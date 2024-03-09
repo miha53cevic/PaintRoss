@@ -76,9 +76,9 @@ export default class Shader {
         return location;
     }
 
-    public SetMatrix3(location: WebGLUniformLocation, mat: glm.mat3) {
+    public SetMatrix4(location: WebGLUniformLocation, mat: glm.mat4) {
         this.Use();
-        this.gl.uniformMatrix3fv(location, false, mat);
+        this.gl.uniformMatrix4fv(location, false, mat);
     }
 
     public SetInt(location: WebGLUniformLocation, data: number) {
