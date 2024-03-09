@@ -1,25 +1,23 @@
 {
     "name": "paintross",
     "version": "0.0.1",
-    "type": "module",
+    "private": true,
     "description": "A simple paint app with image manipulation",
-    "main": "./dist/main.js",
+    "type": "module",
     "scripts": {
-        "start": "http-server ./dist -c-1 -p 3000",
-        "build": "tsc",
-        "dev": "tsc --watch",
-        "lint": "eslint ."
+        "dev": "vite",
+        "build": "tsc && vite build",
+        "preview": "vite preview"
     },
-    "keywords": [
-        "paint"
-    ],
-    "author": "miha53cevic",
-    "license": "MIT",
     "devDependencies": {
-        "@types/jquery": "^3.5.29",
-        "eslint": "^8.57.0",
-        "http-server": "^14.1.1",
-        "typescript": "^5.4.2",
-        "typescript-eslint": "^7.1.1"
-    }
+        "typescript": "^5.2.2",
+        "vite": "^5.1.4",
+        "@types/jquery": "^3.5.29"
+    },
+    "dependencies": {
+        "gl-matrix": "^3.4.3",
+        "jquery": "^3.7.1"
+    },
+    "author": "miha53cevic",
+    "license": "MIT"
 }
