@@ -13,7 +13,7 @@ export default class Shader {
         if (!vertexShader) throw Error("Error creating vertex shader");
         this.gl.shaderSource(vertexShader, vertexShaderSource);
 
-        const fragmentShader = this.gl.createShader(this.gl.VERTEX_SHADER);
+        const fragmentShader = this.gl.createShader(this.gl.FRAGMENT_SHADER);
         if (!fragmentShader) throw Error("Error creating fragment shader");
         this.gl.shaderSource(fragmentShader, fragmentShaderSource);
 
