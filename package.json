@@ -1,0 +1,25 @@
+{
+    "name": "paintross",
+    "version": "0.0.1",
+    "type": "module",
+    "description": "A simple paint app with image manipulation",
+    "main": "./dist/main.js",
+    "scripts": {
+        "start": "http-server ./dist -c-1 -p 3000",
+        "build": "tsc",
+        "dev": "tsc --watch",
+        "lint": "eslint ."
+    },
+    "keywords": [
+        "paint"
+    ],
+    "author": "miha53cevic",
+    "license": "MIT",
+    "devDependencies": {
+        "@types/jquery": "^3.5.29",
+        "eslint": "^8.57.0",
+        "http-server": "^14.1.1",
+        "typescript": "^5.4.2",
+        "typescript-eslint": "^7.1.1"
+    }
+}
