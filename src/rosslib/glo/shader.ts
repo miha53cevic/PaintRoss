@@ -91,12 +91,17 @@ export default class Shader {
         this.gl.uniform1f(location, data);
     }
 
-    public SetVector3(location: WebGLUniformLocation, data: [number, number, number]) {
+    public SetVector4(location: WebGLUniformLocation, data: glm.vec4) {
+        this.Use();
+        this.gl.uniform4f(location, data[0], data[1], data[2], data[3]);
+    }
+
+    public SetVector3(location: WebGLUniformLocation, data: glm.vec3) {
         this.Use();
         this.gl.uniform3f(location, data[0], data[1], data[2]);
     }
 
-    public SetVector2(location: WebGLUniformLocation, data: [number, number]) {
+    public SetVector2(location: WebGLUniformLocation, data: glm.vec2) {
         this.Use();
         this.gl.uniform2f(location, data[0], data[1]);
     }

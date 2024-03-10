@@ -1,4 +1,4 @@
-import { vec2 } from "gl-matrix";
+import { vec2, vec4 } from "gl-matrix";
 import Shader from "./glo/shader";
 import VAO from "./glo/vao";
 import VBO from "./glo/vbo";
@@ -21,9 +21,11 @@ const fragShader =
 precision highp float;
  
 out vec4 FragColor;
+
+uniform vec4 u_colour;
  
 void main() {
-  FragColor = vec4(1, 0, 0, 1);
+  FragColor = u_colour;
 }
 `;
 
@@ -44,6 +46,7 @@ export default class Quad {
     public Position: vec2 = vec2.fromValues(0, 0);
     public Rotation: number = 0;
     public Scale: vec2 = vec2.fromValues(1, 1);
+    public Colour: vec4 = vec4.fromValues(1, 0, 0, 1);
 
     constructor(private readonly gl: WebGL2RenderingContext) {
         if (!Quad._shader && !Quad._vao && !Quad._vbo) {
@@ -65,6 +68,7 @@ export default class Quad {
         const shader = Quad._shader;
         shader.SetMatrix4(shader.GetUniformLocation('u_modelMat'), modelMat);
         shader.SetMatrix4(shader.GetUniformLocation('u_projMat'), projMat);
+        shader.SetVector4(shader.GetUniformLocation('u_colour'), this.Colour);
 
         shader.Use();
         Quad._vao.Bind();
