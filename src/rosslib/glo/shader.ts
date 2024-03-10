@@ -53,7 +53,7 @@ export default class Shader {
         this.gl.detachShader(program, fragmentShader);
         this.gl.deleteShader(vertexShader);
         this.gl.deleteShader(fragmentShader);
-
+        
         const count = this.gl.getProgramParameter(program, this.gl.ACTIVE_UNIFORMS);
         console.log(`[Shader]: Loaded ${count} uniforms`);
 
