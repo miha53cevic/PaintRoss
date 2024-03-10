@@ -79,7 +79,7 @@ export default class App {
         this.gl.clear(this.gl.COLOR_BUFFER_BIT);
     }
 
-    private ResizeToFit() {
+    /*private ResizeToFit() {
         const canvas = this.gl.canvas as HTMLCanvasElement;
         canvas.style.width = '100vw';
         canvas.style.height = '100vh';
@@ -99,5 +99,5 @@ export default class App {
 
         // Update opengl viewport size
         this.gl.viewport(0, 0, canvas.width, canvas.height);
-    }
+    }*/
 }

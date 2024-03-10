@@ -14,8 +14,8 @@ const quad2 = new Quad(gl);
 quad2.Position = vec2.fromValues(100, 100);
 quad2.Scale = vec2.fromValues(100, 100);
 
-function Loop(app: App) {
-    const gl = app.GetGLContext();
+function Loop() {
+    //const gl = app.GetGLContext();
 
     quad1.Render();
     quad2.Render();
