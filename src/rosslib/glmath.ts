@@ -21,6 +21,12 @@ export default class GLMath {
         return mat;
     }
 
+    static createViewMatrix2D(position: vec2) {
+        const mat = mat4.create();
+        mat4.fromTranslation(mat, vec3.fromValues(-position[0], -position[1], 0));
+        return mat;
+    }
+
     static createOrthoProjectionMatrix(screenWidth: number, screenHeight: number, nearPlane: number = -1, farPlane: number = 1) {
         const mat = mat4.create();
         mat4.ortho(mat, 0, screenWidth, screenHeight, 0, nearPlane, farPlane);

@@ -3,6 +3,7 @@ import Clock from './util/clock';
 
 export type UpdateFunction = (elapsedTime: number, app: App) => void;
 export type RenderFunction = (app: App) => void;
+export type OnResizeFunction = (width: number, height: number) => void;
 
 export default class App {
     private readonly canvas: HTMLCanvasElement;
@@ -10,14 +11,15 @@ export default class App {
     private MOUSE_POS: [number, number] = [0, 0];
     private clock: Clock = new Clock();
 
-    constructor(canvasParent: string = '#app', private readonly updateFunc: UpdateFunction, private readonly renderFunc: RenderFunction) {
+    constructor(canvasParent: string = '#app', private readonly updateFunc: UpdateFunction, private readonly renderFunc: RenderFunction, private readonly onResize?: OnResizeFunction) {
         $(canvasParent).append('<canvas width="640px" height="480px" id="appCanvas"></canvas>');
-        $('#appCanvas').css('border', '1px solid black');
+        $(canvasParent).css('display', 'flex');
 
         // Get opengl context
         const canvas = document.getElementById('appCanvas') as HTMLCanvasElement;
         const gl = canvas.getContext('webgl2');
         if (!gl) throw new Error("Error creating webgl2 context");
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true); // flip image data for opengl's bottom to top, only for dom loaded images
 
         this.canvas = canvas;
         this.gl = gl;
@@ -44,9 +46,10 @@ export default class App {
         }, false);
 
         // Event for canvas resize
-        /*window.addEventListener("resize", () => {
+        window.addEventListener("resize", () => {
             this.ResizeToFit();
-        });*/
+        });
+        this.ResizeToFit();
 
         this.clock.Restart(); // reset jer inace cuva od stvaranja kao start time
     }
@@ -79,14 +82,10 @@ export default class App {
         this.gl.clear(this.gl.COLOR_BUFFER_BIT);
     }
 
-    /*private ResizeToFit() {
+    private ResizeToFit() {
         const canvas = this.gl.canvas as HTMLCanvasElement;
-        canvas.style.width = '100vw';
-        canvas.style.height = '100vh';
-
-        // Lookup the size the browser is displaying the canvas.
-        const displayWidth = canvas.clientWidth;
-        const displayHeight = canvas.clientHeight;
+        const displayWidth = window.innerWidth;
+        const displayHeight = window.innerHeight;
 
         // Check if the canvas is not the same size.
         if (canvas.width != displayWidth ||
@@ -99,5 +98,8 @@ export default class App {
 
         // Update opengl viewport size
         this.gl.viewport(0, 0, canvas.width, canvas.height);
-    }*/
+
+        // Call user code on resize
+        this.onResize ? this.onResize(canvas.width, canvas.height) : null;
+    }
 }
