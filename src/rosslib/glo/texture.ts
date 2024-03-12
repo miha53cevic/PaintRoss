@@ -1,5 +1,5 @@
 export default class Texture {
-    private constructor(private readonly gl: WebGL2RenderingContext, private readonly handle: WebGLTexture) {
+    private constructor(private readonly gl: WebGL2RenderingContext, public readonly handle: WebGLTexture) {
     }
 
     public static loadTexture(gl: WebGL2RenderingContext, url: string) {
@@ -21,6 +21,18 @@ export default class Texture {
 
             gl.generateMipmap(gl.TEXTURE_2D);
         });
+
+        return new Texture(gl, handle);
+    }
+
+    public static createTexture(gl: WebGL2RenderingContext, imageWidth: number, imageHeight: number, imageData: Uint8Array | null) {
+        const handle = gl.createTexture();
+        if (!handle) throw new Error("Error creating texture");
+
+        gl.bindTexture(gl.TEXTURE_2D, handle);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, imageWidth, imageHeight, 0, gl.RGBA, gl.UNSIGNED_BYTE, imageData);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
 
         return new Texture(gl, handle);
     }

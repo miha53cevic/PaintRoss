@@ -4,6 +4,7 @@ import Quad from './rosslib/quad';
 import Scene2d from './rosslib/scene2d';
 import Camera2D from './rosslib/camera2d';
 import Texture from './rosslib/glo/texture';
+import Canvas from './rosslib/canvas';
 
 const app = new App('#app', () => {}, Loop, (width, height) => {
     camera2d.updateProjectionMatrix(width, height);
@@ -24,7 +25,9 @@ const quad2 = new Quad(gl);
 quad2.Position = vec2.fromValues(100, 100);
 quad2.Scale = vec2.fromValues(100, 100);
 
-scene.Add([quad1, quad2]);
+const canvas = new Canvas(gl);
+
+scene.Add([quad1, quad2, canvas]);
 
 function Loop() {
     //const gl = app.GetGLContext();
