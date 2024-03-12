@@ -6,17 +6,17 @@ export default class Camera2D {
     private viewMat: mat4 = mat4.create();
     private position: vec2 = vec2.fromValues(0, 0);
 
-    constructor(screenWidth: number, screenHeight: number, near: number = -1, far: number = 1) {
+    constructor(screenWidth: number, screenHeight: number, left: number = 0, top: number = 0, near: number = -1, far: number = 1) {
         this.updateViewMatrix(0, 0);
-        this.updateProjectionMatrix(screenWidth, screenHeight, near, far);
+        this.updateProjectionMatrix(screenWidth, screenHeight, left, top, near, far);
     }
 
     private updateViewMatrix(x: number, y: number) {
         this.viewMat = GLMath.createViewMatrix2D(vec2.fromValues(x, y));
     }
 
-    public updateProjectionMatrix(screenWidth: number, screenHeight: number, near: number = -1, far: number = 1) {
-        this.projMat = GLMath.createOrthoProjectionMatrix(screenWidth, screenHeight, near, far);
+    public updateProjectionMatrix(screenWidth: number, screenHeight: number, left: number = 0, top: number = 0, near: number = -1, far: number = 1) {
+        this.projMat = GLMath.createOrthoProjectionMatrix(left, screenWidth, screenHeight, top, near, far);
     }
 
     public GetProjMatrix() {

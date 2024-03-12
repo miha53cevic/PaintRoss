@@ -8,6 +8,7 @@ export default class Canvas extends Object2D {
     private quadCanvas: Quad;
     private frameBuffer: WebGLFramebuffer;
     private texture: Texture;
+    private zoom: number = 1.0;
 
     constructor(gl: WebGL2RenderingContext) {
         super(gl);
@@ -62,10 +63,14 @@ export default class Canvas extends Object2D {
         const quad = new Quad(this.gl);
         quad.Size = vec2.fromValues(100, 100);
         quad.Colour = vec4.fromValues(0, 1, 0, 1);
-        quad.Render(new Camera2D(this.Size[0], this.Size[1]));
+        quad.Render(new Camera2D(this.Size[0] / this.zoom, this.Size[1] / this.zoom)); // divide left,right,bottom,top with zoom (since top and left are 0, 0/zoom is always zero)
         this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
         // Render to normal viewport (global space)
         this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
         this.quadCanvas.Render(camera);
+    }
+
+    public SetZoom(zoomFactor: number) {
+        this.zoom = zoomFactor;
     }
 }

@@ -32,9 +32,9 @@ export default class GLMath {
         return mat;
     }
 
-    static createOrthoProjectionMatrix(screenWidth: number, screenHeight: number, nearPlane: number = -1, farPlane: number = 1) {
+    static createOrthoProjectionMatrix(left: number, right: number, bottom: number, top: number, nearPlane: number = -1, farPlane: number = 1) {
         const mat = mat4.create();
-        mat4.ortho(mat, 0, screenWidth, screenHeight, 0, nearPlane, farPlane);
+        mat4.ortho(mat, left, right, bottom, top, nearPlane, farPlane);
         return mat;
     }
 
