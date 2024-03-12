@@ -12,7 +12,7 @@ export default class App {
     private MOUSE_POS: [number, number] = [0, 0];
     private clock: Clock = new Clock();
 
-    constructor(canvasParent: string = '#app') {
+    constructor(private readonly canvasParent: string = '#app') {
         $(canvasParent).append('<canvas width="640px" height="480px" id="appCanvas"></canvas>');
         $(canvasParent).css('display', 'flex');
 
@@ -42,6 +42,19 @@ export default class App {
 
     public GetGLContext() {
         return this.gl;
+    }
+
+    public GetCanvasParent() {
+        return this.canvasParent;
+    }
+
+    public Clear(red = 51, green = 51, blue = 51, alpha = 255) {
+        const r = red / 255;
+        const g = green / 255;
+        const b = blue / 255;
+        const a = alpha / 255;
+        this.gl.clearColor(r, g, b, a);
+        this.gl.clear(this.gl.COLOR_BUFFER_BIT);
     }
 
     private Setup() {
@@ -83,19 +96,10 @@ export default class App {
         };
     }
 
-    private Clear(red = 51, green = 51, blue = 51, alpha = 255) {
-        const r = red / 255;
-        const g = green / 255;
-        const b = blue / 255;
-        const a = alpha / 255;
-        this.gl.clearColor(r, g, b, a);
-        this.gl.clear(this.gl.COLOR_BUFFER_BIT);
-    }
-
     private ResizeToFit() {
         const canvas = this.gl.canvas as HTMLCanvasElement;
         const displayWidth = window.innerWidth;
-        const displayHeight = window.innerHeight;
+        const displayHeight = window.innerHeight - 48;
 
         // Check if the canvas is not the same size.
         if (canvas.width != displayWidth ||

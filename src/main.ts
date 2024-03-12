@@ -5,12 +5,57 @@ import Scene2d from './rosslib/scene2d';
 import Camera2D from './rosslib/camera2d';
 import Texture from './rosslib/glo/texture';
 import Canvas from './rosslib/canvas';
+import Shader from './rosslib/glo/shader';
+import VAO from './rosslib/glo/vao';
+import VBO from './rosslib/glo/vbo';
 
 let scene: Scene2d;
 let camera2d: Camera2D;
 
+let drawing = false;
+let points: [number, number][] = [];
+let lineShader: Shader;
+const lineVertexShader = 
+`#version 300 es
+in vec2 a_position;
+
+uniform mat4 u_projMat;
+uniform mat4 u_viewMat;
+ 
+void main() {
+  vec4 pos = u_projMat * u_viewMat * vec4(a_position, 1.0, 1.0);
+  gl_Position = pos;
+}
+`;
+const lineFragShader =  
+`#version 300 es
+precision highp float;
+
+out vec4 FragColor;
+
+void main() {
+  FragColor = vec4(0, 0, 0, 1);
+}
+`;
+
 const app = new App('#app');
 app.onSetup = (gl) => {
+    gl.canvas.addEventListener('mousedown', () => {
+        drawing = true;
+        points = [];
+    });
+
+    gl.canvas.addEventListener('mousemove', () => {
+        if (!drawing) return;
+
+        points.push(app.GetMousePos());
+    });
+
+    gl.canvas.addEventListener('mouseup', () => {
+        drawing = false;
+    });
+    lineShader = new Shader(gl, lineVertexShader, lineFragShader);
+
     scene = new Scene2d();
     camera2d = new Camera2D(gl.canvas.width, gl.canvas.height);
 
@@ -24,7 +69,7 @@ app.onSetup = (gl) => {
     quad2.Position = vec2.fromValues(100, 100);
 
     const canvas = new Canvas(gl);
-    canvas.Size = vec2.fromValues(200, 200);
+    canvas.Size = vec2.fromValues(800, 600);
     canvas.Position = vec2.fromValues(gl.canvas.width / 2 - canvas.Size[0] / 2, gl.canvas.height / 2 - canvas.Size[1] / 2);
 
     scene.Add([canvas, quad1, quad2]);
@@ -32,8 +77,23 @@ app.onSetup = (gl) => {
 app.onResize = (width, height) => {
     camera2d.updateProjectionMatrix(width, height);
 };
-app.onRender = () => {
+app.onUpdate = () => {
+    // try drawing with holding down left mouse button
+};
+app.onRender = (app) => {
     scene.Render(camera2d);
+
+    const gl = app.GetGLContext();
+
+    lineShader.Use();
+    lineShader.SetMatrix4(lineShader.GetUniformLocation('u_projMat'), camera2d.GetProjMatrix());
+    lineShader.SetMatrix4(lineShader.GetUniformLocation('u_viewMat'), camera2d.GetViewMatrix());
+    const vao = new VAO(gl);
+    const vbo = new VBO(gl);
+    vao.Bind();
+    vbo.SetBufferData(points.flat());
+    vao.DefineVertexAttribPointer(vbo, 0, 2, 0, 0);
+    gl.drawArrays(gl.LINE_STRIP, 0, points.length);
 };
 
 app.Run();
