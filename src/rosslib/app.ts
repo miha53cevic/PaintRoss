@@ -1,9 +1,10 @@
 import $ from 'jquery';
 import Clock from './util/clock';
 
+export type SetupFunction = (gl: WebGL2RenderingContext) => void;
 export type UpdateFunction = (elapsedTime: number, app: App) => void;
 export type RenderFunction = (app: App) => void;
-export type OnResizeFunction = (width: number, height: number) => void;
+export type ResizeFunction = (width: number, height: number) => void;
 
 export default class App {
     private readonly canvas: HTMLCanvasElement;
@@ -11,7 +12,7 @@ export default class App {
     private MOUSE_POS: [number, number] = [0, 0];
     private clock: Clock = new Clock();
 
-    constructor(canvasParent: string = '#app', private readonly updateFunc: UpdateFunction, private readonly renderFunc: RenderFunction, private readonly onResize?: OnResizeFunction) {
+    constructor(canvasParent: string = '#app') {
         $(canvasParent).append('<canvas width="640px" height="480px" id="appCanvas"></canvas>');
         $(canvasParent).css('display', 'flex');
 
@@ -24,6 +25,11 @@ export default class App {
         this.canvas = canvas;
         this.gl = gl;
     }
+
+    public onSetup: SetupFunction = () => {};
+    public onUpdate: UpdateFunction = () => {};
+    public onRender: RenderFunction = () => {};
+    public onResize: ResizeFunction = () => {};
 
     public Run() {
         this.Setup();
@@ -48,10 +54,14 @@ export default class App {
         // Event for canvas resize
         window.addEventListener("resize", () => {
             this.ResizeToFit();
+            // Call user code on resize
+            this.onResize(this.gl.canvas.width, this.gl.canvas.height);
         });
         this.ResizeToFit();
 
         this.clock.Restart(); // reset jer inace cuva od stvaranja kao start time
+
+        this.onSetup(this.gl);
     }
 
     private Loop() {
@@ -59,8 +69,8 @@ export default class App {
 
         // Update / rendering code
         const elapsedTime = this.clock.Restart();
-        this.updateFunc(elapsedTime, this);
-        this.renderFunc(this);
+        this.onUpdate(elapsedTime, this);
+        this.onRender(this);
 
         requestAnimationFrame(() => this.Loop());
     }
@@ -98,8 +108,5 @@ export default class App {
 
         // Update opengl viewport size
         this.gl.viewport(0, 0, canvas.width, canvas.height);
-
-        // Call user code on resize
-        this.onResize ? this.onResize(canvas.width, canvas.height) : null;
     }
 }
