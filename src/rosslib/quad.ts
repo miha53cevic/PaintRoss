@@ -46,13 +46,13 @@ void main() {
 
 export default class Quad extends Object2D {
     private static _verticies = [
-        -0.5, -0.5, 0.0, 1.0,
-         0.5, -0.5, 1.0, 1.0,
-         0.5,  0.5, 1.0, 0.0,
+         0.0, 1.0, 0.0, 0.0,
+         1.0, 1.0, 1.0, 0.0,
+         1.0, 0.0, 1.0, 1.0,
 
-         0.5,  0.5, 1.0, 0.0,
-        -0.5,  0.5, 0.0, 0.0,
-        -0.5, -0.5, 0.0, 1.0,
+         1.0, 0.0, 1.0, 1.0,
+         0.0, 0.0, 0.0, 1.0,
+         0.0, 1.0, 0,0, 0.0,
     ];
     private static _shader: Shader;
     private static _vao: VAO;
@@ -77,7 +77,7 @@ export default class Quad extends Object2D {
     }
 
     public Render(camera: Camera2D) {
-        const modelMat = GLMath.createTransformationMatrix2D(this.Position, this.Rotation, this.Scale);
+        const modelMat = GLMath.createTransformationMatrix2D(this.Position, this.Rotation, this.Size);
 
         const shader = Quad._shader;
         shader.SetMatrix4(shader.GetUniformLocation('u_modelMat'), modelMat);

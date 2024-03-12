@@ -1,4 +1,4 @@
-import { vec2, vec4 } from 'gl-matrix';
+import { vec2 } from 'gl-matrix';
 import App from './rosslib/app';
 import Quad from './rosslib/quad';
 import Scene2d from './rosslib/scene2d';
@@ -15,18 +15,19 @@ app.onSetup = (gl) => {
     camera2d = new Camera2D(gl.canvas.width, gl.canvas.height);
 
     const quad1 = new Quad(gl);
-    quad1.Position = vec2.fromValues(gl.canvas.width / 2, gl.canvas.height / 2);
-    quad1.Scale = vec2.fromValues(100, 100);
-    quad1.Colour = vec4.fromValues(1, 1, 1, 1);
+    quad1.Size = vec2.fromValues(100, 100);
+    quad1.Position = vec2.fromValues(0, 0);
     quad1.Texture = Texture.loadTexture(gl, '/test.png');
 
     const quad2 = new Quad(gl);
+    quad2.Size = vec2.fromValues(100, 100);
     quad2.Position = vec2.fromValues(100, 100);
-    quad2.Scale = vec2.fromValues(100, 100);
 
     const canvas = new Canvas(gl);
+    canvas.Size = vec2.fromValues(200, 200);
+    canvas.Position = vec2.fromValues(gl.canvas.width / 2 - canvas.Size[0] / 2, gl.canvas.height / 2 - canvas.Size[1] / 2);
 
-    scene.Add([quad1, quad2, canvas]);
+    scene.Add([canvas, quad1, quad2]);
 };
 app.onResize = (width, height) => {
     camera2d.updateProjectionMatrix(width, height);

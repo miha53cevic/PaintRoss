@@ -12,12 +12,17 @@ export default class GLMath {
         return mat;
     }
 
-    static createTransformationMatrix2D(position: vec2, rotation: number, scale: vec2) {
-        const mat = this.createTransformationMatrix(
-            vec3.fromValues(position[0], position[1], 0),
-            vec3.fromValues(0, 0, rotation),
-            vec3.fromValues(scale[0], scale[1], 1),
-        );
+    static createTransformationMatrix2D(position: vec2, rotation: number, size: vec2) {
+        const mat = mat4.create();
+        mat4.fromTranslation(mat, vec3.fromValues(position[0], position[1], 0));
+
+        // rotate around the center of the object by translating it so that 0,0 is in the middle of the object
+        mat4.translate(mat, mat, vec3.fromValues(0.5 * size[0], 0.5 * size[1], 0.0));
+        mat4.rotateZ(mat, mat, this.toRadian(rotation));
+        mat4.translate(mat, mat, vec3.fromValues(-0.5 * size[0], -0.5 * size[1], 0.0));
+
+        // scale is size since topLeft is 0,0 and size of the quad is 1
+        mat4.scale(mat, mat, vec3.fromValues(size[0], size[1], 1));
         return mat;
     }
 
