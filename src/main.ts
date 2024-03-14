@@ -21,9 +21,10 @@ app.onSetup = (gl, glCanvas) => {
 
     glCanvas.addEventListener('mousedown', (ev) => {
         let mousePos = app.GetMousePos();
-        if (canvas.IsMouseInCanvas(mousePos[0], mousePos[1]) && ev.button === 0) {
-            mousePos = canvas.MouseToCanvasCoordinates(mousePos[0], mousePos[1]);
-            tool.onMouseDown(mousePos[0], mousePos[1], ev.button);
+        const mouseWorld = camera2d.mouseToWorld2D(mousePos[0], mousePos[1], glCanvas.width, glCanvas.height);
+        if (canvas.IsMouseInCanvas(mouseWorld[0], mouseWorld[1]) && ev.button === 0) {
+            const canvasPos = canvas.MouseToCanvasCoordinates(mouseWorld[0], mouseWorld[1]);
+            tool.onMouseDown(canvasPos[0], canvasPos[1], ev.button);
         }
         if (ev.button === 1) {
             panningStartPos = app.GetMousePos();
@@ -33,9 +34,10 @@ app.onSetup = (gl, glCanvas) => {
 
     glCanvas.addEventListener('mousemove', () => {
         let mousePos = app.GetMousePos();
-        if (canvas.IsMouseInCanvas(mousePos[0], mousePos[1])) {
-            mousePos = canvas.MouseToCanvasCoordinates(mousePos[0], mousePos[1]);
-            tool.onMouseMove(mousePos[0], mousePos[1]);
+        const mouseWorld = camera2d.mouseToWorld2D(mousePos[0], mousePos[1], glCanvas.width, glCanvas.height);
+        if (canvas.IsMouseInCanvas(mouseWorld[0], mouseWorld[1])) {
+            const canvasPos = canvas.MouseToCanvasCoordinates(mouseWorld[0], mouseWorld[1]);
+            tool.onMouseMove(canvasPos[0], canvasPos[1]);
         }
         if (panning) {
             let [x, y] = app.GetMousePos();
@@ -45,9 +47,10 @@ app.onSetup = (gl, glCanvas) => {
 
     glCanvas.addEventListener('mouseup', (ev) => {
         let mousePos = app.GetMousePos();
-        if (canvas.IsMouseInCanvas(mousePos[0], mousePos[1])) {
-            mousePos = canvas.MouseToCanvasCoordinates(mousePos[0], mousePos[1]);
-            tool.onMouseUp(mousePos[0], mousePos[1]);
+        const mouseWorld = camera2d.mouseToWorld2D(mousePos[0], mousePos[1], glCanvas.width, glCanvas.height);
+        if (canvas.IsMouseInCanvas(mouseWorld[0], mouseWorld[1])) {
+            const canvasPos = canvas.MouseToCanvasCoordinates(mouseWorld[0], mouseWorld[1]);
+            tool.onMouseUp(canvasPos[0], canvasPos[1], ev.button);
         }
         if (ev.button === 1) {
             panning = false;
