@@ -26,9 +26,13 @@ export default class GLMath {
         return mat;
     }
 
-    static createViewMatrix2D(position: vec2) {
+    static createViewMatrix2D(pan: vec2, zoom: number, zoomCenter: vec2 = vec2.fromValues(0, 0)) {
         const mat = mat4.create();
-        mat4.fromTranslation(mat, vec3.fromValues(-position[0], -position[1], 0));
+        mat4.fromTranslation(mat, vec3.fromValues(-pan[0], -pan[1], 0));
+
+        mat4.translate(mat, mat, vec3.fromValues(zoomCenter[0], zoomCenter[1], 0)); // move scale origin to the zoom center
+        mat4.scale(mat, mat, vec3.fromValues(zoom, zoom, 1.0)); // scale/zoom
+        mat4.translate(mat, mat, vec3.fromValues(-zoomCenter[0], -zoomCenter[1], 0)); // bring back the origin
         return mat;
     }
 

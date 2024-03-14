@@ -4,11 +4,16 @@ import Object2D from "./object2d";
 import Quad from "./quad";
 import Texture from "./glo/texture";
 
+export type CanvasRenderFunction = (camera: Camera2D) => void;
+
 export default class Canvas extends Object2D {
     private quadCanvas: Quad;
     private frameBuffer: WebGLFramebuffer;
     private texture: Texture;
-    private zoom: number = 1.0;
+
+    public Zoom: number = 1.0;
+    public ZoomCenter: [number, number] = [0, 0];
+    public Pan: [number, number] = [0, 0];
 
     constructor(gl: WebGL2RenderingContext) {
         super(gl);
@@ -30,6 +35,8 @@ export default class Canvas extends Object2D {
         this.quadCanvas.Texture = this.texture; // postavi framebuffer texture za kasnije renderiranje
     }
 
+    public onCanvasRender: CanvasRenderFunction = () => {};
+
     private updateCanvasPositionRotationSize() {
         if (this.quadCanvas.Size !== this.Size) {
             console.log("Updating canvas size");
@@ -50,27 +57,62 @@ export default class Canvas extends Object2D {
         }
     }
 
-    public Render(camera: Camera2D): void {
-        this.updateCanvasPositionRotationSize();
-        // Bind framebuffer to render into it
+    public MouseToCanvasCoordinates(x: number, y: number): [number, number] {
+        // If the mouse is in the canvas
+        const normalizedX = x - this.Position[0];
+        const normalizedY = y - this.Position[1];
+        return [
+            normalizedX,
+            normalizedY,
+        ];
+    }
+
+    public IsMouseInCanvas(x: number, y: number) {
+        const dx = x - this.Position[0];
+        const dy = y - this.Position[1];
+
+        // If dx or dy are negative the mouse in on the left or above the canvas
+        if (dx < 0 || dy < 0) return false;
+        // If dx or dy are greater then canvasPos+canvasSize then mouse is right or bottom of canvas
+        if (dx > this.Size[0] || dy > this.Size[1]) return false;
+        // Otherwise mouse is in canvas
+        return true;
+    }
+
+    public GetCanvasCamera() {
+        // divide left,right,bottom,top with zoom (since top and left are 0, 0/zoom is always zero)
+        return new Camera2D(this.Size[0], this.Size[1]);
+    }
+
+    public ClearCanvas() {
+        // Clear framebuffer which clears the texture then
         this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, this.frameBuffer);
-        // Clear framebuffer
         this.gl.clearColor(1, 1, 1, 1);
         this.gl.clear(this.gl.COLOR_BUFFER_BIT);
+        this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
+    }
+
+    public Render(camera: Camera2D): void {
+        this.updateCanvasPositionRotationSize();
+        const canvasCamera = this.GetCanvasCamera();
+        // Bind framebuffer to render into it
+        this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, this.frameBuffer);
+        // Clear framebuffer (no need since the canvas should keep everything drawn to it)
         // Set viewport to canvas size because we're rendering to texture of canvas size
         this.gl.viewport(0, 0, this.Size[0], this.Size[1]);
         // Draw on canvas
         const quad = new Quad(this.gl);
         quad.Size = vec2.fromValues(100, 100);
         quad.Colour = vec4.fromValues(0, 1, 0, 1);
-        quad.Render(new Camera2D(this.Size[0] / this.zoom, this.Size[1] / this.zoom)); // divide left,right,bottom,top with zoom (since top and left are 0, 0/zoom is always zero)
+        quad.Render(canvasCamera); 
+        this.onCanvasRender(canvasCamera);
         this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
         // Render to normal viewport (global space)
         this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
+        camera.SetZoom(this.Zoom, this.ZoomCenter);
+        camera.SetPan(this.Pan[0], this.Pan[1]);
         this.quadCanvas.Render(camera);
-    }
-
-    public SetZoom(zoomFactor: number) {
-        this.zoom = zoomFactor;
+        camera.SetZoom(1.0);
+        camera.SetPan(0, 0);
     }
 }

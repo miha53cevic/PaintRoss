@@ -1,13 +1,13 @@
 import $ from 'jquery';
 import Clock from './util/clock';
 
-export type SetupFunction = (gl: WebGL2RenderingContext) => void;
+export type SetupFunction = (gl: WebGL2RenderingContext, canvas: HTMLCanvasElement) => void;
 export type UpdateFunction = (elapsedTime: number, app: App) => void;
 export type RenderFunction = (app: App) => void;
 export type ResizeFunction = (width: number, height: number) => void;
 
 export default class App {
-    private readonly canvas: HTMLCanvasElement;
+    private readonly glCanvas: HTMLCanvasElement;
     private readonly gl: WebGL2RenderingContext;
     private MOUSE_POS: [number, number] = [0, 0];
     private clock: Clock = new Clock();
@@ -22,7 +22,7 @@ export default class App {
         if (!gl) throw new Error("Error creating webgl2 context");
         gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true); // flip image data for opengl's bottom to top, only for dom loaded images
 
-        this.canvas = canvas;
+        this.glCanvas = canvas;
         this.gl = gl;
     }
 
@@ -44,6 +44,10 @@ export default class App {
         return this.gl;
     }
 
+    public GetGLCanvas() {
+        return this.glCanvas;
+    }
+
     public GetCanvasParent() {
         return this.canvasParent;
     }
@@ -59,22 +63,27 @@ export default class App {
 
     private Setup() {
         // Event for finding mouse position on click
-        this.canvas.addEventListener("mousemove", (evt) => {
-            const { x, y } = this.MousePos(this.canvas, evt);
+        this.glCanvas.addEventListener("mousemove", (evt) => {
+            const { x, y } = this.MousePos(this.glCanvas, evt);
             this.MOUSE_POS = [x, y];
         }, false);
+
+        // Disable right click context menu
+        this.glCanvas.addEventListener("contextmenu", (ev) => {
+            ev.preventDefault();
+        });
 
         // Event for canvas resize
         window.addEventListener("resize", () => {
             this.ResizeToFit();
             // Call user code on resize
-            this.onResize(this.gl.canvas.width, this.gl.canvas.height);
+            this.onResize(this.glCanvas.width, this.glCanvas.height);
         });
         this.ResizeToFit();
 
         this.clock.Restart(); // reset jer inace cuva od stvaranja kao start time
 
-        this.onSetup(this.gl);
+        this.onSetup(this.gl, this.glCanvas);
     }
 
     private Loop() {
@@ -97,7 +106,7 @@ export default class App {
     }
 
     private ResizeToFit() {
-        const canvas = this.gl.canvas as HTMLCanvasElement;
+        const canvas = this.glCanvas;
         const displayWidth = window.innerWidth;
         const displayHeight = window.innerHeight - 48;
 
