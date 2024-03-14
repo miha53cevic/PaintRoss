@@ -12,8 +12,9 @@ uniform mat4 u_projMat;
 uniform mat4 u_viewMat;
  
 void main() {
-  vec4 pos = u_projMat * u_viewMat * vec4(a_position, 1.0, 1.0);
+  vec4 pos = u_projMat * u_viewMat * vec4(a_position, 0.0, 1.0);
   gl_Position = pos;
+  gl_PointSize = 0.0;
 }
 `;
 const lineFragShader =
@@ -36,9 +37,9 @@ export default class Pen implements Tool {
         this.lineShader = new Shader(gl, lineVertexShader, lineFragShader);
     }
 
-    onMouseDown(): void {
+    onMouseDown(x: number, y: number): void {
         this.drawing = true;
-        this.points = [];
+        this.points = [[x, y]]; // add initial click point
     }
 
     onMouseUp(): void {
@@ -52,6 +53,8 @@ export default class Pen implements Tool {
     }
 
     Render(camera: Camera2D) {
+        if (!this.points.length) return;
+
         this.lineShader.Use();
         this.lineShader.SetMatrix4(this.lineShader.GetUniformLocation('u_projMat'), camera.GetProjMatrix());
         this.lineShader.SetMatrix4(this.lineShader.GetUniformLocation('u_viewMat'), camera.GetViewMatrix());
@@ -60,6 +63,8 @@ export default class Pen implements Tool {
         vao.Bind();
         vbo.SetBufferData(this.points.flat());
         vao.DefineVertexAttribPointer(vbo, 0, 2, 0, 0);
-        this.gl.drawArrays(this.gl.LINE_STRIP, 0, this.points.length);
+        // If it's only 1 point draw it instead of a line
+        if (this.points.length > 1) this.gl.drawArrays(this.gl.LINE_STRIP, 0, this.points.length);
+        else this.gl.drawArrays(this.gl.POINTS, 0, 1);
     }
 }

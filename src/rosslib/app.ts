@@ -1,4 +1,3 @@
-import $ from 'jquery';
 import Clock from './util/clock';
 
 export type SetupFunction = (gl: WebGL2RenderingContext, canvas: HTMLCanvasElement) => void;
@@ -12,12 +11,8 @@ export default class App {
     private MOUSE_POS: [number, number] = [0, 0];
     private clock: Clock = new Clock();
 
-    constructor(private readonly canvasParent: string = '#app') {
-        $(canvasParent).append('<canvas width="640px" height="480px" id="appCanvas"></canvas>');
-        $(canvasParent).css('display', 'flex');
-
+    constructor(canvas: HTMLCanvasElement) {
         // Get opengl context
-        const canvas = document.getElementById('appCanvas') as HTMLCanvasElement;
         const gl = canvas.getContext('webgl2');
         if (!gl) throw new Error("Error creating webgl2 context");
         gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true); // flip image data for opengl's bottom to top, only for dom loaded images
@@ -46,10 +41,6 @@ export default class App {
 
     public GetGLCanvas() {
         return this.glCanvas;
-    }
-
-    public GetCanvasParent() {
-        return this.canvasParent;
     }
 
     public Clear(red = 51, green = 51, blue = 51, alpha = 255) {
@@ -98,7 +89,7 @@ export default class App {
     }
 
     private MousePos(canvas: HTMLCanvasElement, evt: MouseEvent) {
-        let rect = canvas.getBoundingClientRect();
+        const rect = canvas.getBoundingClientRect();
         return {
             x: evt.clientX - rect.left,
             y: evt.clientY - rect.top
