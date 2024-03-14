@@ -26,14 +26,32 @@ export default class GLMath {
         return mat;
     }
 
-    static createViewMatrix2D(pan: vec2, zoom: number, zoomCenter: vec2 = vec2.fromValues(0, 0)) {
-        const mat = mat4.create();
-        mat4.fromTranslation(mat, vec3.fromValues(-pan[0], -pan[1], 0));
-
-        mat4.translate(mat, mat, vec3.fromValues(zoomCenter[0], zoomCenter[1], 0)); // move scale origin to the zoom center
-        mat4.scale(mat, mat, vec3.fromValues(zoom, zoom, 1.0)); // scale/zoom
-        mat4.translate(mat, mat, vec3.fromValues(-zoomCenter[0], -zoomCenter[1], 0)); // bring back the origin
+    static createViewMatrix2D(pan: vec2 = vec2.fromValues(0, 0), zoom: number = 1.0, zoomCenter: vec2 = vec2.fromValues(0, 0)) {
+        let mat = mat4.create();
+        mat = this.updateViewMatrixZooming(mat, zoom, zoomCenter);
+        mat = this.updateViewMatrixPanning(mat, pan);
         return mat;
+    }
+
+    // Useful when needing to do extra zoom in on already transformed viewMatrix, because then you need to right multiply by oldViewMat to keep previous transformations
+    static updateViewMatrixZooming(viewMatrix: mat4, zoom: number, zoomCenter: vec2 = vec2.fromValues(0, 0)) {
+        const zoomMatrix = mat4.create();
+        mat4.fromTranslation(zoomMatrix, vec3.fromValues(zoomCenter[0], zoomCenter[1], 0)); // move scale origin to the zoom center
+        mat4.scale(zoomMatrix, zoomMatrix, vec3.fromValues(zoom, zoom, 1.0)); // scale/zoom
+        mat4.translate(zoomMatrix, zoomMatrix, vec3.fromValues(-zoomCenter[0], -zoomCenter[1], 0)); // bring back the origin
+
+        const updatedViewMatrix = mat4.create();
+        mat4.multiply(updatedViewMatrix, zoomMatrix, viewMatrix); // order matters! (newViewMat * oldViewMat)
+        return updatedViewMatrix;
+    }
+
+    static updateViewMatrixPanning(viewMatrix: mat4, pan: vec2, panSpeed: number = 0.1) {
+        const translationMatrix = mat4.create();
+        mat4.fromTranslation(translationMatrix, vec3.fromValues(pan[0] * panSpeed, pan[1] * panSpeed, 0));
+
+        const updatedViewMatrix = mat4.create();
+        mat4.multiply(updatedViewMatrix, translationMatrix, viewMatrix);
+        return updatedViewMatrix;
     }
 
     static createOrthoProjectionMatrix(left: number, right: number, bottom: number, top: number, nearPlane: number = -1, farPlane: number = 1) {

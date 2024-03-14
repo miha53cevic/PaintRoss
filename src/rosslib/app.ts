@@ -108,7 +108,7 @@ export default class App {
     private ResizeToFit() {
         const canvas = this.glCanvas;
         const displayWidth = window.innerWidth;
-        const displayHeight = window.innerHeight - 48;
+        const displayHeight = window.innerHeight - 48; // appbar
 
         // Check if the canvas is not the same size.
         if (canvas.width != displayWidth ||

@@ -11,10 +11,6 @@ export default class Canvas extends Object2D {
     private frameBuffer: WebGLFramebuffer;
     private texture: Texture;
 
-    public Zoom: number = 1.0;
-    public ZoomCenter: [number, number] = [0, 0];
-    public Pan: [number, number] = [0, 0];
-
     constructor(gl: WebGL2RenderingContext) {
         super(gl);
 
@@ -109,10 +105,6 @@ export default class Canvas extends Object2D {
         this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
         // Render to normal viewport (global space)
         this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
-        camera.SetZoom(this.Zoom, this.ZoomCenter);
-        camera.SetPan(this.Pan[0], this.Pan[1]);
         this.quadCanvas.Render(camera);
-        camera.SetZoom(1.0);
-        camera.SetPan(0, 0);
     }
 }

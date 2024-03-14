@@ -12,9 +12,8 @@ let scene: Scene2d;
 let camera2d: Camera2D;
 
 let tool: Tool;
-
 let panning = false;
-let panningStartMousePos: [number, number] = [0, 0];
+let panningStartPos: [number, number] = [0, 0];
 
 const app = new App('#app');
 app.onSetup = (gl, glCanvas) => {
@@ -27,8 +26,8 @@ app.onSetup = (gl, glCanvas) => {
             tool.onMouseDown(mousePos[0], mousePos[1], ev.button);
         }
         if (ev.button === 1) {
+            panningStartPos = app.GetMousePos();
             panning = true;
-            panningStartMousePos = mousePos;
         }
     });
 
@@ -39,10 +38,8 @@ app.onSetup = (gl, glCanvas) => {
             tool.onMouseMove(mousePos[0], mousePos[1]);
         }
         if (panning) {
-            const dx = mousePos[0] - panningStartMousePos[0];
-            const dy = mousePos[1] - panningStartMousePos[1];
-            canvas.Pan[0] = -dx;
-            canvas.Pan[1] = -dy;
+            let [x, y] = app.GetMousePos();
+            camera2d.SetPan(x - panningStartPos[0], y - panningStartPos[1]);
         }
     });
 
@@ -59,17 +56,11 @@ app.onSetup = (gl, glCanvas) => {
 
     glCanvas.addEventListener('wheel', (evt) => {
         const sensetivity = 0.1;
-        const wheelDelta = Math.sign(evt.deltaY);
-        const zoom = wheelDelta * sensetivity;
-
-        canvas.Zoom -= zoom;
-        const maxZoom = 10.0;
-        const minZoom = 0.1;
-        canvas.Zoom = Math.min(Math.max(canvas.Zoom, minZoom), maxZoom);
+        const wheelDelta = Math.sign(-evt.deltaY);
+        const zoomAmount = wheelDelta * sensetivity;
 
         const [x, y] = app.GetMousePos();
-        canvas.ZoomCenter[0] = x;
-        canvas.ZoomCenter[1] = y;
+        camera2d.ZoomBy(zoomAmount, [x, y]);
     });
 
     scene = new Scene2d();
