@@ -1,11 +1,12 @@
 import Camera2D from "../camera2d";
+import CanvasObject from "../objects/canvasObject";
 import Shader from "../glo/shader";
 import VAO from "../glo/vao";
 import VBO from "../glo/vbo";
 import Tool from "./tool";
 
 const lineVertexShader =
-`#version 300 es
+    `#version 300 es
 in vec2 a_position;
 
 uniform mat4 u_projMat;
@@ -18,7 +19,7 @@ void main() {
 }
 `;
 const lineFragShader =
-`#version 300 es
+    `#version 300 es
 precision highp float;
 
 out vec4 FragColor;
@@ -28,31 +29,54 @@ void main() {
 }
 `;
 
-export default class Pen implements Tool {
+export default class Pen extends Tool {
     private readonly lineShader: Shader;
     private points: [number, number][] = [];
     private drawing = false;
 
-    constructor(private readonly gl: WebGL2RenderingContext) {
+    constructor(gl: WebGL2RenderingContext, canvasObj: CanvasObject) {
+        super(gl, canvasObj);
         this.lineShader = new Shader(gl, lineVertexShader, lineFragShader);
     }
 
-    onMouseDown(x: number, y: number): void {
-        this.drawing = true;
-        this.points = [[x, y]]; // add initial click point
+    onMouseDown(x: number, y: number, mouseButton: number): void {
+        if (mouseButton === 0) {
+            this.drawing = true;
+            this.points = [[x, y]]; // add initial click point
+        }
+        if (mouseButton === 2) {
+            const img = this.canvasObj.GetCanvasImage();
+
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
+            ctx.canvas.width = img.width;
+            ctx.canvas.height = img.height;
+            const imageData = ctx.createImageData(img.width, img.height);
+            for (let i = 0; i < img.pixels.length; i++) {
+                imageData.data[i] = img.pixels[i];
+            }
+            ctx.putImageData(imageData, 0, 0);
+            window.open(canvas.toDataURL("image/png"));
+            canvas.remove();
+        }
     }
 
-    onMouseUp(): void {
-        this.drawing = false;
-        this.points = [];
+    onMouseUp(x: number, y: number, mouseButton: number): void {
+        if (mouseButton === 0) {
+            this.drawing = false;
+            this.canvasObj.DrawOnCanvas({ Render: (camera: Camera2D) => this.RenderLines(camera) });
+            this.points = [];
+        }
     }
 
     onMouseMove(x: number, y: number): void {
-        if (!this.drawing) return;
-        this.points.push([x, y]);
+        if (this.drawing) {
+            this.points.push([x, y]);
+            this.canvasObj.DrawOnCanvas({ Render: (camera: Camera2D) => this.RenderLines(camera) });
+        }
     }
 
-    Render(camera: Camera2D) {
+    RenderLines(camera: Camera2D) {
         if (!this.points.length) return;
 
         this.lineShader.Use();

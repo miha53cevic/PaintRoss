@@ -1,5 +1,5 @@
 import { vec2 } from "gl-matrix";
-import Camera2D from "./camera2d";
+import Camera2D from "../camera2d";
 
 export default abstract class Object2D {
     public Position: vec2 = vec2.fromValues(0, 0);

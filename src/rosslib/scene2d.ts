@@ -1,4 +1,4 @@
-import Object2D from "./object2d";
+import Object2D from "./objects/object2d";
 import Camera2D from "./camera2d";
 
 export default class Scene2d {

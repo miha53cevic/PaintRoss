@@ -1,13 +1,11 @@
 import { vec2, vec4 } from "gl-matrix";
-import Camera2D from "./camera2d";
+import Camera2D from "../camera2d";
 import Object2D from "./object2d";
-import Quad from "./quad";
-import Texture from "./glo/texture";
+import QuadObject from "./quadObject";
+import Texture from "../glo/texture";
 
-export type CanvasRenderFunction = (camera: Camera2D) => void;
-
-export default class Canvas extends Object2D {
-    private quadCanvas: Quad;
+export default class CanvasObject extends Object2D {
+    private quadCanvas: QuadObject;
     private frameBuffer: WebGLFramebuffer;
     private texture: Texture;
 
@@ -25,13 +23,11 @@ export default class Canvas extends Object2D {
         gl.bindTexture(gl.TEXTURE_2D, null); // bitno jer inace ostaje bound
         gl.bindFramebuffer(gl.FRAMEBUFFER, null); // vrati na default framebuffer
 
-        this.quadCanvas = new Quad(gl); // canvasQuad u global space
+        this.quadCanvas = new QuadObject(gl); // canvasQuad u global space
         this.quadCanvas.Size = vec2.fromValues(this.Size[0], this.Size[1]);
         this.quadCanvas.Position = vec2.fromValues(this.Position[0], this.Position[1]);
         this.quadCanvas.Texture = this.texture; // postavi framebuffer texture za kasnije renderiranje
     }
-
-    public onCanvasRender: CanvasRenderFunction = () => {};
 
     private updateCanvasPositionRotationSize() {
         if (this.quadCanvas.Size !== this.Size) {
@@ -41,6 +37,7 @@ export default class Canvas extends Object2D {
             this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture.handle);
             // TODO kaj kad je slika stara nutri, moram kopirat staru i napraviti veci canvas nekak
             this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.Size[0], this.Size[1], 0, this.gl.RGBA, this.gl.UNSIGNED_BYTE, null);
+            this.ClearCanvas();
             this.gl.bindTexture(this.gl.TEXTURE_2D, null);
         }
         if (this.quadCanvas.Position !== this.Position) {
@@ -75,6 +72,21 @@ export default class Canvas extends Object2D {
         return true;
     }
 
+    public GetCanvasImage() {
+        const imgWidth = this.Size[0];
+        const imgHeight = this.Size[1];
+        const pixels = new Uint8Array(imgWidth * imgHeight * 4); // width * height * pixel_components (rgba is 4)
+        this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, this.frameBuffer);
+        this.gl.readPixels(0, 0, imgWidth, imgHeight, this.gl.RGBA, this.gl.UNSIGNED_BYTE, pixels);
+        this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
+        // TODO FLIP TEXTURE ON Y COORDINATE
+        return {
+            width: imgWidth,
+            height: imgHeight,
+            pixels: pixels,
+        };
+    }
+
     public GetCanvasCamera() {
         // divide left,right,bottom,top with zoom (since top and left are 0, 0/zoom is always zero)
         return new Camera2D(this.Size[0], this.Size[1]);
@@ -88,8 +100,7 @@ export default class Canvas extends Object2D {
         this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
     }
 
-    public Render(camera: Camera2D): void {
-        this.updateCanvasPositionRotationSize();
+    public DrawOnCanvas(object: Object2D | { Render: (camera: Camera2D) => void }) {
         const canvasCamera = this.GetCanvasCamera();
         // Bind framebuffer to render into it
         this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, this.frameBuffer);
@@ -97,12 +108,17 @@ export default class Canvas extends Object2D {
         // Set viewport to canvas size because we're rendering to texture of canvas size
         this.gl.viewport(0, 0, this.Size[0], this.Size[1]);
         // Draw on canvas
-        const quad = new Quad(this.gl);
+        object.Render(canvasCamera);
+        // Switch back to normal framebuffer
+        this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
+    }
+
+    public Render(camera: Camera2D): void {
+        this.updateCanvasPositionRotationSize();
+        const quad = new QuadObject(this.gl);
         quad.Size = vec2.fromValues(100, 100);
         quad.Colour = vec4.fromValues(0, 1, 0, 1);
-        quad.Render(canvasCamera); 
-        this.onCanvasRender(canvasCamera);
-        this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
+        this.DrawOnCanvas(quad);
         // Render to normal viewport (global space)
         this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
         this.quadCanvas.Render(camera);

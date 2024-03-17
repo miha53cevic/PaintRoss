@@ -1,10 +1,10 @@
 import { vec2 } from 'gl-matrix';
 import App from './app';
-import Quad from './quad';
+import QuadObject from './objects/quadObject';
 import Scene2d from './scene2d';
 import Camera2D from './camera2d';
 import Texture from './glo/texture';
-import Canvas from './canvas';
+import CanvasObject from './objects/canvasObject';
 import Tool from './tools/tool';
 import Pen from './tools/pen';
 
@@ -18,13 +18,12 @@ export function loadPaintApp(canvas: HTMLCanvasElement) {
 
     const app = new App(canvas);
     app.onSetup = (gl, glCanvas) => {
-        tool = new Pen(gl);
 
         glCanvas.addEventListener('mousedown', (ev) => {
             const mousePos = app.GetMousePos();
             const mouseWorld = camera2d.mouseToWorld2D(mousePos[0], mousePos[1], glCanvas.width, glCanvas.height);
-            if (canvas.IsMouseInCanvas(mouseWorld[0], mouseWorld[1]) && ev.button === 0) {
-                const canvasPos = canvas.MouseToCanvasCoordinates(mouseWorld[0], mouseWorld[1]);
+            if (canvasObj.IsMouseInCanvas(mouseWorld[0], mouseWorld[1])) {
+                const canvasPos = canvasObj.MouseToCanvasCoordinates(mouseWorld[0], mouseWorld[1]);
                 tool.onMouseDown(canvasPos[0], canvasPos[1], ev.button);
             }
             if (ev.button === 1) {
@@ -36,8 +35,8 @@ export function loadPaintApp(canvas: HTMLCanvasElement) {
         glCanvas.addEventListener('mousemove', () => {
             const mousePos = app.GetMousePos();
             const mouseWorld = camera2d.mouseToWorld2D(mousePos[0], mousePos[1], glCanvas.width, glCanvas.height);
-            if (canvas.IsMouseInCanvas(mouseWorld[0], mouseWorld[1])) {
-                const canvasPos = canvas.MouseToCanvasCoordinates(mouseWorld[0], mouseWorld[1]);
+            if (canvasObj.IsMouseInCanvas(mouseWorld[0], mouseWorld[1])) {
+                const canvasPos = canvasObj.MouseToCanvasCoordinates(mouseWorld[0], mouseWorld[1]);
                 tool.onMouseMove(canvasPos[0], canvasPos[1]);
             }
             if (panning) {
@@ -52,8 +51,8 @@ export function loadPaintApp(canvas: HTMLCanvasElement) {
         glCanvas.addEventListener('mouseup', (ev) => {
             const mousePos = app.GetMousePos();
             const mouseWorld = camera2d.mouseToWorld2D(mousePos[0], mousePos[1], glCanvas.width, glCanvas.height);
-            if (canvas.IsMouseInCanvas(mouseWorld[0], mouseWorld[1])) {
-                const canvasPos = canvas.MouseToCanvasCoordinates(mouseWorld[0], mouseWorld[1]);
+            if (canvasObj.IsMouseInCanvas(mouseWorld[0], mouseWorld[1])) {
+                const canvasPos = canvasObj.MouseToCanvasCoordinates(mouseWorld[0], mouseWorld[1]);
                 tool.onMouseUp(canvasPos[0], canvasPos[1], ev.button);
             }
             if (ev.button === 1) {
@@ -73,23 +72,22 @@ export function loadPaintApp(canvas: HTMLCanvasElement) {
         scene = new Scene2d();
         camera2d = new Camera2D(gl.canvas.width, gl.canvas.height);
 
-        const quad1 = new Quad(gl);
+        const quad1 = new QuadObject(gl);
         quad1.Size = vec2.fromValues(100, 100);
         quad1.Position = vec2.fromValues(0, 0);
         quad1.Texture = Texture.loadTexture(gl, '/test.png');
 
-        const quad2 = new Quad(gl);
+        const quad2 = new QuadObject(gl);
         quad2.Size = vec2.fromValues(100, 100);
         quad2.Position = vec2.fromValues(100, 100);
 
-        const canvas = new Canvas(gl);
-        canvas.Size = vec2.fromValues(800, 600);
-        canvas.Position = vec2.fromValues(gl.canvas.width / 2 - canvas.Size[0] / 2, gl.canvas.height / 2 - canvas.Size[1] / 2);
-        canvas.onCanvasRender = (camera) => {
-            (tool as Pen).Render(camera);
-        };
+        const canvasObj = new CanvasObject(gl);
+        canvasObj.Size = vec2.fromValues(800, 600);
+        canvasObj.Position = vec2.fromValues(gl.canvas.width / 2 - canvasObj.Size[0] / 2, gl.canvas.height / 2 - canvasObj.Size[1] / 2);
 
-        scene.Add([canvas, quad1, quad2]);
+        tool = new Pen(gl, canvasObj);
+
+        scene.Add([canvasObj, quad1, quad2]);
     };
     app.onResize = (width, height) => {
         camera2d.updateProjectionMatrix(width, height);

@@ -1,11 +1,11 @@
 import { vec4 } from "gl-matrix";
-import Shader from "./glo/shader";
-import VAO from "./glo/vao";
-import VBO from "./glo/vbo";
-import GLMath from "./glmath";
+import Shader from "../glo/shader";
+import VAO from "../glo/vao";
+import VBO from "../glo/vbo";
+import GLMath from "../glmath";
 import Object2D from "./object2d";
-import Camera2D from "./camera2d";
-import Texture from "./glo/texture";
+import Camera2D from "../camera2d";
+import Texture from "../glo/texture";
 
 const vertexShader = 
 `#version 300 es
@@ -44,7 +44,7 @@ void main() {
 }
 `;
 
-export default class Quad extends Object2D {
+export default class QuadObject extends Object2D {
     private static _verticies = [
          0.0, 1.0, 0.0, 0.0,
          1.0, 1.0, 1.0, 0.0,
@@ -63,23 +63,23 @@ export default class Quad extends Object2D {
 
     constructor(gl: WebGL2RenderingContext) {
         super(gl);
-        if (!Quad._shader && !Quad._vao && !Quad._vbo) {
-            Quad._shader = new Shader(gl, vertexShader, fragShader);
-            Quad._vao = new VAO(gl);
-            Quad._vbo = new VBO(gl);
+        if (!QuadObject._shader && !QuadObject._vao && !QuadObject._vbo) {
+            QuadObject._shader = new Shader(gl, vertexShader, fragShader);
+            QuadObject._vao = new VAO(gl);
+            QuadObject._vbo = new VBO(gl);
 
 
-            Quad._vao.Bind();
-            Quad._vbo.SetBufferData(Quad._verticies);
-            Quad._vao.DefineVertexAttribPointer(Quad._vbo, 0, 2, 4 * 4, 0);
-            Quad._vao.DefineVertexAttribPointer(Quad._vbo, 1, 2, 4 * 4, 4 * 2);
+            QuadObject._vao.Bind();
+            QuadObject._vbo.SetBufferData(QuadObject._verticies);
+            QuadObject._vao.DefineVertexAttribPointer(QuadObject._vbo, 0, 2, 4 * 4, 0);
+            QuadObject._vao.DefineVertexAttribPointer(QuadObject._vbo, 1, 2, 4 * 4, 4 * 2);
         }
     }
 
     public Render(camera: Camera2D) {
         const modelMat = GLMath.createTransformationMatrix2D(this.Position, this.Rotation, this.Size);
 
-        const shader = Quad._shader;
+        const shader = QuadObject._shader;
         shader.SetMatrix4(shader.GetUniformLocation('u_modelMat'), modelMat);
         shader.SetMatrix4(shader.GetUniformLocation('u_viewMat'), camera.GetViewMatrix());
         shader.SetMatrix4(shader.GetUniformLocation('u_projMat'), camera.GetProjMatrix());
@@ -93,7 +93,7 @@ export default class Quad extends Object2D {
         else shader.SetInt(shader.GetUniformLocation('u_usingTexture'), 0);
 
         shader.Use();
-        Quad._vao.Bind();
+        QuadObject._vao.Bind();
         this.gl.drawArrays(this.gl.TRIANGLES, 0, 6);
     }
 }
