@@ -26,7 +26,7 @@ export default class Camera2D {
         return this.viewMat;
     }
 
-    public SetPan(x: number, y: number) {
+    public PanBy(x: number, y: number) {
         this.viewMat = GLMath.updateViewMatrixPanning(this.viewMat, vec2.fromValues(x, y));
     }
 

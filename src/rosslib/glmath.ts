@@ -45,7 +45,7 @@ export default class GLMath {
         return updatedViewMatrix;
     }
 
-    static updateViewMatrixPanning(viewMatrix: mat4, pan: vec2, panSpeed: number = 0.1) {
+    static updateViewMatrixPanning(viewMatrix: mat4, pan: vec2, panSpeed: number = 1.0) {
         const translationMatrix = mat4.create();
         mat4.fromTranslation(translationMatrix, vec3.fromValues(pan[0] * panSpeed, pan[1] * panSpeed, 0));
 

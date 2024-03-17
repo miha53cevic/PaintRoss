@@ -42,7 +42,10 @@ export function loadPaintApp(canvas: HTMLCanvasElement) {
             }
             if (panning) {
                 const [x, y] = app.GetMousePos();
-                camera2d.SetPan(x - panningStartPos[0], y - panningStartPos[1]);
+                const dx = x - panningStartPos[0];
+                const dy = y - panningStartPos[1];
+                camera2d.PanBy(dx, dy);
+                panningStartPos = [x, y]; // after panning set new starting pos
             }
         });
 
