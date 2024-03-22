@@ -3,6 +3,7 @@ import Camera2D from "../camera2d";
 import Object2D from "./object2d";
 import QuadObject from "./quadObject";
 import Texture from "../glo/texture";
+import flip_image from "../util/flip_image";
 
 export default class CanvasObject extends Object2D {
     private quadCanvas: QuadObject;
@@ -79,11 +80,11 @@ export default class CanvasObject extends Object2D {
         this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, this.frameBuffer);
         this.gl.readPixels(0, 0, imgWidth, imgHeight, this.gl.RGBA, this.gl.UNSIGNED_BYTE, pixels);
         this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
-        // TODO FLIP TEXTURE ON Y COORDINATE
+        const flipped_pixels = flip_image(imgWidth, imgHeight, pixels);
         return {
             width: imgWidth,
             height: imgHeight,
-            pixels: pixels,
+            pixels: flipped_pixels,
         };
     }
 
