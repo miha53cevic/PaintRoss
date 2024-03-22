@@ -84,6 +84,7 @@ export function loadPaintApp(canvas: HTMLCanvasElement) {
         const canvasObj = new CanvasObject(gl);
         canvasObj.Size = vec2.fromValues(800, 600);
         canvasObj.Position = vec2.fromValues(gl.canvas.width / 2 - canvasObj.Size[0] / 2, gl.canvas.height / 2 - canvasObj.Size[1] / 2);
+        canvasObj.SetDebug(true);
 
         tool = new Pen(gl, canvasObj);
 

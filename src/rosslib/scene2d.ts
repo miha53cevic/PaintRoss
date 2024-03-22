@@ -17,6 +17,10 @@ export default class Scene2d {
         else this.objects2d.push(object2d);
     }
 
+    public Get(index: number) {
+        return this.objects2d[index];
+    }
+
     public Clear() {
         this.objects2d = [];
     }

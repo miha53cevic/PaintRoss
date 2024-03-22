@@ -45,6 +45,7 @@ export default class Pen extends Tool {
             this.points = [[x, y]]; // add initial click point
         }
         if (mouseButton === 2) {
+            this.canvasObj.MergePreviewCanvas(); // copy preview texture data onto canvas texture
             const img = this.canvasObj.GetCanvasImage();
 
             const canvas = document.createElement('canvas');

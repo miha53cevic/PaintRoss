@@ -13,6 +13,10 @@ export default class VAO {
         this.gl.bindVertexArray(this._vao);
     }
 
+    public Unbind() {
+        this.gl.bindVertexArray(null);
+    }
+
     public GetVAO() {
         return this._vao;
     }
@@ -30,5 +34,6 @@ export default class VAO {
        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, vbo.GetVBO());
        this.gl.vertexAttribPointer(attributeId, numOfFloatsPerData, this.gl.FLOAT, false, stride, offset);
        this.gl.enableVertexAttribArray(attributeId);
+       this.gl.bindBuffer(this.gl.ARRAY_BUFFER, null);
     }
 }

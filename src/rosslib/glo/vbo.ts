@@ -10,6 +10,7 @@ export default class VBO {
     public SetBufferData(data: number[], usage: number = this.gl.STATIC_DRAW) {
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this._vbo);
         this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(data), usage);
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, null);
     }
 
     public GetVBO() {
