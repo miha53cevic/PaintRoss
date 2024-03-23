@@ -1,9 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import PaintApp from './components/PaintApp';
+import App from './components/App';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
-        <PaintApp />
+        <App />
     </React.StrictMode>,
 )

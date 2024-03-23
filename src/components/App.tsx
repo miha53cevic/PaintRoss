@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react"
-import { loadPaintApp } from "../rosslib";
+import PaintApp from "../rosslib";
 import styled from "styled-components";
 import AppBar from "./Appbar";
 import Toolbar from "./Toolbar";
@@ -10,13 +10,13 @@ const Main = styled.main`
     flex-direction: column;
 `;
 
-export default function PaintApp() {
+export default function App() {
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
     useEffect(() => {
         if (!canvasRef.current) return;
-        loadPaintApp(canvasRef.current);
-    }, []);
+        PaintApp.Init(canvasRef.current);
+    }, [canvasRef]);
 
     return (
         <Main>
@@ -25,5 +25,5 @@ export default function PaintApp() {
             <Toolbar />
             <ColorPicker />
         </Main >
-    )
+    );
 }

@@ -1,6 +1,5 @@
 import Clock from './util/clock';
 
-export type SetupFunction = (gl: WebGL2RenderingContext, canvas: HTMLCanvasElement) => void;
 export type UpdateFunction = (elapsedTime: number, app: App) => void;
 export type RenderFunction = (app: App) => void;
 export type ResizeFunction = (width: number, height: number) => void;
@@ -19,15 +18,15 @@ export default class App {
 
         this.glCanvas = canvas;
         this.gl = gl;
+
+        this.Setup();
     }
 
-    public onSetup: SetupFunction = () => {};
     public onUpdate: UpdateFunction = () => {};
     public onRender: RenderFunction = () => {};
     public onResize: ResizeFunction = () => {};
 
     public Run() {
-        this.Setup();
         requestAnimationFrame(() => this.Loop());
     }
 
@@ -73,8 +72,6 @@ export default class App {
         this.ResizeToFit();
 
         this.clock.Restart(); // reset jer inace cuva od stvaranja kao start time
-
-        this.onSetup(this.gl, this.glCanvas);
     }
 
     private Loop() {

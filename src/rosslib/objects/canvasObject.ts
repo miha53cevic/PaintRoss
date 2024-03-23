@@ -6,6 +6,12 @@ import Texture from "../glo/texture";
 import flip_image from "../util/flip_image";
 import FrameBuffer from "../glo/framebuffer";
 
+export interface CanvasImage {
+    width: number,
+    height: number,
+    pixels: Uint8Array,
+}
+
 export default class CanvasObject extends Object2D {
     private quadCanvas: QuadObject;
     private frameBuffer: FrameBuffer;
@@ -103,7 +109,8 @@ export default class CanvasObject extends Object2D {
         return true;
     }
 
-    public GetCanvasImage() {
+    public GetCanvasImage(): CanvasImage {
+        this.MergePreviewCanvas(); // get final canvas image
         const imgWidth = this.Size[0];
         const imgHeight = this.Size[1];
         const pixels = new Uint8Array(imgWidth * imgHeight * 4); // width * height * pixel_components (rgba is 4)
