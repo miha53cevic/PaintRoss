@@ -128,6 +128,8 @@ export default class PaintApp {
     public static Init(canvas: HTMLCanvasElement) {
         if (!this._instance) {
             this._instance = new PaintApp(canvas);
+        } else {
+            throw new Error("PaintApp already initialized");
         }
     }
 
