@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import PaintApp from "../rosslib";
+import { useEffect, useRef } from "react";
 
 const appBarHeight = "48px";
 
@@ -51,19 +52,46 @@ const DropdownItem = styled.button`
     min-width: 150px;
 `;
 
-export default function AppBar() {
+const FileInput = styled.input`
+    display: none;
+`;
 
+export default function AppBar() {
+    const openImageRef = useRef<HTMLInputElement>(null);
+
+    useEffect(() => {
+        if (!openImageRef.current) return;
+        openImageRef.current.addEventListener('change', function () {
+            if (this.files && this.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const result = e.target?.result as string;
+                    PaintApp.Get().LoadImage(result);
+                }
+                reader.readAsDataURL(this.files[0]);
+            }
+        });
+    }, []);
+
+    const handleOpenImage = () => {
+        if (!openImageRef.current) return;
+        openImageRef.current.click();
+    };
     const handleSaveImage = () => {
         const source = PaintApp.Get().GetCanvasImage();
         window.open(source);
     };
+
 
     return (
         <Nav>
             <Dropdown>
                 <DropdownTitle>File</DropdownTitle>
                 <DropdownContent>
-                    <DropdownItem>Open Image</DropdownItem>
+                    <DropdownItem onClick={handleOpenImage}>
+                        Open Image
+                        <FileInput type="file" accept="image/*" ref={openImageRef} />
+                    </DropdownItem>
                     <DropdownItem onClick={handleSaveImage}>Save Image</DropdownItem>
                 </DropdownContent>
             </Dropdown>

@@ -95,7 +95,9 @@ export default class PaintApp {
         const quad1 = new QuadObject(gl);
         quad1.Size = vec2.fromValues(100, 100);
         quad1.Position = vec2.fromValues(0, 0);
-        quad1.Texture = Texture.loadTexture(gl, '/test.png');
+        Texture.loadImage(gl, '/test.png').then(result => {
+            quad1.Texture = result.texture;
+        });
 
         const quad2 = new QuadObject(gl);
         quad2.Size = vec2.fromValues(100, 100);
@@ -123,6 +125,16 @@ export default class PaintApp {
 
     public GetCanvasImage() {
         return create_png(this.canvasObj.GetCanvasImage());
+    }
+
+    public async LoadImage(url: string) {
+        const gl = this.app.GetGLContext();
+        const imageObj = new QuadObject(gl);
+        const { texture, imgSize } = await Texture.loadImage(gl, url);
+        imageObj.Texture = texture;
+        this.canvasObj.Size = imgSize;
+        imageObj.Size = this.canvasObj.Size;
+        this.canvasObj.DrawOnCanvas(imageObj);
     }
 
     public static Init(canvas: HTMLCanvasElement) {

@@ -139,9 +139,9 @@ export default class CanvasObject extends Object2D {
         this.preview_frameBuffer.Unbind();
     }
 
-    public MergePreviewCanvas() {
-        this.gl.bindFramebuffer(this.gl.READ_FRAMEBUFFER, this.preview_frameBuffer.GetFrameBuffer()); // source framebuffer
-        this.gl.bindFramebuffer(this.gl.DRAW_FRAMEBUFFER, this.frameBuffer.GetFrameBuffer()); // destination framebuffer
+    private BlitFrameBuffers(srcFrameBuffer: FrameBuffer, destFrameBuffer: FrameBuffer) {
+        this.gl.bindFramebuffer(this.gl.READ_FRAMEBUFFER, srcFrameBuffer.GetFrameBuffer());
+        this.gl.bindFramebuffer(this.gl.DRAW_FRAMEBUFFER, destFrameBuffer.GetFrameBuffer());
 
         this.gl.readBuffer(this.gl.COLOR_ATTACHMENT0); // source color attachment to copy
         this.gl.drawBuffers([this.gl.COLOR_ATTACHMENT0]); // destination to copy into
@@ -152,7 +152,16 @@ export default class CanvasObject extends Object2D {
         this.gl.bindFramebuffer(this.gl.DRAW_FRAMEBUFFER, null);
     }
 
+    public MergePreviewCanvas() {
+        this.BlitFrameBuffers(this.preview_frameBuffer, this.frameBuffer);
+    }
+
+    public CancelPreviewCanvas() {
+        this.BlitFrameBuffers(this.frameBuffer, this.preview_frameBuffer);
+    }
+
     public DrawOnCanvas(object: Object2D | { Render: (camera: Camera2D) => void }) {
+        this.updateCanvasPositionRotationSize();
         const canvasCamera = this.GetCanvasCamera();
         // Bind framebuffer to render into it
         this.preview_frameBuffer.Bind();

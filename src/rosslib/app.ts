@@ -1,5 +1,6 @@
 import Clock from './util/clock';
 
+export type SetupFunction = (glCanvas: HTMLCanvasElement, gl: WebGL2RenderingContext) => void;
 export type UpdateFunction = (elapsedTime: number, app: App) => void;
 export type RenderFunction = (app: App) => void;
 export type ResizeFunction = (width: number, height: number) => void;
@@ -19,14 +20,16 @@ export default class App {
         this.glCanvas = canvas;
         this.gl = gl;
 
-        this.Setup();
+        this.Setup(); // resize canvas to fullscreen & setup events
     }
 
+    public onSetup: SetupFunction = () => {};
     public onUpdate: UpdateFunction = () => {};
     public onRender: RenderFunction = () => {};
     public onResize: ResizeFunction = () => {};
 
     public Run() {
+        this.onSetup(this.glCanvas, this.gl); // user extra setup
         requestAnimationFrame(() => this.Loop());
     }
 
