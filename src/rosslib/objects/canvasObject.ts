@@ -88,6 +88,7 @@ export default class CanvasObject extends Object2D {
     }
 
     public MouseToCanvasCoordinates(x: number, y: number): [number, number] {
+        if (!this.IsMouseInCanvas(x, y)) return [NaN, NaN];
         // If the mouse is in the canvas
         const normalizedX = x - this.Position[0];
         const normalizedY = y - this.Position[1];

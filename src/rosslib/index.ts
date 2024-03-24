@@ -81,9 +81,6 @@ export default class PaintApp {
                 case ' ':
                     this.canvasObj.MergePreviewCanvas();
                     break;
-                case 's':
-                    this.GetCanvasImage();
-                    break;
                 default:
                     console.log(`Pressed ${evt.key}`);
             }
@@ -135,6 +132,18 @@ export default class PaintApp {
         this.canvasObj.Size = imgSize;
         imageObj.Size = this.canvasObj.Size;
         this.canvasObj.DrawOnCanvas(imageObj);
+    }
+
+    public GetCanvasMousePosition(): [number, number] {
+        const glCanvas = this.app.GetGLCanvas();
+        const mousePos = this.app.GetMousePos();
+        const worldMousePos = this.camera2d.mouseToWorld2D(mousePos[0], mousePos[1], glCanvas.width, glCanvas.height);
+        const canvasPos = this.canvasObj.MouseToCanvasCoordinates(worldMousePos[0], worldMousePos[1]);
+        return [Math.floor(canvasPos[0]), Math.floor(canvasPos[1])]; // remove decimals
+    }
+
+    public GetCanvasImageSize() {
+        return [this.canvasObj.Size[0], this.canvasObj.Size[1]];
     }
 
     public static Init(canvas: HTMLCanvasElement) {

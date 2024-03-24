@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import PaintApp from "../rosslib";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const appBarHeight = "48px";
 
@@ -8,9 +8,15 @@ const Nav = styled.nav`
     width: 100%; 
     height: ${appBarHeight}; 
     background-color: #212121; 
+    color: #aaa;
     display: flex;
     flex-direction: row;
-    gap: 1rem;
+`;
+
+const Options = styled.div`
+    flex: 1;
+    display: flex;
+    flex-direction: row;
 `;
 
 const DropdownTitle = styled.div`
@@ -29,7 +35,6 @@ const DropdownContent = styled.div`
 
 const Dropdown = styled.div`
     position: relative;
-    color: #aaa;
     padding: 1rem;
     cursor: pointer;
     &:hover {
@@ -54,6 +59,16 @@ const DropdownItem = styled.button`
 
 const FileInput = styled.input`
     display: none;
+`;
+
+const Info = styled.div`
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+`;
+
+const InfoItem = styled.div`
+    padding: 1rem;
 `;
 
 export default function AppBar() {
@@ -82,39 +97,52 @@ export default function AppBar() {
         window.open(source);
     };
 
+    const [canvasMousePos, setCanvasMousePos] = useState<[number, number]>([NaN, NaN]);
+    useEffect(() => {
+        document.addEventListener('mousemove', () => {
+            setCanvasMousePos(PaintApp.Get().GetCanvasMousePosition());
+        });
+    }, []);
 
     return (
         <Nav>
-            <Dropdown>
-                <DropdownTitle>File</DropdownTitle>
-                <DropdownContent>
-                    <DropdownItem onClick={handleOpenImage}>
-                        Open Image
-                        <FileInput type="file" accept="image/*" ref={openImageRef} />
-                    </DropdownItem>
-                    <DropdownItem onClick={handleSaveImage}>Save Image</DropdownItem>
-                </DropdownContent>
-            </Dropdown>
-            <Dropdown>
-                <DropdownTitle>Edit</DropdownTitle>
-                <DropdownContent>
-                    <DropdownItem>Option1</DropdownItem>
-                    <DropdownItem>Option2</DropdownItem>
-                </DropdownContent>
-            </Dropdown>
-            <Dropdown>
-                <DropdownTitle>Image</DropdownTitle>
-                <DropdownContent>
-                    <DropdownItem>Option1</DropdownItem>
-                    <DropdownItem>Option2</DropdownItem>
-                </DropdownContent>
-            </Dropdown>
-            <Dropdown>
-                <DropdownTitle>Help</DropdownTitle>
-                <DropdownContent>
-                    <DropdownItem>About</DropdownItem>
-                </DropdownContent>
-            </Dropdown>
+            <Options>
+                <Dropdown>
+                    <DropdownTitle>File</DropdownTitle>
+                    <DropdownContent>
+                        <DropdownItem onClick={handleOpenImage}>
+                            Open Image
+                            <FileInput type="file" accept="image/*" ref={openImageRef} />
+                        </DropdownItem>
+                        <DropdownItem onClick={handleSaveImage}>Save Image</DropdownItem>
+                    </DropdownContent>
+                </Dropdown>
+                <Dropdown>
+                    <DropdownTitle>Edit</DropdownTitle>
+                    <DropdownContent>
+                        <DropdownItem>Option1</DropdownItem>
+                        <DropdownItem>Option2</DropdownItem>
+                    </DropdownContent>
+                </Dropdown>
+                <Dropdown>
+                    <DropdownTitle>Image</DropdownTitle>
+                    <DropdownContent>
+                        <DropdownItem>Option1</DropdownItem>
+                        <DropdownItem>Option2</DropdownItem>
+                    </DropdownContent>
+                </Dropdown>
+                <Dropdown>
+                    <DropdownTitle>Help</DropdownTitle>
+                    <DropdownContent>
+                        <DropdownItem>About</DropdownItem>
+                    </DropdownContent>
+                </Dropdown>
+            </Options>
+            <Info>
+                <InfoItem>
+                    {`${canvasMousePos[0]}, ${canvasMousePos[1]}`}
+                </InfoItem>
+            </Info>
         </Nav>
     );
 }
