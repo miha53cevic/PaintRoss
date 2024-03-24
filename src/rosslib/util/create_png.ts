@@ -11,6 +11,7 @@ export default function (canvasImage: CanvasImage) {
         imageData.data[i] = img.pixels[i];
     }
     ctx.putImageData(imageData, 0, 0);
-    window.open(canvas.toDataURL("image/png"));
+    const source = canvas.toDataURL("image/png");
     canvas.remove();
+    return source; // returns image url
 }

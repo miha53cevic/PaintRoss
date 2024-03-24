@@ -122,7 +122,7 @@ export default class PaintApp {
     }
 
     public GetCanvasImage() {
-        create_png(this.canvasObj.GetCanvasImage());
+        return create_png(this.canvasObj.GetCanvasImage());
     }
 
     public static Init(canvas: HTMLCanvasElement) {

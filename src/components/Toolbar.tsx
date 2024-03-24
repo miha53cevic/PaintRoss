@@ -12,6 +12,8 @@ const ToolBar = styled.article`
     height: 400px; 
     padding: 1rem; 
     gap: 1rem;
+    background-color: #212121;
+    color: #aaa;
 `;
 
 const Tools = styled.div`
