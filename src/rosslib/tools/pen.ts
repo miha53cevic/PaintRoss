@@ -22,10 +22,12 @@ const lineFragShader =
     `#version 300 es
 precision highp float;
 
+uniform vec3 colour;
+
 out vec4 FragColor;
 
 void main() {
-  FragColor = vec4(0, 0, 0, 1);
+  FragColor = vec4(colour.xyz, 1);
 }
 `;
 
@@ -67,6 +69,7 @@ export default class Pen extends Tool {
         this.lineShader.Use();
         this.lineShader.SetMatrix4(this.lineShader.GetUniformLocation('u_projMat'), camera.GetProjMatrix());
         this.lineShader.SetMatrix4(this.lineShader.GetUniformLocation('u_viewMat'), camera.GetViewMatrix());
+        this.lineShader.SetVector3(this.lineShader.GetUniformLocation('colour'), this.Colour.NormalizedPrimary());
         const vao = new VAO(this.gl);
         const vbo = new VBO(this.gl);
         vao.Bind();

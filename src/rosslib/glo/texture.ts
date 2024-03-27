@@ -10,7 +10,7 @@ export default class Texture {
 
                 gl.bindTexture(gl.TEXTURE_2D, handle);
                 // Fill the texture with a 1x1 blue pixel whilst it loads in
-                gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 255, 255]));
+                gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([255, 0, 255, 255]));
                 gl.bindTexture(gl.TEXTURE_2D, null);
                 const image = new Image();
                 image.src = url;

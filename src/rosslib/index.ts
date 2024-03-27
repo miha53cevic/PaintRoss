@@ -8,6 +8,7 @@ import CanvasObject from './objects/canvasObject';
 import Tool from './tools/tool';
 import Pen from './tools/pen';
 import create_png from './util/create_png';
+import { RGB } from './util/colour';
 
 export default class PaintApp {
     private static _instance: PaintApp | null = null;
@@ -144,6 +145,18 @@ export default class PaintApp {
 
     public GetCanvasImageSize() {
         return [this.canvasObj.Size[0], this.canvasObj.Size[1]];
+    }
+
+    public GetToolColour() {
+        return this.tool.Colour;
+    }
+
+    public SetPrimaryToolColour(colour: RGB) {
+        this.tool.Colour.Primary = colour;
+    }
+
+    public SetSecondaryToolColour(colour: RGB) {
+        this.tool.Colour.Secondary = colour;
     }
 
     public static Init(canvas: HTMLCanvasElement) {
