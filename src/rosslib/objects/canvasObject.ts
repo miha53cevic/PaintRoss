@@ -161,6 +161,13 @@ export default class CanvasObject extends Object2D {
         this.BlitFrameBuffers(this.frameBuffer, this.preview_frameBuffer);
     }
 
+    public DrawFullscreenTextureOnCanvas(texture: Texture) {
+        const fullscreenQuad = new QuadObject(this.gl);
+        fullscreenQuad.Texture = texture;
+        fullscreenQuad.Size = this.Size;
+        this.DrawOnCanvas(fullscreenQuad);
+    }
+
     public DrawOnCanvas(object: Object2D | { Render: (camera: Camera2D) => void }) {
         this.updateCanvasPositionRotationSize();
         const canvasCamera = this.GetCanvasCamera();

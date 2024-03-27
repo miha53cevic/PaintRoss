@@ -152,7 +152,6 @@ const ColourPickerArea = styled.article`
     align-items: center; 
     height: 200px; 
     width: 300px; 
-    padding: 1rem; 
 `;
 
 export default function ColourPicker() {

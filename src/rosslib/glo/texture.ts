@@ -37,7 +37,7 @@ export default class Texture {
         });
     }
 
-    public static createTexture(gl: WebGL2RenderingContext, imageWidth: number, imageHeight: number, imageData: Uint8Array | null) {
+    public static createTexture(gl: WebGL2RenderingContext, imageWidth: number, imageHeight: number, imageData: Uint8Array | Uint8ClampedArray | null) {
         const handle = gl.createTexture();
         if (!handle) throw new Error("Error creating texture");
 

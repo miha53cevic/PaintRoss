@@ -1,4 +1,7 @@
 import styled from "styled-components";
+import PaintApp from "../rosslib";
+import Fill from "../rosslib/tools/fill";
+import Pen from "../rosslib/tools/pen";
 
 const ToolBar = styled.article`
     position: absolute; 
@@ -28,9 +31,9 @@ export default function Toolbar() {
             <h4>Tools</h4>
             <Tools>
                 <button>Line</button>
-                <button>Pen</button>
+                <button onClick={() => PaintApp.Get().SetTool(PaintApp.Get().HelperCreateTool((gl, canvasObj) => new Pen(gl, canvasObj)))}>Pen</button>
                 <button>Curve</button>
-                <button>Fill bucket</button>
+                <button onClick={() => PaintApp.Get().SetTool(PaintApp.Get().HelperCreateTool((gl, canvasObj) => new Fill(gl, canvasObj)))}>Fill Bucket</button>
             </Tools>
         </ToolBar>
     );

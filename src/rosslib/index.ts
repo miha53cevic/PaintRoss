@@ -127,12 +127,9 @@ export default class PaintApp {
 
     public async LoadImage(url: string) {
         const gl = this.app.GetGLContext();
-        const imageObj = new QuadObject(gl);
         const { texture, imgSize } = await Texture.loadImage(gl, url);
-        imageObj.Texture = texture;
         this.canvasObj.Size = imgSize;
-        imageObj.Size = this.canvasObj.Size;
-        this.canvasObj.DrawOnCanvas(imageObj);
+        this.canvasObj.DrawFullscreenTextureOnCanvas(texture);
     }
 
     public GetCanvasMousePosition(): [number, number] {
@@ -157,6 +154,20 @@ export default class PaintApp {
 
     public SetSecondaryToolColour(colour: RGB) {
         this.tool.Colour.Secondary = colour;
+    }
+
+    public GetTool() {
+        return this.tool;
+    }
+
+    public SetTool(tool: Tool) {
+        tool.Colour = this.tool.Colour; // keep colour selection
+        this.tool = tool;
+        console.log("Now using tool: ", tool.constructor.name);
+    }
+
+    public HelperCreateTool<T extends Tool>(func: (gl: WebGL2RenderingContext, canvasObject: CanvasObject) => T) {
+        return func(this.app.GetGLContext(), this.canvasObj);
     }
 
     public static Init(canvas: HTMLCanvasElement) {
