@@ -2,6 +2,7 @@ import styled from "styled-components";
 import PaintApp from "../rosslib";
 import Fill from "../rosslib/tools/fill";
 import Pen from "../rosslib/tools/pen";
+import { useEffect, useState } from "react";
 
 const ToolBar = styled.article`
     position: absolute; 
@@ -26,14 +27,31 @@ const Tools = styled.div`
 `;
 
 export default function Toolbar() {
+    const [currentTool, setCurrentTool] = useState<string>('Pen');
+    useEffect(() => {
+        PaintApp.Get().GetEventManager().Subscribe('change tool', (tool) => {
+            setCurrentTool(tool as string);
+        });
+    }, []);
+
+    function IsSelectedTool(toolName: string) {
+        return currentTool === toolName;
+    }
+
+    const Tool = styled.button<{ selected?: boolean }>`
+        border: none;
+        border-radius: 0.25rem;
+        background: ${props => props.selected ? 'cyan' : ''};
+    `;
+
     return (
         <ToolBar>
             <h4>Tools</h4>
             <Tools>
-                <button>Line</button>
-                <button onClick={() => PaintApp.Get().SetTool(PaintApp.Get().HelperCreateTool((gl, canvasObj) => new Pen(gl, canvasObj)))}>Pen</button>
-                <button>Curve</button>
-                <button onClick={() => PaintApp.Get().SetTool(PaintApp.Get().HelperCreateTool((gl, canvasObj) => new Fill(gl, canvasObj)))}>Fill Bucket</button>
+                <Tool selected={IsSelectedTool('Line')}>Line</Tool>
+                <Tool selected={IsSelectedTool('Pen')} onClick={() => PaintApp.Get().SetTool(PaintApp.Get().HelperCreateTool((gl, canvasObj) => new Pen(gl, canvasObj)))}>Pen</Tool>
+                <Tool selected={IsSelectedTool('Curve')}>Curve</Tool>
+                <Tool selected={IsSelectedTool('Fill')} onClick={() => PaintApp.Get().SetTool(PaintApp.Get().HelperCreateTool((gl, canvasObj) => new Fill(gl, canvasObj)))}>Fill Bucket</Tool>
             </Tools>
         </ToolBar>
     );

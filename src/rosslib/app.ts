@@ -1,4 +1,5 @@
 import Clock from './util/clock';
+import EventManager from './util/event_manager';
 
 export type SetupFunction = (glCanvas: HTMLCanvasElement, gl: WebGL2RenderingContext) => void;
 export type UpdateFunction = (elapsedTime: number, app: App) => void;
@@ -10,6 +11,7 @@ export default class App {
     private readonly gl: WebGL2RenderingContext;
     private MOUSE_POS: [number, number] = [0, 0];
     private clock: Clock = new Clock();
+    private eventManager: EventManager = new EventManager();
 
     constructor(canvas: HTMLCanvasElement) {
         // Get opengl context
@@ -43,6 +45,10 @@ export default class App {
 
     public GetGLCanvas() {
         return this.glCanvas;
+    }
+
+    public GetEventManager() {
+        return this.eventManager;
     }
 
     public Clear(red = 51, green = 51, blue = 51, alpha = 255) {

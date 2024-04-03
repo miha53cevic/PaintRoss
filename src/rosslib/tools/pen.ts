@@ -41,6 +41,10 @@ export default class Pen extends Tool {
         this.lineShader = new Shader(gl, lineVertexShader, lineFragShader);
     }
 
+    public GetID(): string {
+        return "Pen";
+    }
+
     onMouseDown(x: number, y: number, mouseButton: number): void {
         if (mouseButton === 0) {
             this.drawing = true;
@@ -78,5 +82,8 @@ export default class Pen extends Tool {
         // If it's only 1 point draw it instead of a line
         if (this.points.length > 1) this.gl.drawArrays(this.gl.LINE_STRIP, 0, this.points.length);
         else this.gl.drawArrays(this.gl.POINTS, 0, 1);
+
+        // After draw keep only the last point so you can continue line drawing in next iteration
+        this.points = [this.points[this.points.length - 1]]; // optimization for not keeping old points that are already drawn
     }
 }

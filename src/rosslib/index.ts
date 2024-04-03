@@ -30,10 +30,8 @@ export default class PaintApp {
         glCanvas.addEventListener('mousedown', (ev) => {
             const mousePos = this.app.GetMousePos();
             const mouseWorld = this.camera2d.mouseToWorld2D(mousePos[0], mousePos[1], glCanvas.width, glCanvas.height);
-            if (this.canvasObj.IsMouseInCanvas(mouseWorld[0], mouseWorld[1])) {
-                const canvasPos = this.canvasObj.MouseToCanvasCoordinates(mouseWorld[0], mouseWorld[1]);
-                this.tool.onMouseDown(canvasPos[0], canvasPos[1], ev.button);
-            }
+            const canvasPos = this.canvasObj.MouseToCanvasCoordinates(mouseWorld[0], mouseWorld[1]);
+            this.tool.onMouseDown(canvasPos[0], canvasPos[1], ev.button);
             if (ev.button === 1) {
                 panningStartPos = this.app.GetMousePos();
                 panning = true;
@@ -43,8 +41,8 @@ export default class PaintApp {
         glCanvas.addEventListener('mousemove', () => {
             const mousePos = this.app.GetMousePos();
             const mouseWorld = this.camera2d.mouseToWorld2D(mousePos[0], mousePos[1], glCanvas.width, glCanvas.height);
+            const canvasPos = this.canvasObj.MouseToCanvasCoordinates(mouseWorld[0], mouseWorld[1]);
             if (this.canvasObj.IsMouseInCanvas(mouseWorld[0], mouseWorld[1])) {
-                const canvasPos = this.canvasObj.MouseToCanvasCoordinates(mouseWorld[0], mouseWorld[1]);
                 this.tool.onMouseMove(canvasPos[0], canvasPos[1]);
             }
             if (panning) {
@@ -54,15 +52,14 @@ export default class PaintApp {
                 this.camera2d.PanBy(dx, dy);
                 panningStartPos = [x, y]; // after panning set new starting pos
             }
+            this.GetEventManager().Notify('change canvas coordinates', canvasPos);
         });
 
         glCanvas.addEventListener('mouseup', (ev) => {
             const mousePos = this.app.GetMousePos();
             const mouseWorld = this.camera2d.mouseToWorld2D(mousePos[0], mousePos[1], glCanvas.width, glCanvas.height);
-            if (this.canvasObj.IsMouseInCanvas(mouseWorld[0], mouseWorld[1])) {
-                const canvasPos = this.canvasObj.MouseToCanvasCoordinates(mouseWorld[0], mouseWorld[1]);
-                this.tool.onMouseUp(canvasPos[0], canvasPos[1], ev.button);
-            }
+            const canvasPos = this.canvasObj.MouseToCanvasCoordinates(mouseWorld[0], mouseWorld[1]);
+            this.tool.onMouseUp(canvasPos[0], canvasPos[1], ev.button);
             if (ev.button === 1) {
                 panning = false;
             }
@@ -121,6 +118,10 @@ export default class PaintApp {
         this.app.Run();
     }
 
+    public GetEventManager() {
+        return this.app.GetEventManager();
+    }
+
     public GetCanvasImage() {
         return create_png(this.canvasObj.GetCanvasImage());
     }
@@ -130,6 +131,7 @@ export default class PaintApp {
         const { texture, imgSize } = await Texture.loadImage(gl, url);
         this.canvasObj.Size = imgSize;
         this.canvasObj.DrawFullscreenTextureOnCanvas(texture);
+        this.GetEventManager().Notify('open image');
     }
 
     public GetCanvasMousePosition(): [number, number] {
@@ -150,10 +152,12 @@ export default class PaintApp {
 
     public SetPrimaryToolColour(colour: RGB) {
         this.tool.Colour.Primary = colour;
+        this.GetEventManager().Notify('change primary colour', colour);
     }
 
     public SetSecondaryToolColour(colour: RGB) {
         this.tool.Colour.Secondary = colour;
+        this.GetEventManager().Notify('change secondary colour', colour);
     }
 
     public GetTool() {
@@ -163,7 +167,7 @@ export default class PaintApp {
     public SetTool(tool: Tool) {
         tool.Colour = this.tool.Colour; // keep colour selection
         this.tool = tool;
-        console.log("Now using tool: ", tool.constructor.name);
+        this.GetEventManager().Notify('change tool', tool.GetID());
     }
 
     public HelperCreateTool<T extends Tool>(func: (gl: WebGL2RenderingContext, canvasObject: CanvasObject) => T) {

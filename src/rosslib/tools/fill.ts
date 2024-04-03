@@ -3,6 +3,9 @@ import Tool from "./tool";
 import FloodFill from 'q-floodfill';
 
 export default class Fill extends Tool {
+    public GetID(): string {
+        return "Fill";
+    }
 
     public onMouseDown(x: number, y: number, mouseButton: number): void {
         x = Math.floor(x);
