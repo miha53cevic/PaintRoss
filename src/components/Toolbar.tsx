@@ -26,6 +26,12 @@ const Tools = styled.div`
     gap: 1rem;
 `;
 
+const Tool = styled.button<{ selected?: boolean }>`
+    border: none;
+    border-radius: 0.25rem;
+    background: ${props => props.selected ? 'cyan' : ''};
+`;
+
 export default function Toolbar() {
     const [currentTool, setCurrentTool] = useState<string>('Pen');
     useEffect(() => {
@@ -37,12 +43,6 @@ export default function Toolbar() {
     function IsSelectedTool(toolName: string) {
         return currentTool === toolName;
     }
-
-    const Tool = styled.button<{ selected?: boolean }>`
-        border: none;
-        border-radius: 0.25rem;
-        background: ${props => props.selected ? 'cyan' : ''};
-    `;
 
     return (
         <ToolBar>
