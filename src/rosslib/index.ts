@@ -31,7 +31,7 @@ export default class PaintApp {
             const mousePos = this.app.GetMousePos();
             const mouseWorld = this.camera2d.mouseToWorld2D(mousePos[0], mousePos[1], glCanvas.width, glCanvas.height);
             const canvasPos = this.canvasObj.MouseToCanvasCoordinates(mouseWorld[0], mouseWorld[1]);
-            this.tool.onMouseDown(canvasPos[0], canvasPos[1], ev.button);
+            if (this.canvasObj.IsMouseInCanvas(mouseWorld[0], mouseWorld[1])) this.tool.onMouseDown(canvasPos[0], canvasPos[1], ev.button);
             if (ev.button === 1) {
                 panningStartPos = this.app.GetMousePos();
                 panning = true;
@@ -59,7 +59,7 @@ export default class PaintApp {
             const mousePos = this.app.GetMousePos();
             const mouseWorld = this.camera2d.mouseToWorld2D(mousePos[0], mousePos[1], glCanvas.width, glCanvas.height);
             const canvasPos = this.canvasObj.MouseToCanvasCoordinates(mouseWorld[0], mouseWorld[1]);
-            this.tool.onMouseUp(canvasPos[0], canvasPos[1], ev.button);
+            if (this.canvasObj.IsMouseInCanvas(mouseWorld[0], mouseWorld[1])) this.tool.onMouseUp(canvasPos[0], canvasPos[1], ev.button);
             if (ev.button === 1) {
                 panning = false;
             }

@@ -3,6 +3,7 @@ import PaintApp from "../rosslib";
 import Fill from "../rosslib/tools/fill";
 import Pen from "../rosslib/tools/pen";
 import { useEffect, useState } from "react";
+import Spline from "../rosslib/tools/spline";
 
 const ToolBar = styled.article`
     position: absolute; 
@@ -50,7 +51,7 @@ export default function Toolbar() {
             <Tools>
                 <Tool selected={IsSelectedTool('Line')}>Line</Tool>
                 <Tool selected={IsSelectedTool('Pen')} onClick={() => PaintApp.Get().SetTool(PaintApp.Get().HelperCreateTool((gl, canvasObj) => new Pen(gl, canvasObj)))}>Pen</Tool>
-                <Tool selected={IsSelectedTool('Curve')}>Curve</Tool>
+                <Tool selected={IsSelectedTool('Spline')} onClick={() => PaintApp.Get().SetTool(PaintApp.Get().HelperCreateTool((gl, canvasObj) => new Spline(gl, canvasObj)))}>Curve</Tool>
                 <Tool selected={IsSelectedTool('Fill')} onClick={() => PaintApp.Get().SetTool(PaintApp.Get().HelperCreateTool((gl, canvasObj) => new Fill(gl, canvasObj)))}>Fill Bucket</Tool>
             </Tools>
         </ToolBar>
