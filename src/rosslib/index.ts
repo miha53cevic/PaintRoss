@@ -165,9 +165,9 @@ export default class PaintApp {
     }
 
     public SetTool(tool: Tool) {
+        this.tool.onDestroy();
         tool.Colour = this.tool.Colour; // keep colour selection
         this.tool = tool;
-        this.canvasObj.MergePreviewCanvas();
         this.GetEventManager().Notify('change tool', tool.GetID());
     }
 

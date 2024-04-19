@@ -3,6 +3,8 @@ import Tool from "./tool";
 import FloodFill from 'q-floodfill';
 
 export default class Fill extends Tool {
+    public onDestroy(): void {
+    }
     public GetID(): string {
         return "Fill";
     }

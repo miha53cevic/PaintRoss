@@ -125,6 +125,11 @@ export default class Spline extends Tool {
     public GetID(): string {
         return "Spline";
     }
+    public onDestroy(): void {
+        this.canvasObj.CancelPreviewCanvas();
+        this.RenderSpline(false);
+        this.canvasObj.MergePreviewCanvas();
+    }
 
     private RenderSpline(renderControlPoints: boolean = true) {
         let numberOfConnectedSplines = (this._controlPoints.length - 2); // makni rubne kontrolne točke

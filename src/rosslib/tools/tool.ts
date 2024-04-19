@@ -9,6 +9,7 @@ export default abstract class Tool {
     public abstract onMouseDown(x: number, y: number, mouseButton: number): void;
     public abstract onMouseUp(x: number, y: number, mouseButton: number): void;
     public abstract onMouseMove(x: number, y: number): void;
+    public abstract onDestroy(): void;
     
     public abstract GetID(): string;
 }

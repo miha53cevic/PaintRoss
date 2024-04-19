@@ -41,6 +41,9 @@ export default class Pen extends Tool {
         }
     }
 
+    public onDestroy(): void {
+    }
+
     private RenderLines() {
         this.lineObject.Colour = this.Colour.NormalizedPrimary();
         this.lineObject.SetPoints(this.points);
