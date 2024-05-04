@@ -126,7 +126,6 @@ export default function AppBar() {
                         <DropdownItem onClick={() => PaintApp.Get().ApplyImageEffect('boxBlur')}>Box Blur</DropdownItem>
                         <DropdownItem onClick={() => PaintApp.Get().ApplyImageEffect('sharpen')}>Sharpen</DropdownItem>
                         <DropdownItem onClick={() => PaintApp.Get().ApplyImageEffect('edgeDetect')}>Edge detect</DropdownItem>
-                        <DropdownItem onClick={() => PaintApp.Get().ApplyImageEffect('boxBlur')}>Box blur</DropdownItem>
                     </DropdownContent>
                 </Dropdown>
                 <Dropdown>
