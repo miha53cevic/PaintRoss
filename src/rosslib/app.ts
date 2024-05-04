@@ -1,5 +1,5 @@
 import Clock from './util/clock';
-import EventManager from './util/event_manager';
+import EventManager from './util/eventManager';
 
 export type SetupFunction = (glCanvas: HTMLCanvasElement, gl: WebGL2RenderingContext) => void;
 export type UpdateFunction = (elapsedTime: number, app: App) => void;

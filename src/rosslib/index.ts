@@ -7,8 +7,8 @@ import Texture from './glo/texture';
 import CanvasObject from './objects/canvasObject';
 import Tool from './tools/tool';
 import Pen from './tools/pen';
-import create_png from './util/create_png';
 import { RGB } from './util/colour';
+import ImageFormat from './util/imageFormat';
 
 export default class PaintApp {
     private static _instance: PaintApp | null = null;
@@ -123,7 +123,7 @@ export default class PaintApp {
     }
 
     public GetCanvasImage() {
-        return create_png(this.canvasObj.GetCanvasImage());
+        return ImageFormat.createPNG(this.canvasObj.GetCanvasImage());
     }
 
     public async LoadImage(url: string) {

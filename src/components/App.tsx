@@ -1,13 +1,13 @@
 import AppBar from "./Appbar";
 import Toolbar from "./Toolbar";
-import ColourPicker from "./ColourPicker";
+import CPicker from "./CPicker";
 
 export default function App() {
     return (
         <main>
             <AppBar />
             <Toolbar />
-            <ColourPicker />
+            <CPicker />
         </main >
     );
 }

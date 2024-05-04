@@ -3,8 +3,8 @@ import Camera2D from "../camera2d";
 import Object2D from "./object2d";
 import QuadObject from "./quadObject";
 import Texture from "../glo/texture";
-import flip_image from "../util/flip_image";
 import FrameBuffer from "../glo/framebuffer";
+import ImageOperation from "../util/imageOperation";
 
 export interface CanvasImage {
     width: number,
@@ -119,7 +119,7 @@ export default class CanvasObject extends Object2D {
         this.gl.readBuffer(this.gl.COLOR_ATTACHMENT0); // read from texture in COLOR_ATTACHMENT0
         this.gl.readPixels(0, 0, imgWidth, imgHeight, this.gl.RGBA, this.gl.UNSIGNED_BYTE, pixels);
         this.frameBuffer.Unbind();
-        const flipped_pixels = flip_image(imgWidth, imgHeight, pixels);
+        const flipped_pixels = ImageOperation.flipImage(imgWidth, imgHeight, pixels);
         return {
             width: imgWidth,
             height: imgHeight,
