@@ -106,11 +106,12 @@ export default class PaintApp {
         this.canvasObj = new CanvasObject(gl);
         this.canvasObj.Size = vec2.fromValues(800, 600);
         this.canvasObj.Position = vec2.fromValues(gl.canvas.width / 2 - this.canvasObj.Size[0] / 2, gl.canvas.height / 2 - this.canvasObj.Size[1] / 2);
-        this.canvasObj.DEBUG_MODE = true;
+        this.canvasObj.DEBUG_MODE = false;
 
         this.tool = new Pen(gl, this.canvasObj);
 
-        this.scene.Add([this.canvasObj, quad1, quad2]);
+        //this.scene.Add([this.canvasObj, quad1, quad2]);
+        this.scene.Add([this.canvasObj]);
 
         this.app.onResize = (width, height) => {
             this.camera2d.updateProjectionMatrix(width, height);
