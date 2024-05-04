@@ -4,6 +4,7 @@ import FloodFill from 'q-floodfill';
 
 export default class Fill extends Tool {
     public onDestroy(): void {
+        this.canvasObj.MergePreviewCanvas();
     }
     public GetID(): string {
         return "Fill";
@@ -24,5 +25,4 @@ export default class Fill extends Tool {
     }
     public onMouseMove(x: number, y: number): void {
     }
-
 }

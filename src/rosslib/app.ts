@@ -1,3 +1,4 @@
+import Texture from './glo/texture';
 import Clock from './util/clock';
 import EventManager from './util/eventManager';
 
@@ -81,6 +82,10 @@ export default class App {
         this.ResizeToFit();
 
         this.clock.Restart(); // reset jer inace cuva od stvaranja kao start time
+
+        // Stvori placeholder teksturu na TEXTURE0
+        const placeholderTexture = Texture.createTexture(this.gl, 1, 1, new Uint8Array([255, 192, 203, 255]));
+        placeholderTexture.Use(this.gl.TEXTURE0, false); // nema warnninga jer se treba koristit prvi put
     }
 
     private Loop() {

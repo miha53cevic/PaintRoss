@@ -120,9 +120,13 @@ export default class QuadObject extends Object2D {
         // Check if there is a texture
         if (this.Texture) {
             this.Texture.Use();
+            shader.SetInt(shader.GetUniformLocation('textureSampler'), 1);
             shader.SetInt(shader.GetUniformLocation('u_usingTexture'), 1);
         }
-        else shader.SetInt(shader.GetUniformLocation('u_usingTexture'), 0);
+        else {
+            shader.SetInt(shader.GetUniformLocation('textureSampler'), 0); // use placeholder texture
+            shader.SetInt(shader.GetUniformLocation('u_usingTexture'), 0);
+        }
 
         shader.Use();
         QuadObject._vao.Bind();

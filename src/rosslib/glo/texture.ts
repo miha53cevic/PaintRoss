@@ -50,8 +50,10 @@ export default class Texture {
         return new Texture(gl, handle);
     }
 
-    // texture_unit must be from gl.TEXTURE0
-    public Use(texture_unit: number = this.gl.TEXTURE0) {
+    // texture_unit must be from gl.TEXTURE1, gl.TEXTURE2...
+    // gl.TEXTURE0 is used as placeholder
+    public Use(texture_unit: number = this.gl.TEXTURE1, warnning = true) {
+        if (texture_unit === this.gl.TEXTURE0 && warnning) console.warn("[Texture]: Using placeholder texture!");
         this.gl.activeTexture(texture_unit);
         this.gl.bindTexture(this.gl.TEXTURE_2D, this.handle);
     }
