@@ -118,23 +118,21 @@ export default function AppBar() {
                     </DropdownContent>
                 </Dropdown>
                 <Dropdown>
-                    <DropdownTitle>Edit</DropdownTitle>
+                    <DropdownTitle>Image Effects</DropdownTitle>
                     <DropdownContent>
-                        <DropdownItem>Option1</DropdownItem>
-                        <DropdownItem>Option2</DropdownItem>
-                    </DropdownContent>
-                </Dropdown>
-                <Dropdown>
-                    <DropdownTitle>Image</DropdownTitle>
-                    <DropdownContent>
-                        <DropdownItem>Option1</DropdownItem>
-                        <DropdownItem>Option2</DropdownItem>
+                        <DropdownItem onClick={() => PaintApp.Get().ApplyImageEffect('grayscale')}>Grayscale</DropdownItem>
+                        <DropdownItem onClick={() => PaintApp.Get().ApplyImageEffect('invert colors')}>Invert colours</DropdownItem>
+                        <DropdownItem onClick={() => PaintApp.Get().ApplyImageEffect('gaussianBlur')}>Blur</DropdownItem>
+                        <DropdownItem onClick={() => PaintApp.Get().ApplyImageEffect('boxBlur')}>Box Blur</DropdownItem>
+                        <DropdownItem onClick={() => PaintApp.Get().ApplyImageEffect('sharpen')}>Sharpen</DropdownItem>
+                        <DropdownItem onClick={() => PaintApp.Get().ApplyImageEffect('edgeDetect')}>Edge detect</DropdownItem>
+                        <DropdownItem onClick={() => PaintApp.Get().ApplyImageEffect('boxBlur')}>Box blur</DropdownItem>
                     </DropdownContent>
                 </Dropdown>
                 <Dropdown>
                     <DropdownTitle>Help</DropdownTitle>
                     <DropdownContent>
-                        <DropdownItem>About</DropdownItem>
+                        <DropdownItem onClick={() => alert('Napravio Mihael Petričević')}>About</DropdownItem>
                     </DropdownContent>
                 </Dropdown>
             </Options>

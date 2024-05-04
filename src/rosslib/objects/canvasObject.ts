@@ -1,10 +1,12 @@
-import { vec2, vec4 } from "gl-matrix";
+import { vec2 } from "gl-matrix";
 import Camera2D from "../camera2d";
 import Object2D from "./object2d";
 import QuadObject from "./quadObject";
 import Texture from "../glo/texture";
 import FrameBuffer from "../glo/framebuffer";
 import ImageOperation from "../util/imageOperation";
+import ImageKernel, { KernelOperation } from "../util/imageKernel";
+import ImageEffect, { ImageEffectType } from "../util/ImageEffect";
 
 export interface CanvasImage {
     width: number,
@@ -19,7 +21,7 @@ export default class CanvasObject extends Object2D {
     private texture: Texture;
     private preview_texture: Texture;
     
-    private DEBUG_MODE = false;
+    public DEBUG_MODE = false;
 
     constructor(gl: WebGL2RenderingContext) {
         super(gl);
@@ -57,11 +59,26 @@ export default class CanvasObject extends Object2D {
         }
     }
 
-    public SetDebug(enabled: boolean) {
-        this.DEBUG_MODE = enabled;
+    public ApplyImageKernel(kernel: KernelOperation) {
+        this.MergePreviewCanvas(); // spremi trenutno stanje iz preview u texture
+        const quad = new QuadObject(this.gl);
+        quad.Texture = this.texture;
+        quad.Size = this.Size;
+        quad.Kernel = ImageKernel.GetKernel(kernel);
+        this.DrawOnCanvas(quad); // nacrtaj texture nadodan kernel na preview
+        this.MergePreviewCanvas(); // spremi texture s nadodanim kernelom koji je sad na preview nacrtan opet na texture tako da texture ima istu
+    }
+    public ApplyImageEffect(effect: ImageEffectType) {
+        this.MergePreviewCanvas();
+        const quad = new QuadObject(this.gl);
+        quad.Texture = this.texture;
+        quad.Size = this.Size;
+        quad.Effect = ImageEffect.GetImageEffect(effect);
+        this.DrawOnCanvas(quad); 
+        this.MergePreviewCanvas();
     }
 
-    private updateCanvasPositionRotationSize() {
+    private UpdateCanvasPositionRotationSize() {
         if (this.quadCanvas.Size !== this.Size) {
             console.log("Updating canvas size");
             this.quadCanvas.Size = this.Size;
@@ -119,7 +136,7 @@ export default class CanvasObject extends Object2D {
         this.gl.readBuffer(this.gl.COLOR_ATTACHMENT0); // read from texture in COLOR_ATTACHMENT0
         this.gl.readPixels(0, 0, imgWidth, imgHeight, this.gl.RGBA, this.gl.UNSIGNED_BYTE, pixels);
         this.frameBuffer.Unbind();
-        const flipped_pixels = ImageOperation.flipImage(imgWidth, imgHeight, pixels);
+        const flipped_pixels = ImageOperation.FlipImage(imgWidth, imgHeight, pixels);
         return {
             width: imgWidth,
             height: imgHeight,
@@ -169,7 +186,7 @@ export default class CanvasObject extends Object2D {
     }
 
     public DrawOnCanvas(object: Object2D | { Render: (camera: Camera2D) => void }) {
-        this.updateCanvasPositionRotationSize();
+        this.UpdateCanvasPositionRotationSize();
         const canvasCamera = this.GetCanvasCamera();
         // Bind framebuffer to render into it
         this.preview_frameBuffer.Bind();
@@ -191,11 +208,7 @@ export default class CanvasObject extends Object2D {
     }
 
     public Render(camera: Camera2D): void {
-        this.updateCanvasPositionRotationSize();
-        const quad = new QuadObject(this.gl);
-        quad.Size = vec2.fromValues(100, 100);
-        quad.Colour = vec4.fromValues(0, 1, 0, 1);
-        this.DrawOnCanvas(quad);
+        this.UpdateCanvasPositionRotationSize();
         // Render to normal viewport (global space)
         this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
         this.quadCanvas.Render(camera);

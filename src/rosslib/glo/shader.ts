@@ -91,6 +91,11 @@ export default class Shader {
         this.gl.uniform1f(location, data);
     }
 
+    public SetFloatArray(location: WebGLUniformLocation, data: number[]) {
+        this.Use();
+        this.gl.uniform1fv(location, data);
+    }
+
     public SetVector4(location: WebGLUniformLocation, data: glm.vec4) {
         this.Use();
         this.gl.uniform4f(location, data[0], data[1], data[2], data[3]);

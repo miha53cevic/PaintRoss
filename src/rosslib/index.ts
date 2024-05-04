@@ -9,6 +9,8 @@ import Tool from './tools/tool';
 import Pen from './tools/pen';
 import { RGB } from './util/colour';
 import ImageFormat from './util/imageFormat';
+import { KernelOperation } from './util/imageKernel';
+import { ImageEffectType } from './util/ImageEffect';
 
 export default class PaintApp {
     private static _instance: PaintApp | null = null;
@@ -19,8 +21,8 @@ export default class PaintApp {
     private canvasObj: CanvasObject;
     private tool: Tool;
 
-    private constructor(private readonly canvas: HTMLCanvasElement) {
-        this.app = new App(this.canvas);
+    private constructor(private readonly htmlCanvas: HTMLCanvasElement) {
+        this.app = new App(this.htmlCanvas);
         const gl = this.app.GetGLContext();
         const glCanvas = this.app.GetGLCanvas();
 
@@ -79,6 +81,9 @@ export default class PaintApp {
                 case ' ':
                     this.canvasObj.MergePreviewCanvas();
                     break;
+                case 'd':
+                    this.canvasObj.DEBUG_MODE = !this.canvasObj.DEBUG_MODE;
+                    break;
                 default:
                     console.log(`Pressed ${evt.key}`);
             }
@@ -101,7 +106,7 @@ export default class PaintApp {
         this.canvasObj = new CanvasObject(gl);
         this.canvasObj.Size = vec2.fromValues(800, 600);
         this.canvasObj.Position = vec2.fromValues(gl.canvas.width / 2 - this.canvasObj.Size[0] / 2, gl.canvas.height / 2 - this.canvasObj.Size[1] / 2);
-        this.canvasObj.SetDebug(true);
+        this.canvasObj.DEBUG_MODE = true;
 
         this.tool = new Pen(gl, this.canvasObj);
 
@@ -123,7 +128,7 @@ export default class PaintApp {
     }
 
     public GetCanvasImage() {
-        return ImageFormat.createPNG(this.canvasObj.GetCanvasImage());
+        return ImageFormat.CreatePNG(this.canvasObj.GetCanvasImage());
     }
 
     public async LoadImage(url: string) {
@@ -169,6 +174,21 @@ export default class PaintApp {
         tool.Colour = this.tool.Colour; // keep colour selection
         this.tool = tool;
         this.GetEventManager().Notify('change tool', tool.GetID());
+    }
+
+    public ApplyImageEffect(effect: KernelOperation | ImageEffectType) {
+        switch (effect) {
+            case 'grayscale':
+            case 'invert colors':
+                this.canvasObj.ApplyImageEffect(effect);
+                break;
+            case 'boxBlur':
+            case 'edgeDetect':
+            case 'gaussianBlur':
+            case 'sharpen':
+                this.canvasObj.ApplyImageKernel(effect);
+                break;
+        }
     }
 
     public HelperCreateTool<T extends Tool>(func: (gl: WebGL2RenderingContext, canvasObject: CanvasObject) => T) {

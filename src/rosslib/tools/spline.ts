@@ -36,7 +36,7 @@ export default class Spline extends Tool {
     private _selectedControlPoint: Point | null = null;
 
     public LineSegments = 200;
-    public ControlPointSize: Point = [5, 5];
+    public ControlPointSize: Point = [10, 10];
 
     constructor(gl: WebGL2RenderingContext, canvasObj: CanvasObject) {
         super(gl, canvasObj);

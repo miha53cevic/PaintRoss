@@ -6,6 +6,8 @@ import GLMath from "../glmath";
 import Object2D from "./object2d";
 import Camera2D from "../camera2d";
 import Texture from "../glo/texture";
+import ImageKernel, { Kernel } from "../util/imageKernel";
+import ImageEffect from "../util/ImageEffect";
 
 const vertexShader = 
 `#version 300 es
@@ -33,10 +35,35 @@ out vec4 FragColor;
 uniform vec4 u_colour;
 uniform sampler2D textureSampler;
 uniform int u_usingTexture;
+uniform float u_kernel[9];
+uniform float u_kernelWeight;
+uniform int u_effect;
  
 void main() {
   if (u_usingTexture == 1) {
-    FragColor = texture(textureSampler, textureCoords);
+    vec2 onePixel = vec2(1) / vec2(textureSize(textureSampler, 0));
+
+    vec4 colorSum =
+      texture(textureSampler, textureCoords + onePixel * vec2(-1, -1)) * u_kernel[0] +
+      texture(textureSampler, textureCoords + onePixel * vec2( 0, -1)) * u_kernel[1] +
+      texture(textureSampler, textureCoords + onePixel * vec2( 1, -1)) * u_kernel[2] +
+      texture(textureSampler, textureCoords + onePixel * vec2(-1,  0)) * u_kernel[3] +
+      texture(textureSampler, textureCoords + onePixel * vec2( 0,  0)) * u_kernel[4] +
+      texture(textureSampler, textureCoords + onePixel * vec2( 1,  0)) * u_kernel[5] +
+      texture(textureSampler, textureCoords + onePixel * vec2(-1,  1)) * u_kernel[6] +
+      texture(textureSampler, textureCoords + onePixel * vec2( 0,  1)) * u_kernel[7] +
+      texture(textureSampler, textureCoords + onePixel * vec2( 1,  1)) * u_kernel[8];
+    colorSum /= u_kernelWeight;
+
+    // grayscale
+    if (u_effect == 1) {
+        float average = 0.2126 * colorSum.r + 0.7152 * colorSum.g + 0.0722 * colorSum.b;
+        colorSum = vec4(average, average, average, 1.0);
+    }
+    // invert colors
+    if (u_effect == 2) colorSum = vec4(1.0) - colorSum;
+
+    FragColor = vec4((colorSum).rgb, 1);
   }
   else {
     FragColor = u_colour;
@@ -60,6 +87,8 @@ export default class QuadObject extends Object2D {
 
     public Colour: vec4 = vec4.fromValues(1, 0, 0, 1);
     public Texture: Texture | null = null;
+    public Kernel: Kernel = ImageKernel.GetKernel('normal');
+    public Effect: number = ImageEffect.GetImageEffect('none');
 
     constructor(gl: WebGL2RenderingContext) {
         super(gl);
@@ -84,6 +113,9 @@ export default class QuadObject extends Object2D {
         shader.SetMatrix4(shader.GetUniformLocation('u_viewMat'), camera.GetViewMatrix());
         shader.SetMatrix4(shader.GetUniformLocation('u_projMat'), camera.GetProjMatrix());
         shader.SetVector4(shader.GetUniformLocation('u_colour'), this.Colour);
+        shader.SetFloatArray(shader.GetUniformLocation('u_kernel'), this.Kernel);
+        shader.SetFloat(shader.GetUniformLocation('u_kernelWeight'), ImageKernel.ComputeKernelWeight(this.Kernel));
+        shader.SetInt(shader.GetUniformLocation('u_effect'), this.Effect);
 
         // Check if there is a texture
         if (this.Texture) {
