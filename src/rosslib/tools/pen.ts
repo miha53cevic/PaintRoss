@@ -42,6 +42,7 @@ export default class Pen extends Tool {
     }
 
     public onDestroy(): void {
+        this.canvasObj.MergePreviewCanvas();
     }
 
     private RenderLines() {
