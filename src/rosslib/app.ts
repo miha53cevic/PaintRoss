@@ -52,7 +52,7 @@ export default class App {
         return this.eventManager;
     }
 
-    public Clear(red = 51, green = 51, blue = 51, alpha = 255) {
+    public Clear(red = 30, green = 41, blue = 59, alpha = 255) {
         const r = red / 255;
         const g = green / 255;
         const b = blue / 255;
