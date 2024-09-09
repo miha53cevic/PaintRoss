@@ -1,5 +1,5 @@
-import Object2D from "./objects/object2d";
 import Camera2D from "./camera2d";
+import Object2D from "./objects/object2d";
 
 export default class Scene2d {
     private objects2d: Object2D[] = [];
@@ -18,7 +18,13 @@ export default class Scene2d {
     }
 
     public Get(index: number) {
+        if (index < 0 || index >= this.objects2d.length) 
+            throw new Error("Object2D index out of range");
         return this.objects2d[index];
+    }
+
+    public GetObjectsLength() {
+        return this.objects2d.length;
     }
 
     public Clear() {

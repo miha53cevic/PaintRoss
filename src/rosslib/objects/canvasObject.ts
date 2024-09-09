@@ -1,12 +1,12 @@
 import { vec2 } from "gl-matrix";
 import Camera2D from "../camera2d";
+import FrameBuffer from "../glo/framebuffer";
+import Texture from "../glo/texture";
+import ImageEffect, { ImageEffectType } from "../util/ImageEffect";
+import ImageKernel, { KernelOperation } from "../util/imageKernel";
+import ImageOperation from "../util/imageOperation";
 import Object2D from "./object2d";
 import QuadObject from "./quadObject";
-import Texture from "../glo/texture";
-import FrameBuffer from "../glo/framebuffer";
-import ImageOperation from "../util/imageOperation";
-import ImageKernel, { KernelOperation } from "../util/imageKernel";
-import ImageEffect, { ImageEffectType } from "../util/ImageEffect";
 
 export interface CanvasImage {
     width: number,

@@ -1,5 +1,5 @@
+import { vec2 } from "gl-matrix";
 import { RGB } from "./colour";
-import Point from "./point";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type EventListener = (args: any) => void;
@@ -11,7 +11,7 @@ interface EventTypeList extends TEventTypeList {
     'change primary colour': (colour: RGB) => void,
     'change secondary colour': (colour: RGB) => void,
     'open image': () => void,
-    'change canvas coordinates': (canvasPos: Point) => void,
+    'change canvas coordinates': (canvasPos: vec2) => void,
 }
 export type EventType = keyof EventTypeList;
 type EventListenerParameter<T extends EventType> = Parameters<EventTypeList[T]>[0];

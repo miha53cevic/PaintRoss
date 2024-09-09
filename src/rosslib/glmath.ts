@@ -33,6 +33,12 @@ export default class GLMath {
         return mat;
     }
 
+    static getViewMatrixScale(viewMatrix: mat4): vec3 {
+        const scale = vec3.create();
+        mat4.getScaling(scale, viewMatrix);
+        return scale;
+    }
+
     // Useful when needing to do extra zoom in on already transformed viewMatrix, because then you need to right multiply by oldViewMat to keep previous transformations
     static updateViewMatrixZooming(viewMatrix: mat4, zoom: number, zoomCenter: vec2 = vec2.fromValues(0, 0)) {
         const zoomMatrix = mat4.create();

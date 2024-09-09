@@ -1,16 +1,16 @@
 import { vec2 } from 'gl-matrix';
 import App from './app';
-import QuadObject from './objects/quadObject';
-import Scene2d from './scene2d';
 import Camera2D from './camera2d';
 import Texture from './glo/texture';
 import CanvasObject from './objects/canvasObject';
-import Tool from './tools/tool';
+import QuadObject from './objects/quadObject';
+import Scene2d from './scene2d';
 import Pen from './tools/pen';
+import Tool from './tools/tool';
 import { RGB } from './util/colour';
+import { ImageEffectType } from './util/ImageEffect';
 import ImageFormat from './util/imageFormat';
 import { KernelOperation } from './util/imageKernel';
-import { ImageEffectType } from './util/ImageEffect';
 
 export default class PaintApp {
     private static _instance: PaintApp | null = null;
@@ -68,9 +68,9 @@ export default class PaintApp {
         });
 
         glCanvas.addEventListener('wheel', (evt) => {
-            const sensetivity = 0.1;
+            const zoomSensitivity = 0.1;
             const wheelDelta = Math.sign(-evt.deltaY);
-            const zoomAmount = wheelDelta * sensetivity;
+            const zoomAmount = wheelDelta * zoomSensitivity;
 
             const [x, y] = this.app.GetMousePos();
             this.camera2d.ZoomBy(zoomAmount, [x, y]);

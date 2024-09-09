@@ -5,7 +5,6 @@ export default class Camera2D {
     private projMat: mat4 = mat4.create();
     private viewMat: mat4 = mat4.create();
 
-    public totalZoom: number = 1.0;
     public maxZoom: number = 5.0;
     public minZoom: number = 0.1;
 
@@ -31,9 +30,10 @@ export default class Camera2D {
     }
 
     public ZoomBy(zoomBy: number, zoomCenter: vec2 = vec2.fromValues(0, 0)) {
-        if (this.totalZoom + zoomBy < this.minZoom || this.totalZoom + zoomBy > this.maxZoom) return;
-        this.totalZoom += zoomBy;
-        // When zooming on an already transformed image, you need to right multiply by previous viewMatrix to keep the transforms
+        const currentZoom = GLMath.getViewMatrixScale(this.viewMat)[0];
+        if (zoomBy > 0 && currentZoom >= this.maxZoom) return;
+        if (zoomBy < 0 && currentZoom <= this.minZoom) return;
+
         this.viewMat = GLMath.updateViewMatrixZooming(this.viewMat, 1 + zoomBy, zoomCenter);
     }
 
