@@ -3,6 +3,7 @@ import App from './app';
 import Camera2D from './camera2d';
 import Texture from './glo/texture';
 import CanvasObject from './objects/canvasObject';
+import CircleObject from './objects/circleObject';
 import CursorObject from './objects/cursorObject';
 import QuadObject from './objects/quadObject';
 import Scene2d from './scene2d';
@@ -112,11 +113,17 @@ export default class PaintApp {
         this.canvasObj.Position = vec2.fromValues(gl.canvas.width / 2 - this.canvasObj.Size[0] / 2, gl.canvas.height / 2 - this.canvasObj.Size[1] / 2);
         this.canvasObj.DEBUG_MODE = false;
 
-        const cursorObject = new CursorObject(gl, 50, 100);
+        const circleElipse = new CircleObject(gl, 100);
+        circleElipse.Position = vec2.fromValues(0, 0);
+        circleElipse.Size = vec2.fromValues(20, 10);
+
+        const cursorObject = new CursorObject(gl);
+        cursorObject.Position = vec2.fromValues(100, 0);
+        cursorObject.Size = vec2.fromValues(10, 10);
 
         this.tool = new Pen(gl, this.canvasObj);
 
-        this.scene.Add([this.canvasObj, quad1, quad2, cursorObject]);
+        this.scene.Add([this.canvasObj, quad1, quad2, circleElipse, cursorObject]);
         //this.scene.Add([this.canvasObj]);
 
         this.app.onResize = (width, height) => {

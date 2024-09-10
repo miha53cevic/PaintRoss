@@ -1,4 +1,5 @@
 import Camera2D from "../camera2d";
+import GLMath from "../glmath";
 import Shader from "../glo/shader";
 import VAO from "../glo/vao";
 import VBO from "../glo/vbo";
@@ -9,11 +10,12 @@ const lineVertexShader =
     `#version 300 es
 in vec2 a_position;
 
+uniform mat4 u_modelMat;
 uniform mat4 u_projMat;
 uniform mat4 u_viewMat;
  
 void main() {
-  vec4 pos = u_projMat * u_viewMat * vec4(a_position, 0.0, 1.0);
+  vec4 pos = u_projMat * u_viewMat * u_modelMat * vec4(a_position, 0.0, 1.0);
   gl_Position = pos;
   gl_PointSize = 0.0;
 }
@@ -49,7 +51,6 @@ export default class LineObject extends Object2D {
     }
 
     public SetPoints(points: [number, number][]) {
-        console.log(points);
         this._points = points;
         this._vao.Bind();
         this._vbo.SetBufferData(points.flat());
@@ -59,7 +60,10 @@ export default class LineObject extends Object2D {
     public Render(camera: Camera2D) {
         if (this._points.length === 0) return;
 
+        const modelMat = GLMath.createTransformationMatrix2D(this.Position, this.Rotation, this.Size);
+
         const shader = LineObject._shader;
+        shader.SetMatrix4(shader.GetUniformLocation('u_modelMat'), modelMat);
         shader.SetMatrix4(shader.GetUniformLocation('u_projMat'), camera.GetProjMatrix());
         shader.SetMatrix4(shader.GetUniformLocation('u_viewMat'), camera.GetViewMatrix());
         shader.SetVector3(shader.GetUniformLocation('colour'), this.Colour);
