@@ -1,4 +1,5 @@
 import glm from 'gl-matrix';
+import Logger from '../util/logger';
 
 export default class Shader {
     private readonly _handle: WebGLProgram = -1;
@@ -55,7 +56,7 @@ export default class Shader {
         this.gl.deleteShader(fragmentShader);
         
         const count = this.gl.getProgramParameter(program, this.gl.ACTIVE_UNIFORMS);
-        console.log(`[Shader]: Loaded ${count} uniforms`);
+        Logger.log("Shader", `Loaded ${count} uniforms`);
 
         return program;
     }
@@ -66,12 +67,12 @@ export default class Shader {
 
     public GetUniformLocation(name: string) {
         if (this._handle == -1) {
-            throw new Error("[Shader]: _handle is -1");
+            throw new Error("Shader handle is -1");
         }
 
         const location = this.gl.getUniformLocation(this._handle, name);
         if (!location || location == -1) {
-            throw new Error(`[Shader]: Found no location for the uniform: ${name}`);
+            throw new Error(`Shader found no location for the uniform: ${name}`);
         }
         return location;
     }

@@ -1,3 +1,5 @@
+import Logger from "../util/logger";
+
 export default class Texture {
     private constructor(private readonly gl: WebGL2RenderingContext, public readonly handle: WebGLTexture) {
     }
@@ -53,7 +55,7 @@ export default class Texture {
     // texture_unit must be from gl.TEXTURE1, gl.TEXTURE2...
     // gl.TEXTURE0 is used as placeholder
     public Use(texture_unit: number = this.gl.TEXTURE1, warnning = true) {
-        if (texture_unit === this.gl.TEXTURE0 && warnning) console.warn("[Texture]: Using placeholder texture!");
+        if (texture_unit === this.gl.TEXTURE0 && warnning) Logger.warn("[Texture]: Using placeholder texture!");
         this.gl.activeTexture(texture_unit);
         this.gl.bindTexture(this.gl.TEXTURE_2D, this.handle);
     }

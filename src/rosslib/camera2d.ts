@@ -5,7 +5,7 @@ export default class Camera2D {
     private projMat: mat4 = mat4.create();
     private viewMat: mat4 = mat4.create();
 
-    public maxZoom: number = 5.0;
+    public maxZoom: number = 100.0;
     public minZoom: number = 0.1;
 
     constructor(screenWidth: number, screenHeight: number, left: number = 0, top: number = 0, near: number = -1, far: number = 1) {

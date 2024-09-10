@@ -5,6 +5,7 @@ import Texture from "../glo/texture";
 import ImageEffect, { ImageEffectType } from "../util/ImageEffect";
 import ImageKernel, { KernelOperation } from "../util/imageKernel";
 import ImageOperation from "../util/imageOperation";
+import Logger from "../util/logger";
 import Object2D from "./object2d";
 import QuadObject from "./quadObject";
 
@@ -80,7 +81,7 @@ export default class CanvasObject extends Object2D {
 
     private UpdateCanvasPositionRotationSize() {
         if (this.quadCanvas.Size !== this.Size) {
-            console.log("Updating canvas size");
+            Logger.log("Event", "Updating canvas size");
             this.quadCanvas.Size = this.Size;
             // Resize textures to new canvas size
             // TODO kaj kad je slika stara nutri, moram kopirat staru i napraviti veci canvas nekak
@@ -95,11 +96,11 @@ export default class CanvasObject extends Object2D {
             this.MergePreviewCanvas();
         }
         if (this.quadCanvas.Position !== this.Position) {
-            console.log("Updating canvas position");
+            Logger.log("Event", "Updating canvas position");
             this.quadCanvas.Position = this.Position;
         }
         if (this.quadCanvas.Rotation !== this.Rotation) {
-            console.log("Updating canvas rotation");
+            Logger.log("Event", "Updating canvas rotation");
             this.quadCanvas.Rotation = this.Rotation;
         }
     }

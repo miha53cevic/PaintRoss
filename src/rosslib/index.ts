@@ -11,6 +11,7 @@ import { RGB } from './util/colour';
 import { ImageEffectType } from './util/ImageEffect';
 import ImageFormat from './util/imageFormat';
 import { KernelOperation } from './util/imageKernel';
+import Logger from './util/logger';
 
 export default class PaintApp {
     private static _instance: PaintApp | null = null;
@@ -22,6 +23,8 @@ export default class PaintApp {
     private tool: Tool;
 
     private constructor(private readonly htmlCanvas: HTMLCanvasElement) {
+        Logger.enable();
+
         this.app = new App(this.htmlCanvas);
         const gl = this.app.GetGLContext();
         const glCanvas = this.app.GetGLCanvas();
@@ -85,7 +88,7 @@ export default class PaintApp {
                     this.canvasObj.DEBUG_MODE = !this.canvasObj.DEBUG_MODE;
                     break;
                 default:
-                    console.log(`Pressed ${evt.key}`);
+                    Logger.log("KeyPress", `Pressed ${evt.key}`);
             }
         });
 
