@@ -1,13 +1,13 @@
 import { vec4 } from "gl-matrix";
+import Camera2D from "../camera2d";
+import GLMath from "../glmath";
 import Shader from "../glo/shader";
+import Texture from "../glo/texture";
 import VAO from "../glo/vao";
 import VBO from "../glo/vbo";
-import GLMath from "../glmath";
-import Object2D from "./object2d";
-import Camera2D from "../camera2d";
-import Texture from "../glo/texture";
-import ImageKernel, { Kernel } from "../util/imageKernel";
 import ImageEffect from "../util/ImageEffect";
+import ImageKernel, { Kernel } from "../util/imageKernel";
+import Object2D from "./object2d";
 
 const vertexShader = 
 `#version 300 es

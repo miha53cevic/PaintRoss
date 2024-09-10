@@ -1,9 +1,9 @@
+import Camera2D from "../camera2d";
 import Shader from "../glo/shader";
 import VAO from "../glo/vao";
 import VBO from "../glo/vbo";
-import Object2D from "./object2d";
-import Camera2D from "../camera2d";
 import { RGB } from "../util/colour";
+import Object2D from "./object2d";
 
 const lineVertexShader =
     `#version 300 es
@@ -33,36 +33,39 @@ void main() {
 
 export default class LineObject extends Object2D {
     private static _shader: Shader;
-    private static _vao: VAO;
-    private static _vbo: VBO;
+    private _vao: VAO;
+    private _vbo: VBO;
     private _points: [number, number][] = [];
 
     public Colour: RGB = [0, 0, 0];
 
     constructor(gl: WebGL2RenderingContext) {
         super(gl);
-        if (!LineObject._shader && !LineObject._vao && !LineObject._vbo) {
-            LineObject._shader = new Shader(gl, lineVertexShader, lineFragShader);
-            LineObject._vao = new VAO(gl);
-            LineObject._vbo = new VBO(gl);
-        }
+
+        if (!LineObject._shader) LineObject._shader = new Shader(gl, lineVertexShader, lineFragShader);
+
+        this._vao = new VAO(gl);
+        this._vbo = new VBO(gl);
     }
 
     public SetPoints(points: [number, number][]) {
+        console.log(points);
         this._points = points;
-        const vao = LineObject._vao;
-        const vbo = LineObject._vbo;
-        vao.Bind();
-        vbo.SetBufferData(points.flat());
-        vao.DefineVertexAttribPointer(vbo, 0, 2, 0, 0);
+        this._vao.Bind();
+        this._vbo.SetBufferData(points.flat());
+        this._vao.DefineVertexAttribPointer(this._vbo, 0, 2, 0, 0);
     }
 
     public Render(camera: Camera2D) {
+        if (this._points.length === 0) return;
+
         const shader = LineObject._shader;
-        shader.Use();
         shader.SetMatrix4(shader.GetUniformLocation('u_projMat'), camera.GetProjMatrix());
         shader.SetMatrix4(shader.GetUniformLocation('u_viewMat'), camera.GetViewMatrix());
         shader.SetVector3(shader.GetUniformLocation('colour'), this.Colour);
+
+        shader.Use();
+        this._vao.Bind();
 
         // If it's only 1 point draw it instead of a line
         if (this._points.length > 1) this.gl.drawArrays(this.gl.LINE_STRIP, 0, this._points.length);
