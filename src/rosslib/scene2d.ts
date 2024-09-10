@@ -1,7 +1,7 @@
 import Camera2D from "./camera2d";
 import Object2D from "./objects/object2d";
 
-export default class Scene2d {
+export default class Scene2D {
     private objects2d: Object2D[] = [];
 
     public Render(camera2d: Camera2D) {

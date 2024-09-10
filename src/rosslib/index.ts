@@ -6,7 +6,7 @@ import CanvasObject from './objects/canvasObject';
 import CircleObject from './objects/circleObject';
 import CursorObject from './objects/cursorObject';
 import QuadObject from './objects/quadObject';
-import Scene2d from './scene2d';
+import Scene2D from './scene2d';
 import Pen from './tools/pen';
 import Tool from './tools/tool';
 import { RGB } from './util/colour';
@@ -19,7 +19,7 @@ export default class PaintApp {
     private static _instance: PaintApp | null = null;
     private app: App;
 
-    private scene: Scene2d;
+    private scene: Scene2D;
     private camera2d: Camera2D;
     private canvasObj: CanvasObject;
     private tool: Tool;
@@ -94,7 +94,7 @@ export default class PaintApp {
             }
         });
 
-        this.scene = new Scene2d();
+        this.scene = new Scene2D();
         this.camera2d = new Camera2D(gl.canvas.width, gl.canvas.height);
 
         const quad1 = new QuadObject(gl);
