@@ -8,7 +8,7 @@ export function NormalizeRGB(colour: RGB): RGB {
     ];
 }
 
-export default class ColourSelection {
+export class ColourSelection {
     public Primary: RGB = [0, 0, 0];
     public Secondary: RGB = [255, 255, 255]; 
 }

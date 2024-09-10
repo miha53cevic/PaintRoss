@@ -1,5 +1,5 @@
 import CanvasObject from "../objects/canvasObject";
-import ColourSelection from "../util/colour";
+import { ColourSelection } from "../util/colour";
 
 export default abstract class Tool {
     constructor(protected readonly gl: WebGL2RenderingContext, protected readonly canvasObj: CanvasObject) {}
