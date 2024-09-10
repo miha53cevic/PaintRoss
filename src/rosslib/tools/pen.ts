@@ -1,6 +1,6 @@
 import CanvasObject from "../objects/canvasObject";
-import Tool from "./tool";
 import LineObject from "../objects/lineObject";
+import Tool from "./tool";
 
 export default class Pen extends Tool {
     private points: [number, number][] = [];
@@ -46,7 +46,7 @@ export default class Pen extends Tool {
     }
 
     private RenderLines() {
-        this.lineObject.Colour = this.Colour.NormalizedPrimary();
+        this.lineObject.Colour = this.ColourSelection.Primary;
         this.lineObject.SetPoints(this.points);
         this.canvasObj.DrawOnCanvas(this.lineObject);
     }

@@ -1,4 +1,5 @@
 import Camera2D from "../camera2d";
+import { RGB } from "../util/colour";
 import CircleObject from "./circleObject";
 import Object2D from "./object2d";
 
@@ -9,10 +10,15 @@ export default class CursorObject extends Object2D {
         super(gl);
 
         this._circleObject = new CircleObject(gl, 100);
+        this._circleObject.Outlined = true;
     }
 
     public Render(camera: Camera2D): void {
         this._circleObject.Render(camera);
+    }
+
+    public SetColour(color: RGB) {
+        this._circleObject.SetColour(color);
     }
 
     get Position() {

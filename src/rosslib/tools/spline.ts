@@ -148,7 +148,7 @@ export default class Spline extends Tool {
                 curvePoints.push(Ct);
             }
             // Render linestrip
-            this._lineObject.Colour = this.Colour.NormalizedPrimary();
+            this._lineObject.Colour = this.ColourSelection.Primary;
             this._lineObject.SetPoints(curvePoints);
             this.canvasObj.DrawOnCanvas(this._lineObject);
 
@@ -158,7 +158,7 @@ export default class Spline extends Tool {
     }
 
     private RenderInitialLine() {
-        this._lineObject.Colour = this.Colour.NormalizedPrimary();
+        this._lineObject.Colour = this.ColourSelection.Primary;
         this._lineObject.SetPoints(this._controlPoints);
         this.canvasObj.DrawOnCanvas(this._lineObject);
     }

@@ -116,6 +116,7 @@ export default class PaintApp {
         const circleElipse = new CircleObject(gl, 100);
         circleElipse.Position = vec2.fromValues(0, 0);
         circleElipse.Size = vec2.fromValues(20, 10);
+        circleElipse.SetColour([255, 255, 120]);
 
         const cursorObject = new CursorObject(gl);
         cursorObject.Position = vec2.fromValues(100, 0);
@@ -166,16 +167,16 @@ export default class PaintApp {
     }
 
     public GetToolColour() {
-        return this.tool.Colour;
+        return this.tool.ColourSelection;
     }
 
     public SetPrimaryToolColour(colour: RGB) {
-        this.tool.Colour.Primary = colour;
+        this.tool.ColourSelection.Primary = colour;
         this.GetEventManager().Notify('change primary colour', colour);
     }
 
     public SetSecondaryToolColour(colour: RGB) {
-        this.tool.Colour.Secondary = colour;
+        this.tool.ColourSelection.Secondary = colour;
         this.GetEventManager().Notify('change secondary colour', colour);
     }
 
@@ -185,7 +186,7 @@ export default class PaintApp {
 
     public SetTool(tool: Tool) {
         this.tool.onDestroy();
-        tool.Colour = this.tool.Colour; // keep colour selection
+        tool.ColourSelection = this.tool.ColourSelection; // keep colour selection
         this.tool = tool;
         this.GetEventManager().Notify('change tool', tool.GetID());
     }
