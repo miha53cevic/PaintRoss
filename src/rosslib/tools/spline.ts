@@ -43,7 +43,7 @@ export default class Spline extends Tool {
         this._lineObject = new LineObject(gl);
     }
 
-    public onMouseDown(x: number, y: number, mouseButton: number): void {
+    public handleMouseDown(x: number, y: number, mouseButton: number): void {
         switch (this._state) {
             case 'waiting for initial click': {
                 if (mouseButton === 0) {
@@ -69,7 +69,7 @@ export default class Spline extends Tool {
             }
         }
     }
-    public onMouseUp(x: number, y: number, mouseButton: number): void {
+    public handleMouseUp(x: number, y: number, mouseButton: number): void {
         switch (this._state) {
             case 'waiting for initial release': {
                 if (mouseButton === 0) {
@@ -101,7 +101,7 @@ export default class Spline extends Tool {
             }
         }
     }
-    public onMouseMove(x: number, y: number): void {
+    public handleMouseMove(x: number, y: number): void {
         switch (this._state) {
             case 'waiting for initial release': {
                 if (this._controlPoints.length == 2) {
@@ -125,7 +125,7 @@ export default class Spline extends Tool {
     public GetID(): string {
         return "Spline";
     }
-    public onDestroy(): void {
+    public handleDestroy(): void {
         this.canvasObj.CancelPreviewCanvas();
         this.RenderSpline(false);
         this.canvasObj.MergePreviewCanvas();

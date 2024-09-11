@@ -3,14 +3,14 @@ import Texture from "../glo/texture";
 import Tool from "./tool";
 
 export default class Fill extends Tool {
-    public onDestroy(): void {
+    public handleDestroy(): void {
         this.canvasObj.MergePreviewCanvas();
     }
     public GetID(): string {
         return "Fill";
     }
 
-    public onMouseDown(x: number, y: number, mouseButton: number): void {
+    public handleMouseDown(x: number, y: number, mouseButton: number): void {
         x = Math.floor(x);
         y = Math.floor(y);
 
@@ -21,8 +21,8 @@ export default class Fill extends Tool {
         const texture = Texture.createTexture(this.gl, image.width, image.height, floodFill.imageData.data);
         this.canvasObj.DrawFullscreenTextureOnCanvas(texture);
     }
-    public onMouseUp(x: number, y: number, mouseButton: number): void {
+    public handleMouseUp(x: number, y: number, mouseButton: number): void {
     }
-    public onMouseMove(x: number, y: number): void {
+    public handleMouseMove(x: number, y: number): void {
     }
 }

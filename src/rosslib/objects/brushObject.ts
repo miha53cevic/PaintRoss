@@ -3,7 +3,7 @@ import { RGB } from "../util/colour";
 import CircleObject from "./circleObject";
 import Object2D from "./object2d";
 
-export default class CursorObject extends Object2D {
+export default class BrushObject extends Object2D {
     private _circleObject: CircleObject;
 
     public constructor(gl: WebGL2RenderingContext) {

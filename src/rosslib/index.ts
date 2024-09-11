@@ -2,9 +2,9 @@ import { vec2 } from 'gl-matrix';
 import App from './app';
 import Camera2D from './camera2d';
 import Texture from './glo/texture';
+import BrushObject from './objects/brushObject';
 import CanvasObject from './objects/canvasObject';
 import CircleObject from './objects/circleObject';
-import CursorObject from './objects/cursorObject';
 import QuadObject from './objects/quadObject';
 import Scene2D from './scene2d';
 import Pen from './tools/pen';
@@ -38,7 +38,7 @@ export default class PaintApp {
             const mousePos = this.app.GetMousePos();
             const mouseWorld = this.camera2d.mouseToWorld2D(mousePos[0], mousePos[1], glCanvas.width, glCanvas.height);
             const canvasPos = this.canvasObj.MouseToCanvasCoordinates(mouseWorld[0], mouseWorld[1]);
-            if (this.canvasObj.IsMouseInCanvas(mouseWorld[0], mouseWorld[1])) this.tool.onMouseDown(canvasPos[0], canvasPos[1], ev.button);
+            this.tool.onMouseDown(canvasPos[0], canvasPos[1], ev.button);
             if (ev.button === 1) {
                 panningStartPos = this.app.GetMousePos();
                 panning = true;
@@ -49,9 +49,7 @@ export default class PaintApp {
             const mousePos = this.app.GetMousePos();
             const mouseWorld = this.camera2d.mouseToWorld2D(mousePos[0], mousePos[1], glCanvas.width, glCanvas.height);
             const canvasPos = this.canvasObj.MouseToCanvasCoordinates(mouseWorld[0], mouseWorld[1]);
-            if (this.canvasObj.IsMouseInCanvas(mouseWorld[0], mouseWorld[1])) {
-                this.tool.onMouseMove(canvasPos[0], canvasPos[1]);
-            }
+            this.tool.onMouseMove(canvasPos[0], canvasPos[1]);
             if (panning) {
                 const [x, y] = this.app.GetMousePos();
                 const dx = x - panningStartPos[0];
@@ -66,7 +64,7 @@ export default class PaintApp {
             const mousePos = this.app.GetMousePos();
             const mouseWorld = this.camera2d.mouseToWorld2D(mousePos[0], mousePos[1], glCanvas.width, glCanvas.height);
             const canvasPos = this.canvasObj.MouseToCanvasCoordinates(mouseWorld[0], mouseWorld[1]);
-            if (this.canvasObj.IsMouseInCanvas(mouseWorld[0], mouseWorld[1])) this.tool.onMouseUp(canvasPos[0], canvasPos[1], ev.button);
+            this.tool.onMouseUp(canvasPos[0], canvasPos[1], ev.button);
             if (ev.button === 1) {
                 panning = false;
             }
@@ -118,7 +116,7 @@ export default class PaintApp {
         circleElipse.Size = vec2.fromValues(20, 10);
         circleElipse.SetColour([255, 255, 120]);
 
-        const cursorObject = new CursorObject(gl);
+        const cursorObject = new BrushObject(gl);
         cursorObject.Position = vec2.fromValues(100, 0);
         cursorObject.Size = vec2.fromValues(10, 10);
 
