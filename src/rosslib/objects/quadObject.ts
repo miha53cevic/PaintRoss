@@ -1,10 +1,10 @@
-import { vec4 } from "gl-matrix";
 import Camera2D from "../camera2d";
 import GLMath from "../glmath";
 import Shader from "../glo/shader";
 import Texture from "../glo/texture";
 import VAO from "../glo/vao";
 import VBO from "../glo/vbo";
+import { NormalizeRGB, RGB } from "../util/colour";
 import ImageEffect from "../util/ImageEffect";
 import ImageKernel, { Kernel } from "../util/imageKernel";
 import Object2D from "./object2d";
@@ -32,7 +32,7 @@ precision highp float;
 in vec2 textureCoords;
 out vec4 FragColor;
 
-uniform vec4 u_colour;
+uniform vec3 u_colour;
 uniform sampler2D textureSampler;
 uniform int u_usingTexture;
 uniform float u_kernel[9];
@@ -66,7 +66,7 @@ void main() {
     FragColor = vec4((colorSum).rgb, 1);
   }
   else {
-    FragColor = u_colour;
+    FragColor = vec4(u_colour, 1.0);
   }
 }
 `;
@@ -85,7 +85,7 @@ export default class QuadObject extends Object2D {
     private static _vao: VAO;
     private static _vbo: VBO;
 
-    public Colour: vec4 = vec4.fromValues(1, 0, 0, 1);
+    public Colour: RGB = [255, 0, 0];
     public Texture: Texture | null = null;
     public Kernel: Kernel = ImageKernel.GetKernel('normal');
     public Effect: number = ImageEffect.GetImageEffect('none');
@@ -112,7 +112,7 @@ export default class QuadObject extends Object2D {
         shader.SetMatrix4(shader.GetUniformLocation('u_modelMat'), modelMat);
         shader.SetMatrix4(shader.GetUniformLocation('u_viewMat'), camera.GetViewMatrix());
         shader.SetMatrix4(shader.GetUniformLocation('u_projMat'), camera.GetProjMatrix());
-        shader.SetVector4(shader.GetUniformLocation('u_colour'), this.Colour);
+        shader.SetVector3(shader.GetUniformLocation('u_colour'), NormalizeRGB(this.Colour));
         shader.SetFloatArray(shader.GetUniformLocation('u_kernel'), this.Kernel);
         shader.SetFloat(shader.GetUniformLocation('u_kernelWeight'), ImageKernel.ComputeKernelWeight(this.Kernel));
         shader.SetInt(shader.GetUniformLocation('u_effect'), this.Effect);

@@ -33,6 +33,9 @@ void main() {
 }
 `;
 
+// TODO - use this for drawing lines
+// https://mattdesl.svbtle.com/drawing-lines-is-hard
+
 export default class LineObject extends Object2D {
     private static _shader: Shader;
     private _vao: VAO;

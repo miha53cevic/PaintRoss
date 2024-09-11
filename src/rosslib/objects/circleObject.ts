@@ -10,7 +10,7 @@ export default class CircleObject extends Object2D {
     
     public Outlined = false;
 
-    public constructor(gl: WebGL2RenderingContext, segments: number) {
+    public constructor(gl: WebGL2RenderingContext, segments: number = 100) {
         super(gl);
 
         this._lineObject = new LineObject(gl);

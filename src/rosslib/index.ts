@@ -6,6 +6,7 @@ import BrushObject from './objects/brushObject';
 import CanvasObject from './objects/canvasObject';
 import CircleObject from './objects/circleObject';
 import QuadObject from './objects/quadObject';
+import RectangleObject from './objects/rectangleObject';
 import Scene2D from './scene2d';
 import Pen from './tools/pen';
 import Tool from './tools/tool';
@@ -116,13 +117,17 @@ export default class PaintApp {
         circleElipse.Size = vec2.fromValues(20, 10);
         circleElipse.SetColour([255, 255, 120]);
 
-        const cursorObject = new BrushObject(gl);
-        cursorObject.Position = vec2.fromValues(100, 0);
-        cursorObject.Size = vec2.fromValues(10, 10);
+        const brushObject = new BrushObject(gl);
+        brushObject.Position = vec2.fromValues(100, 0);
+        brushObject.Size = vec2.fromValues(10, 10);
+
+        const rectangleObject = new RectangleObject(gl);
+        rectangleObject.Position = vec2.fromValues(150, 150);
+        rectangleObject.Size = vec2.fromValues(100, 100);
 
         this.tool = new Pen(gl, this.canvasObj);
 
-        this.scene.Add([this.canvasObj, quad1, quad2, circleElipse, cursorObject]);
+        this.scene.Add([this.canvasObj, quad1, quad2, circleElipse, brushObject, rectangleObject]);
         //this.scene.Add([this.canvasObj]);
 
         this.app.onResize = (width, height) => {
