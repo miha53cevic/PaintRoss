@@ -1,5 +1,6 @@
 import { vec2 } from "gl-matrix";
 import { RGB } from "./colour";
+import Logger from "./logger";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type EventListener = (args: any) => void;
@@ -13,7 +14,7 @@ interface EventTypeList extends TEventTypeList {
     'OpenImage': () => void,
     'ChangeCanvasCoordinates': (canvasPos: vec2) => void,
 }
-export type EventType = keyof EventTypeList;
+type EventType = keyof EventTypeList;
 type EventListenerParameter<T extends EventType> = Parameters<EventTypeList[T]>[0];
 
 export default class EventManager {
@@ -35,5 +36,7 @@ export default class EventManager {
     public Notify<T extends EventType>(event: T, data?: EventListenerParameter<T>) {
         if (!this._listeners.has(event)) return; // no listeners for this event registered
         this._listeners.get(event)!.forEach(listener => listener(data));
+
+        Logger.Log("Event", `${event} notified`);
     }
 }

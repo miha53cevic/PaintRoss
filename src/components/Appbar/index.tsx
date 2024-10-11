@@ -31,7 +31,7 @@ export default function AppBar() {
 
     const [canvasMousePos, setCanvasMousePos] = useState<[number, number]>([NaN, NaN]);
     useEffect(() => {
-        PaintApp.Get().GetEventManager().Subscribe('change canvas coordinates', () => {
+        PaintApp.Get().GetEventManager().Subscribe('ChangeCanvasCoordinates', () => {
             setCanvasMousePos(PaintApp.Get().GetCanvasMousePosition());
         });
     }, []);

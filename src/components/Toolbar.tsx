@@ -7,7 +7,7 @@ import Spline from "../rosslib/tools/spline";
 export default function Toolbar() {
     const [currentTool, setCurrentTool] = useState<string>('Pen');
     useEffect(() => {
-        PaintApp.Get().GetEventManager().Subscribe('change tool', (tool) => {
+        PaintApp.Get().GetEventManager().Subscribe('ChangeTool', (tool) => {
             setCurrentTool(tool as string);
         });
     }, []);
