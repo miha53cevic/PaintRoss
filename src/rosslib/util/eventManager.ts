@@ -7,11 +7,11 @@ interface TEventTypeList {
     [eventName: string]: EventListener,
 }
 interface EventTypeList extends TEventTypeList {
-    'change tool': (toolId: string) => void,
-    'change primary colour': (colour: RGB) => void,
-    'change secondary colour': (colour: RGB) => void,
-    'open image': () => void,
-    'change canvas coordinates': (canvasPos: vec2) => void,
+    'ChangeTool': (toolId: string) => void,
+    'ChangePrimaryColour': (colour: RGB) => void,
+    'ChangeSecondaryColour': (colour: RGB) => void,
+    'OpenImage': () => void,
+    'ChangeCanvasCoordinates': (canvasPos: vec2) => void,
 }
 export type EventType = keyof EventTypeList;
 type EventListenerParameter<T extends EventType> = Parameters<EventTypeList[T]>[0];

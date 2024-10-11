@@ -51,12 +51,12 @@ export default function AppBar() {
                 <Dropdown
                     title="Image Effects"
                 >
-                    <DropdownItem onClick={() => PaintApp.Get().ApplyImageEffect('grayscale')}>Grayscale</DropdownItem>
-                    <DropdownItem onClick={() => PaintApp.Get().ApplyImageEffect('invert colors')}>Invert colours</DropdownItem>
-                    <DropdownItem onClick={() => PaintApp.Get().ApplyImageEffect('gaussianBlur')}>Blur</DropdownItem>
-                    <DropdownItem onClick={() => PaintApp.Get().ApplyImageEffect('boxBlur')}>Box Blur</DropdownItem>
-                    <DropdownItem onClick={() => PaintApp.Get().ApplyImageEffect('sharpen')}>Sharpen</DropdownItem>
-                    <DropdownItem onClick={() => PaintApp.Get().ApplyImageEffect('edgeDetect')}>Edge detect</DropdownItem>
+                    <DropdownItem onClick={() => PaintApp.Get().ApplyImageEffect('Grayscale')}>Grayscale</DropdownItem>
+                    <DropdownItem onClick={() => PaintApp.Get().ApplyImageEffect('InvertColors')}>Invert colours</DropdownItem>
+                    <DropdownItem onClick={() => PaintApp.Get().ApplyImageEffect('GaussianBlur')}>Blur</DropdownItem>
+                    <DropdownItem onClick={() => PaintApp.Get().ApplyImageEffect('BoxBlur')}>Box Blur</DropdownItem>
+                    <DropdownItem onClick={() => PaintApp.Get().ApplyImageEffect('Sharpen')}>Sharpen</DropdownItem>
+                    <DropdownItem onClick={() => PaintApp.Get().ApplyImageEffect('EdgeDetect')}>Edge detect</DropdownItem>
                 </Dropdown>
                 <Dropdown
                     title="Help"

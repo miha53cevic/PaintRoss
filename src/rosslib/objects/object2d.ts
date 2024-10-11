@@ -30,7 +30,7 @@ export default abstract class Object2D {
         this._size = value;
     }
 
-    constructor(protected readonly gl: WebGL2RenderingContext) {}
+    constructor(protected readonly _gl: WebGL2RenderingContext) { }
 
     public abstract Render(camera: Camera2D): void;
 }

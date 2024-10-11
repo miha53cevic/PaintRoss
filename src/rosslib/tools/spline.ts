@@ -55,9 +55,9 @@ export default class Spline extends Tool {
             }
             case 'waiting for point edit finish': {
                 if (mouseButton === 2) { // finish with right click
-                    this.canvasObj.CancelPreviewCanvas();
+                    this._canvasObj.CancelPreviewCanvas();
                     this.RenderSpline(false);
-                    this.canvasObj.MergePreviewCanvas();
+                    this._canvasObj.MergePreviewCanvas();
                     this._state = 'waiting for initial click';
                 }
                 if (mouseButton === 0) {
@@ -94,7 +94,7 @@ export default class Spline extends Tool {
             case 'waiting for point edit finish': {
                 if (mouseButton === 0) {
                     this._selectedControlPoint = null;
-                    this.canvasObj.CancelPreviewCanvas();
+                    this._canvasObj.CancelPreviewCanvas();
                     this.RenderSpline();
                 }
                 break;
@@ -107,7 +107,7 @@ export default class Spline extends Tool {
                 if (this._controlPoints.length == 2) {
                     this._controlPoints[1] = [x, y];
                 } else this._controlPoints.push([x, y]);
-                this.canvasObj.CancelPreviewCanvas();
+                this._canvasObj.CancelPreviewCanvas();
                 this.RenderInitialLine();
                 break;
             }
@@ -115,7 +115,7 @@ export default class Spline extends Tool {
                 if (this._selectedControlPoint) {
                     this._selectedControlPoint[0] = x;
                     this._selectedControlPoint[1] = y;
-                    this.canvasObj.CancelPreviewCanvas();
+                    this._canvasObj.CancelPreviewCanvas();
                     this.RenderSpline();
                 }
                 break;
@@ -130,9 +130,9 @@ export default class Spline extends Tool {
     }
 
     protected HandleDestroy(): void {
-        this.canvasObj.CancelPreviewCanvas();
+        this._canvasObj.CancelPreviewCanvas();
         this.RenderSpline(false);
-        this.canvasObj.MergePreviewCanvas();
+        this._canvasObj.MergePreviewCanvas();
     }
 
     private RenderSpline(renderControlPoints: boolean = true) {
@@ -154,7 +154,7 @@ export default class Spline extends Tool {
             // Render linestrip
             this._lineObject.Colour = this.ColourSelection.Primary;
             this._lineObject.SetPoints(curvePoints);
-            this.canvasObj.DrawOnCanvas(this._lineObject);
+            this._canvasObj.DrawOnCanvas(this._lineObject);
 
             // Render control points
             if (renderControlPoints) this.RenderControlPoints();
@@ -164,11 +164,11 @@ export default class Spline extends Tool {
     private RenderInitialLine() {
         this._lineObject.Colour = this.ColourSelection.Primary;
         this._lineObject.SetPoints(this._controlPoints);
-        this.canvasObj.DrawOnCanvas(this._lineObject);
+        this._canvasObj.DrawOnCanvas(this._lineObject);
     }
 
     private RenderControlPoints() {
-        const quad = new QuadObject(this.gl);
+        const quad = new QuadObject(this._gl);
         quad.Size = this.ControlPointSize;
         for (const controlPoint of this._controlPoints) {
             if (this._selectedControlPoint === controlPoint) {
@@ -179,7 +179,7 @@ export default class Spline extends Tool {
                 controlPoint[1] - quad.Size[1] / 2,
             ];
             quad.Position = pos;
-            this.canvasObj.DrawOnCanvas(quad);
+            this._canvasObj.DrawOnCanvas(quad);
         }
     }
 

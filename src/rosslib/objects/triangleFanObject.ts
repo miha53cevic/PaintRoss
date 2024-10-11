@@ -59,7 +59,7 @@ export default class TriangleFanObject extends Object2D {
     public Render(camera: Camera2D) {
         if (this._points.length < 3) return;
 
-        const modelMat = GLMath.createTransformationMatrix2D(this.Position, this.Rotation, this.Size);
+        const modelMat = GLMath.CreateTransformationMatrix2D(this.Position, this.Rotation, this.Size);
 
         const shader = TriangleFanObject._shader;
         shader.SetMatrix4(shader.GetUniformLocation('u_modelMat'), modelMat);
@@ -70,6 +70,6 @@ export default class TriangleFanObject extends Object2D {
         shader.Use();
         this._vao.Bind();
 
-        this.gl.drawArrays(this.gl.TRIANGLE_FAN, 0, this._points.length);
+        this._gl.drawArrays(this._gl.TRIANGLE_FAN, 0, this._points.length);
     }
 }

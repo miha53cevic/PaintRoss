@@ -1,9 +1,9 @@
 export type Kernel = [number, number, number, number, number, number, number, number, number];
-export type KernelOperation = 'normal' | 'gaussianBlur' | 'sharpen' | 'edgeDetect' | 'boxBlur';
+export type KernelOperation = 'Normal' | 'GaussianBlur' | 'Sharpen' | 'EdgeDetect' | 'BoxBlur';
 
-const kernelOperations = new Map<KernelOperation, Kernel>([
+const KernelOperations = new Map<KernelOperation, Kernel>([
     [
-        'normal',
+        'Normal',
         [
             0, 0, 0,
             0, 1, 0,
@@ -11,7 +11,7 @@ const kernelOperations = new Map<KernelOperation, Kernel>([
         ]
     ],
     [
-        'gaussianBlur',
+        'GaussianBlur',
         [
             0, 1, 0,
             1, 1, 1,
@@ -19,7 +19,7 @@ const kernelOperations = new Map<KernelOperation, Kernel>([
         ],
     ],
     [
-        'sharpen',
+        'Sharpen',
         [
             0, -1, 0,
             -1, 5, -1,
@@ -27,7 +27,7 @@ const kernelOperations = new Map<KernelOperation, Kernel>([
         ],
     ],
     [
-        'edgeDetect',
+        'EdgeDetect',
         [
             -1, -1, -1,
             -1, 8, -1,
@@ -35,7 +35,7 @@ const kernelOperations = new Map<KernelOperation, Kernel>([
         ],
     ],
     [
-        'boxBlur',
+        'BoxBlur',
         [
             0.111, 0.111, 0.111,
             0.111, 0.111, 0.111,
@@ -53,6 +53,6 @@ export default class ImageKernel {
     }
 
     public static GetKernel(name: KernelOperation): Kernel {
-        return kernelOperations.get(name)!;
+        return KernelOperations.get(name)!;
     }
 }

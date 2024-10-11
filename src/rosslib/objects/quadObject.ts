@@ -9,8 +9,8 @@ import ImageEffect from "../util/ImageEffect";
 import ImageKernel, { Kernel } from "../util/imageKernel";
 import Object2D from "./object2d";
 
-const vertexShader = 
-`#version 300 es
+const vertexShader =
+    `#version 300 es
 in vec2 a_position;
 in vec2 a_textureCoords;
 out vec2 textureCoords;
@@ -25,8 +25,8 @@ void main() {
   textureCoords = a_textureCoords;
 }
 `;
-const fragShader =  
-`#version 300 es
+const fragShader =
+    `#version 300 es
 precision highp float;
 
 in vec2 textureCoords;
@@ -73,13 +73,13 @@ void main() {
 
 export default class QuadObject extends Object2D {
     private static _verticies = [
-         0.0, 1.0, 0.0, 0.0,
-         1.0, 1.0, 1.0, 0.0,
-         1.0, 0.0, 1.0, 1.0,
+        0.0, 1.0, 0.0, 0.0,
+        1.0, 1.0, 1.0, 0.0,
+        1.0, 0.0, 1.0, 1.0,
 
-         1.0, 0.0, 1.0, 1.0,
-         0.0, 0.0, 0.0, 1.0,
-         0.0, 1.0, 0,0, 0.0,
+        1.0, 0.0, 1.0, 1.0,
+        0.0, 0.0, 0.0, 1.0,
+        0.0, 1.0, 0, 0, 0.0,
     ];
     private static _shader: Shader;
     private static _vao: VAO;
@@ -87,7 +87,7 @@ export default class QuadObject extends Object2D {
 
     public Colour: RGB = [255, 0, 0];
     public Texture: Texture | null = null;
-    public Kernel: Kernel = ImageKernel.GetKernel('normal');
+    public Kernel: Kernel = ImageKernel.GetKernel('Normal');
     public Effect: number = ImageEffect.GetImageEffect('none');
 
     constructor(gl: WebGL2RenderingContext) {
@@ -106,7 +106,7 @@ export default class QuadObject extends Object2D {
     }
 
     public Render(camera: Camera2D) {
-        const modelMat = GLMath.createTransformationMatrix2D(this.Position, this.Rotation, this.Size);
+        const modelMat = GLMath.CreateTransformationMatrix2D(this.Position, this.Rotation, this.Size);
 
         const shader = QuadObject._shader;
         shader.SetMatrix4(shader.GetUniformLocation('u_modelMat'), modelMat);
@@ -130,6 +130,6 @@ export default class QuadObject extends Object2D {
 
         shader.Use();
         QuadObject._vao.Bind();
-        this.gl.drawArrays(this.gl.TRIANGLES, 0, 6);
+        this._gl.drawArrays(this._gl.TRIANGLES, 0, 6);
     }
 }

@@ -1,28 +1,28 @@
 export default class Logger {
-    private static enabled: boolean = false;
+    private static _enabled: boolean = false;
 
-    static enable(): void {
-        this.enabled = true;
+    static Enable(): void {
+        this._enabled = true;
     }
 
-    static disable(): void {
-        this.enabled = false;
+    static Disable(): void {
+        this._enabled = false;
     }
 
-    static log(level: string, message: string): void {
-        if (!this.enabled) return;
+    static Log(level: string, message: string): void {
+        if (!this._enabled) return;
         console.log(`[${level}]: ${message}`);
     }
 
-    static debug(message: string): void {
-        this.log("DEBUG", message);
+    static Debug(message: string): void {
+        this.Log("DEBUG", message);
     }
 
-    static warn(message: string): void {
-        this.log("WARN", message);
+    static Warn(message: string): void {
+        this.Log("WARN", message);
     }
 
-    static error(message: string): void {
-        this.log("ERROR", message);
+    static Error(message: string): void {
+        this.Log("ERROR", message);
     }
 }

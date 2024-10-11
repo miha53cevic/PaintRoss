@@ -8,7 +8,7 @@ export default class Fill extends Tool {
     }
 
     protected HandleDestroy(): void {
-        this.canvasObj.MergePreviewCanvas();
+        this._canvasObj.MergePreviewCanvas();
     }
 
     public GetID(): string {
@@ -19,12 +19,12 @@ export default class Fill extends Tool {
         x = Math.floor(x);
         y = Math.floor(y);
 
-        const image = this.canvasObj.GetCanvasImage();
-        const imageData = new ImageData(new Uint8ClampedArray(image.pixels.buffer), image.width, image.height);
+        const image = this._canvasObj.GetCanvasImage();
+        const imageData = new ImageData(new Uint8ClampedArray(image.Pixels.buffer), image.Width, image.Height);
         const floodFill = new FloodFill(imageData);
         floodFill.fill(`rgb(${this.ColourSelection.Primary[0]}, ${this.ColourSelection.Primary[1]}, ${this.ColourSelection.Primary[2]})`, x, y, 0);
-        const texture = Texture.createTexture(this.gl, image.width, image.height, floodFill.imageData.data);
-        this.canvasObj.DrawFullscreenTextureOnCanvas(texture);
+        const texture = Texture.CreateTexture(this._gl, image.Width, image.Height, floodFill.imageData.data);
+        this._canvasObj.DrawFullscreenTextureOnCanvas(texture);
     }
 
     protected HandleMouseUp(x: number, y: number, mouseButton: number): void {

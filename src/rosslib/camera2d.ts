@@ -2,42 +2,42 @@ import { mat4, vec2 } from "gl-matrix";
 import GLMath from "./glmath";
 
 export default class Camera2D {
-    private projMat: mat4 = mat4.create();
-    private viewMat: mat4 = mat4.create();
+    private _projMat: mat4 = mat4.create();
+    private _viewMat: mat4 = mat4.create();
 
-    public maxZoom: number = 100.0;
-    public minZoom: number = 0.1;
+    public MaxZoom: number = 100.0;
+    public MinZoom: number = 0.1;
 
     constructor(screenWidth: number, screenHeight: number, left: number = 0, top: number = 0, near: number = -1, far: number = 1) {
-        this.viewMat = GLMath.createViewMatrix2D();
-        this.updateProjectionMatrix(screenWidth, screenHeight, left, top, near, far);
+        this._viewMat = GLMath.CreateViewMatrix2D();
+        this.UpdateProjectionMatrix(screenWidth, screenHeight, left, top, near, far);
     }
 
-    public updateProjectionMatrix(screenWidth: number, screenHeight: number, left: number = 0, top: number = 0, near: number = -1, far: number = 1) {
-        this.projMat = GLMath.createOrthoProjectionMatrix(left, screenWidth, screenHeight, top, near, far);
+    public UpdateProjectionMatrix(screenWidth: number, screenHeight: number, left: number = 0, top: number = 0, near: number = -1, far: number = 1) {
+        this._projMat = GLMath.CreateOrthoProjectionMatrix(left, screenWidth, screenHeight, top, near, far);
     }
 
     public GetProjMatrix() {
-        return this.projMat;
+        return this._projMat;
     }
 
     public GetViewMatrix() {
-        return this.viewMat;
+        return this._viewMat;
     }
 
     public PanBy(x: number, y: number) {
-        this.viewMat = GLMath.updateViewMatrixPanning(this.viewMat, vec2.fromValues(x, y));
+        this._viewMat = GLMath.UpdateViewMatrixPanning(this._viewMat, vec2.fromValues(x, y));
     }
 
     public ZoomBy(zoomBy: number, zoomCenter: vec2 = vec2.fromValues(0, 0)) {
-        const currentZoom = GLMath.getViewMatrixScale(this.viewMat)[0];
-        if (zoomBy > 0 && currentZoom >= this.maxZoom) return;
-        if (zoomBy < 0 && currentZoom <= this.minZoom) return;
+        const currentZoom = GLMath.GetViewMatrixScale(this._viewMat)[0];
+        if (zoomBy > 0 && currentZoom >= this.MaxZoom) return;
+        if (zoomBy < 0 && currentZoom <= this.MinZoom) return;
 
-        this.viewMat = GLMath.updateViewMatrixZooming(this.viewMat, 1 + zoomBy, zoomCenter);
+        this._viewMat = GLMath.UpdateViewMatrixZooming(this._viewMat, 1 + zoomBy, zoomCenter);
     }
 
-    public mouseToWorld2D(mouseX: number, mouseY: number, canvasWidth: number, canvasHeight: number) {
+    public MouseToWorld2D(mouseX: number, mouseY: number, canvasWidth: number, canvasHeight: number) {
         // Convert mouse coordinates to clip space (-1 to 1)
         const clipX = (mouseX / canvasWidth) * 2 - 1;
         const clipY = 1 - (mouseY / canvasHeight) * 2;

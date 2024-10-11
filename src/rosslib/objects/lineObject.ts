@@ -63,7 +63,7 @@ export default class LineObject extends Object2D {
     public Render(camera: Camera2D) {
         if (this._points.length === 0) return;
 
-        const modelMat = GLMath.createTransformationMatrix2D(this.Position, this.Rotation, this.Size);
+        const modelMat = GLMath.CreateTransformationMatrix2D(this.Position, this.Rotation, this.Size);
 
         const shader = LineObject._shader;
         shader.SetMatrix4(shader.GetUniformLocation('u_modelMat'), modelMat);
@@ -75,7 +75,7 @@ export default class LineObject extends Object2D {
         this._vao.Bind();
 
         // If it's only 1 point draw it instead of a line
-        if (this._points.length > 1) this.gl.drawArrays(this.gl.LINE_STRIP, 0, this._points.length);
-        else this.gl.drawArrays(this.gl.POINTS, 0, 1);
+        if (this._points.length > 1) this._gl.drawArrays(this._gl.LINE_STRIP, 0, this._points.length);
+        else this._gl.drawArrays(this._gl.POINTS, 0, 1);
     }
 }

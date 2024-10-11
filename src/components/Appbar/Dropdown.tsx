@@ -15,7 +15,7 @@ export function DropdownItem({ children, className, ...props }: DropdownItemProp
     );
 }
 
-export interface FileInputProps extends InputHTMLAttributes<HTMLInputElement> { 
+export interface FileInputProps extends InputHTMLAttributes<HTMLInputElement> {
     type: "file",
     inputRef?: React.RefObject<HTMLInputElement>,
 }
