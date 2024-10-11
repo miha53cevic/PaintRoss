@@ -88,7 +88,7 @@ export default class QuadObject extends Object2D {
     public Colour: RGB = [255, 0, 0];
     public Texture: Texture | null = null;
     public Kernel: Kernel = ImageKernel.GetKernel('Normal');
-    public Effect: number = ImageEffect.GetImageEffect('none');
+    public Effect: number = ImageEffect.GetImageEffect('None');
 
     constructor(gl: WebGL2RenderingContext) {
         super(gl);
