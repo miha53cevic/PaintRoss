@@ -1,53 +1,56 @@
 import CanvasObject from "../objects/canvasObject";
-import Tool from "./tool";
 import LineObject from "../objects/lineObject";
+import Tool from "./tool";
 
 export default class Pen extends Tool {
-    private points: [number, number][] = [];
-    private drawing = false;
-    private lineObject: LineObject;
+    private _points: [number, number][] = [];
+    private _drawing = false;
+    private _lineObject: LineObject;
 
     constructor(gl: WebGL2RenderingContext, canvasObj: CanvasObject) {
         super(gl, canvasObj);
-        this.lineObject = new LineObject(gl);
+        this._lineObject = new LineObject(gl);
     }
 
     public GetID(): string {
         return "Pen";
     }
 
-    onMouseDown(x: number, y: number, mouseButton: number): void {
+    protected HandleMouseDown(x: number, y: number, mouseButton: number): void {
         if (mouseButton === 0) {
-            this.drawing = true;
-            this.points = [[x, y]]; // add initial click point
+            this._drawing = true;
+            this._points = [[x, y]]; // add initial click point
         }
     }
 
-    onMouseUp(x: number, y: number, mouseButton: number): void {
+    protected HandleMouseUp(x: number, y: number, mouseButton: number): void {
         if (mouseButton === 0) {
-            this.drawing = false;
+            this._drawing = false;
             this.RenderLines();
-            this.points = [];
+            this._points = [];
         }
     }
 
-    onMouseMove(x: number, y: number): void {
-        if (this.drawing) {
-            this.points.push([x, y]);
+    protected HandleMouseMove(x: number, y: number): void {
+        if (this._drawing) {
+            this._points.push([x, y]);
             this.RenderLines();
 
             // After draw keep only the last point so you can continue line drawing in next iteration
-            this.points = [this.points[this.points.length - 1]]; // optimization for not keeping old points that are already drawn
+            this._points = [this._points[this._points.length - 1]]; // optimization for not keeping old points that are already drawn
         }
     }
 
-    public onDestroy(): void {
-        this.canvasObj.MergePreviewCanvas();
+    protected HandleKeyPress(key: string): void {
+    }
+
+    protected HandleDestroy(): void {
+        this._canvasObj.MergePreviewCanvas();
     }
 
     private RenderLines() {
-        this.lineObject.Colour = this.Colour.NormalizedPrimary();
-        this.lineObject.SetPoints(this.points);
-        this.canvasObj.DrawOnCanvas(this.lineObject);
+        this._lineObject.Colour = this.ColourSelection.Primary;
+        this._lineObject.SetPoints(this._points);
+        this._canvasObj.DrawOnCanvas(this._lineObject);
     }
 }

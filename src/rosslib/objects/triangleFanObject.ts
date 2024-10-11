@@ -6,7 +6,7 @@ import VBO from "../glo/vbo";
 import { NormalizeRGB, RGB } from "../util/colour";
 import Object2D from "./object2d";
 
-const lineVertexShader =
+const triangleFanVertexShader =
     `#version 300 es
 in vec2 a_position;
 
@@ -17,10 +17,9 @@ uniform mat4 u_viewMat;
 void main() {
   vec4 pos = u_projMat * u_viewMat * u_modelMat * vec4(a_position, 0.0, 1.0);
   gl_Position = pos;
-  gl_PointSize = 0.0;
 }
 `;
-const lineFragShader =
+const triangleFanFragSHader =
     `#version 300 es
 precision highp float;
 
@@ -33,10 +32,7 @@ void main() {
 }
 `;
 
-// TODO - use this for drawing lines
-// https://mattdesl.svbtle.com/drawing-lines-is-hard
-
-export default class LineObject extends Object2D {
+export default class TriangleFanObject extends Object2D {
     private static _shader: Shader;
     private _vao: VAO;
     private _vbo: VBO;
@@ -47,7 +43,7 @@ export default class LineObject extends Object2D {
     constructor(gl: WebGL2RenderingContext) {
         super(gl);
 
-        if (!LineObject._shader) LineObject._shader = new Shader(gl, lineVertexShader, lineFragShader);
+        if (!TriangleFanObject._shader) TriangleFanObject._shader = new Shader(gl, triangleFanVertexShader, triangleFanFragSHader);
 
         this._vao = new VAO(gl);
         this._vbo = new VBO(gl);
@@ -61,11 +57,11 @@ export default class LineObject extends Object2D {
     }
 
     public Render(camera: Camera2D) {
-        if (this._points.length === 0) return;
+        if (this._points.length < 3) return;
 
         const modelMat = GLMath.CreateTransformationMatrix2D(this.Position, this.Rotation, this.Size);
 
-        const shader = LineObject._shader;
+        const shader = TriangleFanObject._shader;
         shader.SetMatrix4(shader.GetUniformLocation('u_modelMat'), modelMat);
         shader.SetMatrix4(shader.GetUniformLocation('u_projMat'), camera.GetProjMatrix());
         shader.SetMatrix4(shader.GetUniformLocation('u_viewMat'), camera.GetViewMatrix());
@@ -74,8 +70,6 @@ export default class LineObject extends Object2D {
         shader.Use();
         this._vao.Bind();
 
-        // If it's only 1 point draw it instead of a line
-        if (this._points.length > 1) this._gl.drawArrays(this._gl.LINE_STRIP, 0, this._points.length);
-        else this._gl.drawArrays(this._gl.POINTS, 0, 1);
+        this._gl.drawArrays(this._gl.TRIANGLE_FAN, 0, this._points.length);
     }
 }

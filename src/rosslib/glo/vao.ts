@@ -3,18 +3,18 @@ import VBO from "./vbo";
 export default class VAO {
     private readonly _vao: WebGLVertexArrayObject = -1;
 
-    constructor(private readonly gl: WebGL2RenderingContext) {
-        const vao = gl.createVertexArray();
+    constructor(private readonly _gl: WebGL2RenderingContext) {
+        const vao = _gl.createVertexArray();
         if (!vao) throw Error("Error when creating vertexArray");
         this._vao = vao;
     }
 
     public Bind() {
-        this.gl.bindVertexArray(this._vao);
+        this._gl.bindVertexArray(this._vao);
     }
 
     public Unbind() {
-        this.gl.bindVertexArray(null);
+        this._gl.bindVertexArray(null);
     }
 
     public GetVAO() {
@@ -31,9 +31,9 @@ export default class VAO {
             Specify vertex attributes which are then stored in the VAO vector, and used when binding later
         */
        this.Bind();
-       this.gl.bindBuffer(this.gl.ARRAY_BUFFER, vbo.GetVBO());
-       this.gl.vertexAttribPointer(attributeId, numOfFloatsPerData, this.gl.FLOAT, false, stride, offset);
-       this.gl.enableVertexAttribArray(attributeId);
-       this.gl.bindBuffer(this.gl.ARRAY_BUFFER, null);
+       this._gl.bindBuffer(this._gl.ARRAY_BUFFER, vbo.GetVBO());
+       this._gl.vertexAttribPointer(attributeId, numOfFloatsPerData, this._gl.FLOAT, false, stride, offset);
+       this._gl.enableVertexAttribArray(attributeId);
+       this._gl.bindBuffer(this._gl.ARRAY_BUFFER, null);
     }
 }

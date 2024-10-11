@@ -8,11 +8,11 @@ export type RenderFunction = (app: App) => void;
 export type ResizeFunction = (width: number, height: number) => void;
 
 export default class App {
-    private readonly glCanvas: HTMLCanvasElement;
-    private readonly gl: WebGL2RenderingContext;
-    private MOUSE_POS: [number, number] = [0, 0];
-    private clock: Clock = new Clock();
-    private eventManager: EventManager = new EventManager();
+    private readonly _glCanvas: HTMLCanvasElement;
+    private readonly _gl: WebGL2RenderingContext;
+    private _mousePos: [number, number] = [0, 0];
+    private _clock: Clock = new Clock();
+    private _eventManager: EventManager = new EventManager();
 
     constructor(canvas: HTMLCanvasElement) {
         // Get opengl context
@@ -20,56 +20,56 @@ export default class App {
         if (!gl) throw new Error("Error creating webgl2 context");
         gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true); // flip image data for opengl's bottom to top, only for dom loaded images
 
-        this.glCanvas = canvas;
-        this.gl = gl;
+        this._glCanvas = canvas;
+        this._gl = gl;
 
         this.Setup(); // resize canvas to fullscreen & setup events
     }
 
-    public onSetup: SetupFunction = () => {};
-    public onUpdate: UpdateFunction = () => {};
-    public onRender: RenderFunction = () => {};
-    public onResize: ResizeFunction = () => {};
+    public OnSetup: SetupFunction = () => { };
+    public OnUpdate: UpdateFunction = () => { };
+    public OnRender: RenderFunction = () => { };
+    public OnResize: ResizeFunction = () => { };
 
     public Run() {
-        this.onSetup(this.glCanvas, this.gl); // user extra setup
+        this.OnSetup(this._glCanvas, this._gl); // user extra setup
         requestAnimationFrame(() => this.Loop());
     }
 
     public GetMousePos() {
-        return this.MOUSE_POS;
+        return this._mousePos;
     }
 
     public GetGLContext() {
-        return this.gl;
+        return this._gl;
     }
 
     public GetGLCanvas() {
-        return this.glCanvas;
+        return this._glCanvas;
     }
 
     public GetEventManager() {
-        return this.eventManager;
+        return this._eventManager;
     }
 
-    public Clear(red = 51, green = 51, blue = 51, alpha = 255) {
+    public Clear(red = 30, green = 41, blue = 59, alpha = 255) {
         const r = red / 255;
         const g = green / 255;
         const b = blue / 255;
         const a = alpha / 255;
-        this.gl.clearColor(r, g, b, a);
-        this.gl.clear(this.gl.COLOR_BUFFER_BIT);
+        this._gl.clearColor(r, g, b, a);
+        this._gl.clear(this._gl.COLOR_BUFFER_BIT);
     }
 
     private Setup() {
         // Event for finding mouse position on click
-        this.glCanvas.addEventListener("mousemove", (evt) => {
-            const { x, y } = this.MousePos(this.glCanvas, evt);
-            this.MOUSE_POS = [x, y];
+        this._glCanvas.addEventListener("mousemove", (evt) => {
+            const { X, Y } = this.CalculateMousePos(this._glCanvas, evt);
+            this._mousePos = [X, Y];
         }, false);
 
         // Disable right click context menu
-        this.glCanvas.addEventListener("contextmenu", (ev) => {
+        this._glCanvas.addEventListener("contextmenu", (ev) => {
             ev.preventDefault();
         });
 
@@ -77,38 +77,38 @@ export default class App {
         window.addEventListener("resize", () => {
             this.ResizeToFit();
             // Call user code on resize
-            this.onResize(this.glCanvas.width, this.glCanvas.height);
+            this.OnResize(this._glCanvas.width, this._glCanvas.height);
         });
         this.ResizeToFit();
 
-        this.clock.Restart(); // reset jer inace cuva od stvaranja kao start time
+        this._clock.Restart(); // reset jer inace cuva od stvaranja kao start time
 
         // Stvori placeholder teksturu na TEXTURE0
-        const placeholderTexture = Texture.createTexture(this.gl, 1, 1, new Uint8Array([255, 192, 203, 255]));
-        placeholderTexture.Use(this.gl.TEXTURE0, false); // nema warnninga jer se treba koristit prvi put
+        const placeholderTexture = Texture.CreateTexture(this._gl, 1, 1, new Uint8Array([255, 192, 203, 255]));
+        placeholderTexture.Use(this._gl.TEXTURE0, false); // nema warnninga jer se treba koristit prvi put
     }
 
     private Loop() {
         this.Clear();
 
         // Update / rendering code
-        const elapsedTime = this.clock.Restart();
-        this.onUpdate(elapsedTime, this);
-        this.onRender(this);
+        const elapsedTime = this._clock.Restart();
+        this.OnUpdate(elapsedTime, this);
+        this.OnRender(this);
 
         requestAnimationFrame(() => this.Loop());
     }
 
-    private MousePos(canvas: HTMLCanvasElement, evt: MouseEvent) {
+    private CalculateMousePos(canvas: HTMLCanvasElement, evt: MouseEvent) {
         const rect = canvas.getBoundingClientRect();
         return {
-            x: evt.clientX - rect.left,
-            y: evt.clientY - rect.top
+            X: evt.clientX - rect.left,
+            Y: evt.clientY - rect.top
         };
     }
 
     private ResizeToFit() {
-        const canvas = this.glCanvas;
+        const canvas = this._glCanvas;
         const displayWidth = window.innerWidth;
         const displayHeight = window.innerHeight - 48; // appbar
 
@@ -122,6 +122,6 @@ export default class App {
         }
 
         // Update opengl viewport size
-        this.gl.viewport(0, 0, canvas.width, canvas.height);
+        this._gl.viewport(0, 0, canvas.width, canvas.height);
     }
 }

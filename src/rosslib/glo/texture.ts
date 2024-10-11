@@ -1,9 +1,11 @@
+import Logger from "../util/logger";
+
 export default class Texture {
-    private constructor(private readonly gl: WebGL2RenderingContext, public readonly handle: WebGLTexture) {
+    private constructor(private readonly _gl: WebGL2RenderingContext, public readonly Handle: WebGLTexture) {
     }
 
-    public static loadImage(gl: WebGL2RenderingContext, url: string) {
-        return new Promise<{ texture: Texture, imgSize: [number, number] }>((resolve, reject) => {
+    public static LoadImage(gl: WebGL2RenderingContext, url: string) {
+        return new Promise<{ Texture: Texture, ImgSize: [number, number] }>((resolve, reject) => {
             try {
                 const handle = gl.createTexture();
                 if (!handle) throw new Error("Error creating texture");
@@ -25,11 +27,11 @@ export default class Texture {
                     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
                     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
                     gl.generateMipmap(gl.TEXTURE_2D);
-                    
+
                     gl.bindTexture(gl.TEXTURE_2D, null);
 
                     image.remove();
-                    resolve({ texture: new Texture(gl, handle), imgSize: [imgWidth, imgHeight]});
+                    resolve({ Texture: new Texture(gl, handle), ImgSize: [imgWidth, imgHeight] });
                 });
             } catch (err) {
                 reject(err);
@@ -37,7 +39,7 @@ export default class Texture {
         });
     }
 
-    public static createTexture(gl: WebGL2RenderingContext, imageWidth: number, imageHeight: number, imageData: Uint8Array | Uint8ClampedArray | null) {
+    public static CreateTexture(gl: WebGL2RenderingContext, imageWidth: number, imageHeight: number, imageData: Uint8Array | Uint8ClampedArray | null) {
         const handle = gl.createTexture();
         if (!handle) throw new Error("Error creating texture");
 
@@ -52,10 +54,10 @@ export default class Texture {
 
     // texture_unit must be from gl.TEXTURE1, gl.TEXTURE2...
     // gl.TEXTURE0 is used as placeholder
-    public Use(texture_unit: number = this.gl.TEXTURE1, warnning = true) {
-        if (texture_unit === this.gl.TEXTURE0 && warnning) console.warn("[Texture]: Using placeholder texture!");
-        this.gl.activeTexture(texture_unit);
-        this.gl.bindTexture(this.gl.TEXTURE_2D, this.handle);
+    public Use(texture_unit: number = this._gl.TEXTURE1, warnning = true) {
+        if (texture_unit === this._gl.TEXTURE0 && warnning) Logger.Warn("[Texture]: Using placeholder texture!");
+        this._gl.activeTexture(texture_unit);
+        this._gl.bindTexture(this._gl.TEXTURE_2D, this.Handle);
     }
 
 }

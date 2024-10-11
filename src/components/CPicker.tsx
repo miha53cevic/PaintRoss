@@ -1,20 +1,5 @@
 import { useEffect, useRef } from "react";
-import styled from "styled-components";
 import ColourPicker from "../rosslib/util/colourPicker";
-
-const ColourPickerArea = styled.article`
-    position: absolute; 
-    bottom: 1rem; 
-    left: 1rem; 
-    background-color: #212121; 
-    color: #aaa;
-    border-radius: 1rem; 
-    display: flex; 
-    flex-direction: column; 
-    align-items: center; 
-    height: 200px; 
-    width: 300px; 
-`;
 
 export default function CPicker() {
     const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -30,9 +15,11 @@ export default function CPicker() {
     }, []);
 
     return (
-        <ColourPickerArea>
-            <h4>Colour Picker</h4>
-            <canvas width='100%' height='100%' ref={canvasRef}></canvas>
-        </ColourPickerArea>
+        <div className="absolute bottom-4 left-4 bg-slate-950 text-slate-400 rounded-2xl flex flex-col items-center justify-center w-[300px] h-[200px] p-4 gap-4">
+            <h4 className="font-bold">Colour Picker</h4>
+            <div>
+                <canvas width='100%' height='100%' ref={canvasRef}></canvas>
+            </div>
+        </div>
     );
 }

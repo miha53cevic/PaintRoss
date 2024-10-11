@@ -1,68 +1,67 @@
 import { vec2 } from "gl-matrix";
 import Camera2D from "../camera2d";
+import FrameBuffer from "../glo/framebuffer";
+import Texture from "../glo/texture";
+import ImageEffect, { ImageEffectType } from "../util/ImageEffect";
+import ImageKernel, { KernelOperation } from "../util/imageKernel";
+import ImageOperation from "../util/imageOperation";
+import Logger from "../util/logger";
 import Object2D from "./object2d";
 import QuadObject from "./quadObject";
-import Texture from "../glo/texture";
-import FrameBuffer from "../glo/framebuffer";
-import ImageOperation from "../util/imageOperation";
-import ImageKernel, { KernelOperation } from "../util/imageKernel";
-import ImageEffect, { ImageEffectType } from "../util/ImageEffect";
 
 export interface CanvasImage {
-    width: number,
-    height: number,
-    pixels: Uint8Array,
+    Width: number,
+    Height: number,
+    Pixels: Uint8Array,
 }
 
 export default class CanvasObject extends Object2D {
-    private quadCanvas: QuadObject;
-    private frameBuffer: FrameBuffer;
-    private preview_frameBuffer: FrameBuffer;
-    private texture: Texture;
-    private preview_texture: Texture;
-    
-    public DEBUG_MODE = false;
+    private _quadCanvas: QuadObject;
+    private _frameBuffer: FrameBuffer;
+    private _previewFrameBuffer: FrameBuffer;
+    private _texture: Texture;
+    private _previewTexture: Texture;
+
+    public DebugMode = false;
 
     constructor(gl: WebGL2RenderingContext) {
         super(gl);
 
-        this.frameBuffer = new FrameBuffer(gl);
-        this.preview_frameBuffer = new FrameBuffer(gl);
-        this.texture = Texture.createTexture(gl, this.Size[0], this.Size[1], null);
-        this.preview_texture = Texture.createTexture(gl, this.Size[0], this.Size[1], null);
-        this.BindAttachemntsToFrameBuffers(this.texture, this.preview_texture);
+        this._frameBuffer = new FrameBuffer(gl);
+        this._previewFrameBuffer = new FrameBuffer(gl);
+        this._texture = Texture.CreateTexture(gl, super.Size[0], super.Size[1], null);
+        this._previewTexture = Texture.CreateTexture(gl, super.Size[0], super.Size[1], null);
+        this.BindAttachemntsToFrameBuffers(this._texture, this._previewTexture);
 
 
         // Setup quad to render the framebuffer textures into
-        this.quadCanvas = new QuadObject(gl); // canvasQuad u global space
-        this.quadCanvas.Size = vec2.fromValues(this.Size[0], this.Size[1]);
-        this.quadCanvas.Position = vec2.fromValues(this.Position[0], this.Position[1]);
-        this.quadCanvas.Texture = this.preview_texture; // postavi framebuffer texture za kasnije renderiranje
+        this._quadCanvas = new QuadObject(gl); // canvasQuad u global space
+        this._quadCanvas.Texture = this._previewTexture; // postavi framebuffer texture za kasnije renderiranje
     }
 
     private BindAttachemntsToFrameBuffers(texture: Texture, previewTexture: Texture) {
         // textures to write into will be the size of the canvas so use glViewport of 0,0,size,size before rendering to framebuffer!
         // all attachment in FBO MUST be the same size!!!
-        this.frameBuffer.Bind();
-        this.frameBuffer.AddTextureAttachment(texture);
-        this.frameBuffer.Unbind();
+        this._frameBuffer.Bind();
+        this._frameBuffer.AddTextureAttachment(texture);
+        this._frameBuffer.Unbind();
 
-        this.preview_frameBuffer.Bind();
-        this.preview_frameBuffer.AddTextureAttachment(previewTexture);
-        this.preview_frameBuffer.Unbind();
+        this._previewFrameBuffer.Bind();
+        this._previewFrameBuffer.AddTextureAttachment(previewTexture);
+        this._previewFrameBuffer.Unbind();
     }
 
     protected CheckFrameBufferCompletness() {
-        const status = this.gl.checkFramebufferStatus(this.gl.FRAMEBUFFER);
-        if (status !== this.gl.FRAMEBUFFER_COMPLETE) {
+        const status = this._gl.checkFramebufferStatus(this._gl.FRAMEBUFFER);
+        if (status !== this._gl.FRAMEBUFFER_COMPLETE) {
             console.error('ERROR: Framebuffer is not complete:', status);
         }
     }
 
     public ApplyImageKernel(kernel: KernelOperation) {
         this.MergePreviewCanvas(); // spremi trenutno stanje iz preview u texture
-        const quad = new QuadObject(this.gl);
-        quad.Texture = this.texture;
+        const quad = new QuadObject(this._gl);
+        quad.Texture = this._texture;
         quad.Size = this.Size;
         quad.Kernel = ImageKernel.GetKernel(kernel);
         this.DrawOnCanvas(quad); // nacrtaj texture nadodan kernel na preview
@@ -70,38 +69,12 @@ export default class CanvasObject extends Object2D {
     }
     public ApplyImageEffect(effect: ImageEffectType) {
         this.MergePreviewCanvas();
-        const quad = new QuadObject(this.gl);
-        quad.Texture = this.texture;
+        const quad = new QuadObject(this._gl);
+        quad.Texture = this._texture;
         quad.Size = this.Size;
         quad.Effect = ImageEffect.GetImageEffect(effect);
-        this.DrawOnCanvas(quad); 
+        this.DrawOnCanvas(quad);
         this.MergePreviewCanvas();
-    }
-
-    private UpdateCanvasPositionRotationSize() {
-        if (this.quadCanvas.Size !== this.Size) {
-            console.log("Updating canvas size");
-            this.quadCanvas.Size = this.Size;
-            // Resize textures to new canvas size
-            // TODO kaj kad je slika stara nutri, moram kopirat staru i napraviti veci canvas nekak
-            this.gl.deleteTexture(this.texture.handle);
-            this.gl.deleteTexture(this.preview_texture.handle);
-            this.texture = Texture.createTexture(this.gl, this.Size[0], this.Size[1], null);
-            this.preview_texture = Texture.createTexture(this.gl, this.Size[0], this.Size[1], null);
-            this.BindAttachemntsToFrameBuffers(this.texture, this.preview_texture);
-
-            this.quadCanvas.Texture = this.preview_texture;
-            this.ClearCanvas();
-            this.MergePreviewCanvas();
-        }
-        if (this.quadCanvas.Position !== this.Position) {
-            console.log("Updating canvas position");
-            this.quadCanvas.Position = this.Position;
-        }
-        if (this.quadCanvas.Rotation !== this.Rotation) {
-            console.log("Updating canvas rotation");
-            this.quadCanvas.Rotation = this.Rotation;
-        }
     }
 
     public MouseToCanvasCoordinates(x: number, y: number): [number, number] {
@@ -132,15 +105,15 @@ export default class CanvasObject extends Object2D {
         const imgWidth = this.Size[0];
         const imgHeight = this.Size[1];
         const pixels = new Uint8Array(imgWidth * imgHeight * 4); // width * height * pixel_components (rgba is 4)
-        this.frameBuffer.Bind();
-        this.gl.readBuffer(this.gl.COLOR_ATTACHMENT0); // read from texture in COLOR_ATTACHMENT0
-        this.gl.readPixels(0, 0, imgWidth, imgHeight, this.gl.RGBA, this.gl.UNSIGNED_BYTE, pixels);
-        this.frameBuffer.Unbind();
+        this._frameBuffer.Bind();
+        this._gl.readBuffer(this._gl.COLOR_ATTACHMENT0); // read from texture in COLOR_ATTACHMENT0
+        this._gl.readPixels(0, 0, imgWidth, imgHeight, this._gl.RGBA, this._gl.UNSIGNED_BYTE, pixels);
+        this._frameBuffer.Unbind();
         const flipped_pixels = ImageOperation.FlipImage(imgWidth, imgHeight, pixels);
         return {
-            width: imgWidth,
-            height: imgHeight,
-            pixels: flipped_pixels,
+            Width: imgWidth,
+            Height: imgHeight,
+            Pixels: flipped_pixels,
         };
     }
 
@@ -151,71 +124,107 @@ export default class CanvasObject extends Object2D {
 
     public ClearCanvas() {
         // Clear framebuffer which clears the texture then
-        this.preview_frameBuffer.Bind();
-        this.gl.clearColor(1, 1, 1, 1);
-        this.gl.clear(this.gl.COLOR_BUFFER_BIT);
-        this.preview_frameBuffer.Unbind();
+        this._previewFrameBuffer.Bind();
+        this._gl.clearColor(1, 1, 1, 1);
+        this._gl.clear(this._gl.COLOR_BUFFER_BIT);
+        this._previewFrameBuffer.Unbind();
     }
 
     private BlitFrameBuffers(srcFrameBuffer: FrameBuffer, destFrameBuffer: FrameBuffer) {
-        this.gl.bindFramebuffer(this.gl.READ_FRAMEBUFFER, srcFrameBuffer.GetFrameBuffer());
-        this.gl.bindFramebuffer(this.gl.DRAW_FRAMEBUFFER, destFrameBuffer.GetFrameBuffer());
+        this._gl.bindFramebuffer(this._gl.READ_FRAMEBUFFER, srcFrameBuffer.GetFrameBuffer());
+        this._gl.bindFramebuffer(this._gl.DRAW_FRAMEBUFFER, destFrameBuffer.GetFrameBuffer());
 
-        this.gl.readBuffer(this.gl.COLOR_ATTACHMENT0); // source color attachment to copy
-        this.gl.drawBuffers([this.gl.COLOR_ATTACHMENT0]); // destination to copy into
+        this._gl.readBuffer(this._gl.COLOR_ATTACHMENT0); // source color attachment to copy
+        this._gl.drawBuffers([this._gl.COLOR_ATTACHMENT0]); // destination to copy into
 
-        this.gl.blitFramebuffer(0, 0, this.Size[0], this.Size[1], 0, 0, this.Size[0], this.Size[1], this.gl.COLOR_BUFFER_BIT, this.gl.NEAREST);
+        this._gl.blitFramebuffer(0, 0, this.Size[0], this.Size[1], 0, 0, this.Size[0], this.Size[1], this._gl.COLOR_BUFFER_BIT, this._gl.NEAREST);
 
-        this.gl.bindFramebuffer(this.gl.READ_FRAMEBUFFER, null);
-        this.gl.bindFramebuffer(this.gl.DRAW_FRAMEBUFFER, null);
+        this._gl.bindFramebuffer(this._gl.READ_FRAMEBUFFER, null);
+        this._gl.bindFramebuffer(this._gl.DRAW_FRAMEBUFFER, null);
     }
 
     public MergePreviewCanvas() {
-        this.BlitFrameBuffers(this.preview_frameBuffer, this.frameBuffer);
+        this.BlitFrameBuffers(this._previewFrameBuffer, this._frameBuffer);
     }
 
     public CancelPreviewCanvas() {
-        this.BlitFrameBuffers(this.frameBuffer, this.preview_frameBuffer);
+        this.BlitFrameBuffers(this._frameBuffer, this._previewFrameBuffer);
     }
 
     public DrawFullscreenTextureOnCanvas(texture: Texture) {
-        const fullscreenQuad = new QuadObject(this.gl);
+        const fullscreenQuad = new QuadObject(this._gl);
         fullscreenQuad.Texture = texture;
         fullscreenQuad.Size = this.Size;
         this.DrawOnCanvas(fullscreenQuad);
     }
 
     public DrawOnCanvas(object: Object2D | { Render: (camera: Camera2D) => void }) {
-        this.UpdateCanvasPositionRotationSize();
         const canvasCamera = this.GetCanvasCamera();
         // Bind framebuffer to render into it
-        this.preview_frameBuffer.Bind();
+        this._previewFrameBuffer.Bind();
         // Clear framebuffer (no need since the canvas should keep everything drawn to it)
         // Set viewport to canvas size because we're rendering to texture of canvas size
-        this.gl.viewport(0, 0, this.Size[0], this.Size[1]);
+        this._gl.viewport(0, 0, this.Size[0], this.Size[1]);
         // Draw on canvas
         object.Render(canvasCamera);
         // Switch back to normal framebuffer
-        this.preview_frameBuffer.Unbind();
+        this._previewFrameBuffer.Unbind();
     }
 
     private RenderActualCanvasTexture(camera: Camera2D) {
-        const quad = new QuadObject(this.gl);
+        const quad = new QuadObject(this._gl);
         quad.Size = vec2.fromValues(this.Size[0], this.Size[1]);
         quad.Position = vec2.fromValues(this.Position[0] + this.Size[0] + 32, this.Position[1]);
-        quad.Texture = this.texture;
+        quad.Texture = this._texture;
         quad.Render(camera);
     }
 
     public Render(camera: Camera2D): void {
-        this.UpdateCanvasPositionRotationSize();
         // Render to normal viewport (global space)
-        this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
-        this.quadCanvas.Render(camera);
+        this._gl.viewport(0, 0, this._gl.canvas.width, this._gl.canvas.height);
+        this._quadCanvas.Render(camera);
 
         // Draw actual canvas texture side by side if in debug
-        if (this.DEBUG_MODE) {
+        if (this.DebugMode) {
             this.RenderActualCanvasTexture(camera);
         }
+    }
+
+    get Position() {
+        return this._quadCanvas.Position;
+    }
+
+    set Position(value) {
+        this._quadCanvas.Position = value;
+        Logger.Log("Event", "Updating canvas position");
+    }
+
+    get Rotation(): number {
+        return this._quadCanvas.Rotation;
+    }
+
+    set Rotation(value: number) {
+        this._quadCanvas.Rotation = value;
+        Logger.Log("Event", "Updating canvas rotation");
+    }
+
+    get Size() {
+        return this._quadCanvas.Size;
+    }
+
+    set Size(value) {
+        this._quadCanvas.Size = value;
+        Logger.Log("Event", "Updating canvas size");
+        // Resize textures to new canvas size
+        // TODO kaj kad je slika stara nutri, moram kopirat staru i napraviti veci canvas nekak
+        this._gl.deleteTexture(this._texture.Handle);
+        this._gl.deleteTexture(this._previewTexture.Handle);
+        this._texture = Texture.CreateTexture(this._gl, this.Size[0], this.Size[1], null);
+        this._previewTexture = Texture.CreateTexture(this._gl, this.Size[0], this.Size[1], null);
+        this.BindAttachemntsToFrameBuffers(this._texture, this._previewTexture);
+
+        this._quadCanvas.Texture = this._previewTexture;
+        this.ClearCanvas();
+        this.MergePreviewCanvas();
     }
 }

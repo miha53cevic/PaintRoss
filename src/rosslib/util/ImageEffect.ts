@@ -1,14 +1,14 @@
-const imageEffectName = [
-    'none',
-    'grayscale',
-    'invert colors'
+const ImageEffectNames = [
+    'None',
+    'Grayscale',
+    'InvertColors'
 ] as const;
-export type ImageEffectType = typeof imageEffectName[number];
+export type ImageEffectType = typeof ImageEffectNames[number];
 
 export default class ImageEffect {
-    private constructor() {}
+    private constructor() { }
 
     public static GetImageEffect(name: ImageEffectType) {
-        return imageEffectName.indexOf(name);
+        return ImageEffectNames.indexOf(name);
     }
 }
