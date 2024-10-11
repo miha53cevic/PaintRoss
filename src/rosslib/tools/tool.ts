@@ -2,34 +2,38 @@ import CanvasObject from "../objects/canvasObject";
 import { ColourSelection } from "../util/colour";
 
 export default abstract class Tool {
-    constructor(protected readonly gl: WebGL2RenderingContext, protected readonly canvasObj: CanvasObject) {}
+    constructor(protected readonly gl: WebGL2RenderingContext, protected readonly canvasObj: CanvasObject) { }
 
     public ColourSelection: ColourSelection = new ColourSelection();
 
-    public onMouseDown(x: number, y: number, mouseButton: number): void {
-        if (this.isValidCoords(x, y)) return;
-        this.handleMouseDown(x, y, mouseButton);
+    public OnMouseDown(x: number, y: number, mouseButton: number): void {
+        if (this.IsValidCoords(x, y)) return;
+        this.HandleMouseDown(x, y, mouseButton);
     }
-    public onMouseUp(x: number, y: number, mouseButton: number): void {
-        if (this.isValidCoords(x, y)) return;
-        this.handleMouseUp(x, y, mouseButton);
+    public OnMouseUp(x: number, y: number, mouseButton: number): void {
+        if (this.IsValidCoords(x, y)) return;
+        this.HandleMouseUp(x, y, mouseButton);
     }
-    public onMouseMove(x: number, y: number): void {
-        if (this.isValidCoords(x, y)) return;
-        this.handleMouseMove(x, y);
+    public OnMouseMove(x: number, y: number): void {
+        if (this.IsValidCoords(x, y)) return;
+        this.HandleMouseMove(x, y);
     }
-    public onDestroy(): void {
-        this.handleDestroy();
+    public OnKeyPress(key: string): void {
+        this.HandleKeyPress(key);
+    }
+    public OnDestroy(): void {
+        this.HandleDestroy();
     }
 
-    protected abstract handleMouseDown(x: number, y: number, mouseButton: number): void;
-    protected abstract handleMouseUp(x: number, y: number, mouseButton: number): void;
-    protected abstract handleMouseMove(x: number, y: number): void;
-    protected abstract handleDestroy(): void;
-    
+    protected abstract HandleMouseDown(x: number, y: number, mouseButton: number): void;
+    protected abstract HandleMouseUp(x: number, y: number, mouseButton: number): void;
+    protected abstract HandleMouseMove(x: number, y: number): void;
+    protected abstract HandleKeyPress(key: string): void;
+    protected abstract HandleDestroy(): void;
+
     public abstract GetID(): string;
 
-    private isValidCoords(x: number, y: number): boolean {
+    private IsValidCoords(x: number, y: number): boolean {
         return (isNaN(x) || isNaN(y));
     }
 }

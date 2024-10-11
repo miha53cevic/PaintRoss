@@ -39,7 +39,7 @@ export default class PaintApp {
             const mousePos = this.app.GetMousePos();
             const mouseWorld = this.camera2d.mouseToWorld2D(mousePos[0], mousePos[1], glCanvas.width, glCanvas.height);
             const canvasPos = this.canvasObj.MouseToCanvasCoordinates(mouseWorld[0], mouseWorld[1]);
-            this.tool.onMouseDown(canvasPos[0], canvasPos[1], ev.button);
+            this.tool.OnMouseDown(canvasPos[0], canvasPos[1], ev.button);
             if (ev.button === 1) {
                 panningStartPos = this.app.GetMousePos();
                 panning = true;
@@ -50,7 +50,7 @@ export default class PaintApp {
             const mousePos = this.app.GetMousePos();
             const mouseWorld = this.camera2d.mouseToWorld2D(mousePos[0], mousePos[1], glCanvas.width, glCanvas.height);
             const canvasPos = this.canvasObj.MouseToCanvasCoordinates(mouseWorld[0], mouseWorld[1]);
-            this.tool.onMouseMove(canvasPos[0], canvasPos[1]);
+            this.tool.OnMouseMove(canvasPos[0], canvasPos[1]);
             if (panning) {
                 const [x, y] = this.app.GetMousePos();
                 const dx = x - panningStartPos[0];
@@ -65,28 +65,38 @@ export default class PaintApp {
             const mousePos = this.app.GetMousePos();
             const mouseWorld = this.camera2d.mouseToWorld2D(mousePos[0], mousePos[1], glCanvas.width, glCanvas.height);
             const canvasPos = this.canvasObj.MouseToCanvasCoordinates(mouseWorld[0], mouseWorld[1]);
-            this.tool.onMouseUp(canvasPos[0], canvasPos[1], ev.button);
+            this.tool.OnMouseUp(canvasPos[0], canvasPos[1], ev.button);
             if (ev.button === 1) {
                 panning = false;
             }
         });
 
+        const Zoom = (zoomAmount: number) => {
+            const [x, y] = this.app.GetMousePos();
+            this.camera2d.ZoomBy(zoomAmount, [x, y]);
+        }
+
         glCanvas.addEventListener('wheel', (evt) => {
             const zoomSensitivity = 0.1;
             const wheelDelta = Math.sign(-evt.deltaY);
             const zoomAmount = wheelDelta * zoomSensitivity;
-
-            const [x, y] = this.app.GetMousePos();
-            this.camera2d.ZoomBy(zoomAmount, [x, y]);
+            Zoom(zoomAmount);
         });
 
         document.addEventListener('keypress', (evt) => {
+            const zoomAmount = 0.1;
             switch (evt.key) {
                 case ' ':
                     this.canvasObj.MergePreviewCanvas();
                     break;
                 case 'd':
                     this.canvasObj.DEBUG_MODE = !this.canvasObj.DEBUG_MODE;
+                    break;
+                case '+':
+                    Zoom(zoomAmount);
+                    break;
+                case '-':
+                    Zoom(-zoomAmount);
                     break;
                 default:
                     Logger.log("KeyPress", `Pressed ${evt.key}`);
@@ -188,7 +198,7 @@ export default class PaintApp {
     }
 
     public SetTool(tool: Tool) {
-        this.tool.onDestroy();
+        this.tool.OnDestroy();
         tool.ColourSelection = this.tool.ColourSelection; // keep colour selection
         this.tool = tool;
         this.GetEventManager().Notify('change tool', tool.GetID());

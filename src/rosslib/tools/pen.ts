@@ -16,14 +16,14 @@ export default class Pen extends Tool {
         return "Pen";
     }
 
-    handleMouseDown(x: number, y: number, mouseButton: number): void {
+    protected HandleMouseDown(x: number, y: number, mouseButton: number): void {
         if (mouseButton === 0) {
             this.drawing = true;
             this.points = [[x, y]]; // add initial click point
         }
     }
 
-    handleMouseUp(x: number, y: number, mouseButton: number): void {
+    protected HandleMouseUp(x: number, y: number, mouseButton: number): void {
         if (mouseButton === 0) {
             this.drawing = false;
             this.RenderLines();
@@ -31,7 +31,7 @@ export default class Pen extends Tool {
         }
     }
 
-    handleMouseMove(x: number, y: number): void {
+    protected HandleMouseMove(x: number, y: number): void {
         if (this.drawing) {
             this.points.push([x, y]);
             this.RenderLines();
@@ -41,7 +41,10 @@ export default class Pen extends Tool {
         }
     }
 
-    public handleDestroy(): void {
+    protected HandleKeyPress(key: string): void {
+    }
+
+    protected HandleDestroy(): void {
         this.canvasObj.MergePreviewCanvas();
     }
 

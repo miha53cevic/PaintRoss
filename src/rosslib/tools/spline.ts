@@ -43,7 +43,7 @@ export default class Spline extends Tool {
         this._lineObject = new LineObject(gl);
     }
 
-    public handleMouseDown(x: number, y: number, mouseButton: number): void {
+    protected HandleMouseDown(x: number, y: number, mouseButton: number): void {
         switch (this._state) {
             case 'waiting for initial click': {
                 if (mouseButton === 0) {
@@ -69,7 +69,7 @@ export default class Spline extends Tool {
             }
         }
     }
-    public handleMouseUp(x: number, y: number, mouseButton: number): void {
+    protected HandleMouseUp(x: number, y: number, mouseButton: number): void {
         switch (this._state) {
             case 'waiting for initial release': {
                 if (mouseButton === 0) {
@@ -101,7 +101,7 @@ export default class Spline extends Tool {
             }
         }
     }
-    public handleMouseMove(x: number, y: number): void {
+    protected HandleMouseMove(x: number, y: number): void {
         switch (this._state) {
             case 'waiting for initial release': {
                 if (this._controlPoints.length == 2) {
@@ -125,7 +125,11 @@ export default class Spline extends Tool {
     public GetID(): string {
         return "Spline";
     }
-    public handleDestroy(): void {
+
+    protected HandleKeyPress(key: string): void {
+    }
+
+    protected HandleDestroy(): void {
         this.canvasObj.CancelPreviewCanvas();
         this.RenderSpline(false);
         this.canvasObj.MergePreviewCanvas();
@@ -168,8 +172,8 @@ export default class Spline extends Tool {
         quad.Size = this.ControlPointSize;
         for (const controlPoint of this._controlPoints) {
             if (this._selectedControlPoint === controlPoint) {
-                quad.Colour = [1, 1, 0, 1];
-            } else quad.Colour = [1, 0, 0, 1];
+                quad.Colour = [255, 255, 0];
+            } else quad.Colour = [255, 0, 0];
             const pos: Point = [
                 controlPoint[0] - quad.Size[0] / 2,
                 controlPoint[1] - quad.Size[1] / 2,
@@ -202,5 +206,5 @@ export default class Spline extends Tool {
             }
         }
         return null;
-    } 
+    }
 }
