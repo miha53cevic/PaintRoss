@@ -1,5 +1,5 @@
 import Camera2D from "../camera2d";
-import { RGB } from "../util/colour";
+import { RGBA } from "../util/colour";
 import CircleObject from "./circleObject";
 import Object2D from "./object2d";
 
@@ -17,7 +17,7 @@ export default class BrushObject extends Object2D {
         this._circleObject.Render(camera);
     }
 
-    public SetColour(color: RGB) {
+    public SetColour(color: RGBA) {
         this._circleObject.SetColour(color);
     }
 

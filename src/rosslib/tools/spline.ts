@@ -43,12 +43,13 @@ export default class Spline extends Tool {
         this._lineObject = new LineObject(gl);
     }
 
-    protected HandleMouseDown(x: number, y: number, mouseButton: number): void {
+    public OnMouseDown(canvasX: number | undefined, canvasY: number | undefined, mouseButton: number): void {
+        if (canvasX === undefined || canvasY === undefined) return;
         switch (this._state) {
             case 'waiting for initial click': {
                 if (mouseButton === 0) {
                     this._controlPoints = [];
-                    this._controlPoints.push([x, y]); // initial line starting point
+                    this._controlPoints.push([canvasX, canvasY]); // initial line starting point
                     this._state = 'waiting for initial release';
                 }
                 break;
@@ -61,7 +62,7 @@ export default class Spline extends Tool {
                     this._state = 'waiting for initial click';
                 }
                 if (mouseButton === 0) {
-                    const cp = this.GetTouchingControlPoint([x, y]);
+                    const cp = this.GetTouchingControlPoint([canvasX, canvasY]);
                     this._selectedControlPoint = cp;
                     this.RenderSpline();
                 }
@@ -69,7 +70,9 @@ export default class Spline extends Tool {
             }
         }
     }
-    protected HandleMouseUp(x: number, y: number, mouseButton: number): void {
+
+    public OnMouseUp(canvasX: number | undefined, canvasY: number | undefined, mouseButton: number): void {
+        if (canvasX === undefined || canvasY === undefined) return;
         switch (this._state) {
             case 'waiting for initial release': {
                 if (mouseButton === 0) {
@@ -101,20 +104,26 @@ export default class Spline extends Tool {
             }
         }
     }
-    protected HandleMouseMove(x: number, y: number): void {
+
+    public OnMouseMove(canvasX: number | undefined, canvasY: number | undefined): void {
+        if (canvasX === undefined || canvasY === undefined) return;
         switch (this._state) {
             case 'waiting for initial release': {
+                // If the second control point is already placed just change it
                 if (this._controlPoints.length == 2) {
-                    this._controlPoints[1] = [x, y];
-                } else this._controlPoints.push([x, y]);
+                    this._controlPoints[1] = [canvasX, canvasY];
+                    // Otherwise add the second control point
+                } else this._controlPoints.push([canvasX, canvasY]);
+                // Rerender the line
                 this._canvasObj.CancelPreviewCanvas();
                 this.RenderInitialLine();
                 break;
             }
             case 'waiting for point edit finish': {
                 if (this._selectedControlPoint) {
-                    this._selectedControlPoint[0] = x;
-                    this._selectedControlPoint[1] = y;
+                    this._selectedControlPoint[0] = canvasX;
+                    this._selectedControlPoint[1] = canvasY;
+                    // Rerender spline
                     this._canvasObj.CancelPreviewCanvas();
                     this.RenderSpline();
                 }
@@ -122,14 +131,15 @@ export default class Spline extends Tool {
             }
         }
     }
+
     public GetID(): string {
         return "Spline";
     }
 
-    protected HandleKeyPress(key: string): void {
+    public OnKeyPress(key: string): void {
     }
 
-    protected HandleDestroy(): void {
+    public OnDestroy(): void {
         this._canvasObj.CancelPreviewCanvas();
         this.RenderSpline(false);
         this._canvasObj.MergePreviewCanvas();
@@ -172,8 +182,8 @@ export default class Spline extends Tool {
         quad.Size = this.ControlPointSize;
         for (const controlPoint of this._controlPoints) {
             if (this._selectedControlPoint === controlPoint) {
-                quad.Colour = [255, 255, 0];
-            } else quad.Colour = [255, 0, 0];
+                quad.Colour = [255, 255, 0, 255];
+            } else quad.Colour = [255, 0, 0, 255];
             const pos: Point = [
                 controlPoint[0] - quad.Size[0] / 2,
                 controlPoint[1] - quad.Size[1] / 2,

@@ -2,7 +2,7 @@ import { vec2 } from "gl-matrix";
 import Camera2D from "../camera2d";
 import FrameBuffer from "../glo/framebuffer";
 import Texture from "../glo/texture";
-import ImageEffect, { ImageEffectType } from "../util/ImageEffect";
+import ImageEffect, { ImageEffectType } from "../util/imageEffect";
 import ImageKernel, { KernelOperation } from "../util/imageKernel";
 import ImageOperation from "../util/imageOperation";
 import Logger from "../util/logger";
@@ -77,8 +77,8 @@ export default class CanvasObject extends Object2D {
         this.MergePreviewCanvas();
     }
 
-    public MouseToCanvasCoordinates(x: number, y: number): [number, number] {
-        if (!this.IsMouseInCanvas(x, y)) return [NaN, NaN];
+    public MouseToCanvasCoordinates(x: number, y: number): [number, number] | [undefined, undefined] {
+        if (!this.IsMouseInCanvas(x, y)) return [undefined, undefined];
         // If the mouse is in the canvas
         const normalizedX = x - this.Position[0];
         const normalizedY = y - this.Position[1];

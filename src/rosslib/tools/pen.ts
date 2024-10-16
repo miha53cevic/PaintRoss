@@ -16,14 +16,15 @@ export default class Pen extends Tool {
         return "Pen";
     }
 
-    protected HandleMouseDown(x: number, y: number, mouseButton: number): void {
+    public OnMouseDown(canvasX: number | undefined, canvasY: number | undefined, mouseButton: number): void {
+        if (!canvasX || !canvasY) return;
         if (mouseButton === 0) {
             this._drawing = true;
-            this._points = [[x, y]]; // add initial click point
+            this._points = [[canvasX, canvasY]]; // add initial click point
         }
     }
 
-    protected HandleMouseUp(x: number, y: number, mouseButton: number): void {
+    public OnMouseUp(canvasX: number | undefined, canvasY: number | undefined, mouseButton: number): void {
         if (mouseButton === 0) {
             this._drawing = false;
             this.RenderLines();
@@ -31,9 +32,10 @@ export default class Pen extends Tool {
         }
     }
 
-    protected HandleMouseMove(x: number, y: number): void {
+    public OnMouseMove(canvasX: number | undefined, canvasY: number | undefined): void {
         if (this._drawing) {
-            this._points.push([x, y]);
+            if (!canvasX || !canvasY) return;
+            this._points.push([canvasX, canvasY]);
             this.RenderLines();
 
             // After draw keep only the last point so you can continue line drawing in next iteration
@@ -41,10 +43,10 @@ export default class Pen extends Tool {
         }
     }
 
-    protected HandleKeyPress(key: string): void {
+    public OnKeyPress(key: string): void {
     }
 
-    protected HandleDestroy(): void {
+    public OnDestroy(): void {
         this._canvasObj.MergePreviewCanvas();
     }
 

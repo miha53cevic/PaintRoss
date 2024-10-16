@@ -29,7 +29,7 @@ export default function AppBar() {
         window.open(source);
     };
 
-    const [canvasMousePos, setCanvasMousePos] = useState<[number, number]>([NaN, NaN]);
+    const [canvasMousePos, setCanvasMousePos] = useState<[number, number] | [undefined, undefined]>([undefined, undefined]);
     useEffect(() => {
         PaintApp.Get().GetEventManager().Subscribe('ChangeCanvasCoordinates', () => {
             setCanvasMousePos(PaintApp.Get().GetCanvasMousePosition());

@@ -1,5 +1,5 @@
 import Camera2D from "../camera2d";
-import { RGB } from "../util/colour";
+import { RGBA } from "../util/colour";
 import LineObject from "./lineObject";
 import Object2D from "./object2d";
 import TriangleFanObject from "./triangleFanObject";
@@ -7,7 +7,7 @@ import TriangleFanObject from "./triangleFanObject";
 export default class CircleObject extends Object2D {
     private _lineObject: LineObject;
     private _triangleFanObject: TriangleFanObject;
-    
+
     public Outlined = false;
 
     public constructor(gl: WebGL2RenderingContext, segments: number = 100) {
@@ -43,7 +43,7 @@ export default class CircleObject extends Object2D {
         }
     }
 
-    public SetColour(color: RGB) {
+    public SetColour(color: RGBA) {
         this._lineObject.Colour = color;
         this._triangleFanObject.Colour = color;
     }

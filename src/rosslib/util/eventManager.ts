@@ -1,5 +1,4 @@
-import { vec2 } from "gl-matrix";
-import { RGB } from "./colour";
+import { RGBA } from "./colour";
 import Logger from "./logger";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -9,10 +8,10 @@ interface TEventTypeList {
 }
 interface EventTypeList extends TEventTypeList {
     'ChangeTool': (toolId: string) => void,
-    'ChangePrimaryColour': (colour: RGB) => void,
-    'ChangeSecondaryColour': (colour: RGB) => void,
+    'ChangePrimaryColour': (colour: RGBA) => void,
+    'ChangeSecondaryColour': (colour: RGBA) => void,
     'OpenImage': () => void,
-    'ChangeCanvasCoordinates': (canvasPos: vec2) => void,
+    'ChangeCanvasCoordinates': (canvasPos: [number, number] | [undefined, undefined]) => void,
 }
 type EventType = keyof EventTypeList;
 type EventListenerParameter<T extends EventType> = Parameters<EventTypeList[T]>[0];
