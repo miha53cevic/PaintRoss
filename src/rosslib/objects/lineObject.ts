@@ -17,7 +17,6 @@ uniform mat4 u_viewMat;
 void main() {
   vec4 pos = u_projMat * u_viewMat * u_modelMat * vec4(a_position, 0.0, 1.0);
   gl_Position = pos;
-  gl_PointSize = 0.0;
 }
 `;
 const lineFragShader =

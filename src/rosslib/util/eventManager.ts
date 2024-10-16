@@ -1,4 +1,3 @@
-import { vec2 } from "gl-matrix";
 import { RGB } from "./colour";
 import Logger from "./logger";
 
@@ -12,7 +11,7 @@ interface EventTypeList extends TEventTypeList {
     'ChangePrimaryColour': (colour: RGB) => void,
     'ChangeSecondaryColour': (colour: RGB) => void,
     'OpenImage': () => void,
-    'ChangeCanvasCoordinates': (canvasPos: vec2) => void,
+    'ChangeCanvasCoordinates': (canvasPos: [number, number] | [undefined, undefined]) => void,
 }
 type EventType = keyof EventTypeList;
 type EventListenerParameter<T extends EventType> = Parameters<EventTypeList[T]>[0];

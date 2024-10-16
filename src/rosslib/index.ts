@@ -11,7 +11,7 @@ import Scene2D from './scene2d';
 import Pen from './tools/pen';
 import Tool from './tools/tool';
 import { RGB } from './util/colour';
-import { ImageEffectType } from './util/ImageEffect';
+import { ImageEffectType } from './util/imageEffect';
 import ImageFormat from './util/imageFormat';
 import { KernelOperation } from './util/imageKernel';
 import Logger from './util/logger';
@@ -166,12 +166,13 @@ export default class PaintApp {
         this.GetEventManager().Notify('OpenImage');
     }
 
-    public GetCanvasMousePosition(): [number, number] {
+    public GetCanvasMousePosition(): [number, number] | [undefined, undefined] {
         const glCanvas = this._app.GetGLCanvas();
         const mousePos = this._app.GetMousePos();
         const worldMousePos = this._mainCamera2d.MouseToWorld2D(mousePos[0], mousePos[1], glCanvas.width, glCanvas.height);
         const canvasPos = this._canvasObj.MouseToCanvasCoordinates(worldMousePos[0], worldMousePos[1]);
-        return [Math.floor(canvasPos[0]), Math.floor(canvasPos[1])]; // remove decimals
+        if (!canvasPos[0] && !canvasPos[1]) return [undefined, undefined];
+        else return [Math.floor(canvasPos[0]), Math.floor(canvasPos[1])]; // remove decimals
     }
 
     public GetCanvasImageSize() {

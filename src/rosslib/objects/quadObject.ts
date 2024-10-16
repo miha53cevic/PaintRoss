@@ -5,7 +5,7 @@ import Texture from "../glo/texture";
 import VAO from "../glo/vao";
 import VBO from "../glo/vbo";
 import { NormalizeRGB, RGB } from "../util/colour";
-import ImageEffect from "../util/ImageEffect";
+import ImageEffect from "../util/imageEffect";
 import ImageKernel, { Kernel } from "../util/imageKernel";
 import Object2D from "./object2d";
 
