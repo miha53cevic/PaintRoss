@@ -182,8 +182,8 @@ export default class Spline extends Tool {
         quad.Size = this.ControlPointSize;
         for (const controlPoint of this._controlPoints) {
             if (this._selectedControlPoint === controlPoint) {
-                quad.Colour = [255, 255, 0];
-            } else quad.Colour = [255, 0, 0];
+                quad.Colour = [255, 255, 0, 255];
+            } else quad.Colour = [255, 0, 0, 255];
             const pos: Point = [
                 controlPoint[0] - quad.Size[0] / 2,
                 controlPoint[1] - quad.Size[1] / 2,

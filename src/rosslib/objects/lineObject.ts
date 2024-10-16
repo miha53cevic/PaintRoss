@@ -3,7 +3,7 @@ import GLMath from "../glmath";
 import Shader from "../glo/shader";
 import VAO from "../glo/vao";
 import VBO from "../glo/vbo";
-import { NormalizeRGB, RGB } from "../util/colour";
+import { NormalizeRGBA, RGBA } from "../util/colour";
 import Object2D from "./object2d";
 
 const lineVertexShader =
@@ -23,12 +23,12 @@ const lineFragShader =
     `#version 300 es
 precision highp float;
 
-uniform vec3 colour;
+uniform vec4 colour;
 
 out vec4 FragColor;
 
 void main() {
-  FragColor = vec4(colour.xyz, 1);
+  FragColor = vec4(colour);
 }
 `;
 
@@ -41,7 +41,7 @@ export default class LineObject extends Object2D {
     private _vbo: VBO;
     private _points: [number, number][] = [];
 
-    public Colour: RGB = [0, 0, 0];
+    public Colour: RGBA = [0, 0, 0, 255];
 
     constructor(gl: WebGL2RenderingContext) {
         super(gl);
@@ -68,7 +68,7 @@ export default class LineObject extends Object2D {
         shader.SetMatrix4(shader.GetUniformLocation('u_modelMat'), modelMat);
         shader.SetMatrix4(shader.GetUniformLocation('u_projMat'), camera.GetProjMatrix());
         shader.SetMatrix4(shader.GetUniformLocation('u_viewMat'), camera.GetViewMatrix());
-        shader.SetVector3(shader.GetUniformLocation('colour'), NormalizeRGB(this.Colour));
+        shader.SetVector4(shader.GetUniformLocation('colour'), NormalizeRGBA(this.Colour));
 
         shader.Use();
         this._vao.Bind();

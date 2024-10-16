@@ -10,7 +10,7 @@ import RectangleObject from './objects/rectangleObject';
 import Scene2D from './scene2d';
 import Pen from './tools/pen';
 import Tool from './tools/tool';
-import { RGB } from './util/colour';
+import { RGBA } from './util/colour';
 import { ImageEffectType } from './util/imageEffect';
 import ImageFormat from './util/imageFormat';
 import { KernelOperation } from './util/imageKernel';
@@ -125,7 +125,7 @@ export default class PaintApp {
         const circleElipse = new CircleObject(gl, 100);
         circleElipse.Position = vec2.fromValues(0, 0);
         circleElipse.Size = vec2.fromValues(20, 10);
-        circleElipse.SetColour([255, 255, 120]);
+        circleElipse.SetColour([255, 255, 120, 255]);
 
         const brushObject = new BrushObject(gl);
         brushObject.Position = vec2.fromValues(100, 0);
@@ -183,12 +183,12 @@ export default class PaintApp {
         return this._selectedTool.ColourSelection;
     }
 
-    public SetPrimaryToolColour(colour: RGB) {
+    public SetPrimaryToolColour(colour: RGBA) {
         this._selectedTool.ColourSelection.Primary = colour;
         this.GetEventManager().Notify('ChangePrimaryColour', colour);
     }
 
-    public SetSecondaryToolColour(colour: RGB) {
+    public SetSecondaryToolColour(colour: RGBA) {
         this._selectedTool.ColourSelection.Secondary = colour;
         this.GetEventManager().Notify('ChangeSecondaryColour', colour);
     }

@@ -1,5 +1,6 @@
 import PaintApp from "..";
 import GLMath from "../glmath";
+import { RGBA } from "./colour";
 
 export default class ColourPicker {
     private _image: ImageData;
@@ -47,9 +48,10 @@ export default class ColourPicker {
         const angle = GLMath.ToDegrees(Math.atan2(sy, sx) + Math.PI);
         const radiusNormalized = distance / this.Radius * 100;
         const rgb = this.HSVtoRGB(angle, radiusNormalized, 100);
+        const rgba: RGBA = [rgb[0], rgb[1], rgb[2], 255];
 
-        if (ev.button === 0) PaintApp.Get().SetPrimaryToolColour(rgb);
-        else if (ev.button === 2) PaintApp.Get().SetSecondaryToolColour(rgb);
+        if (ev.button === 0) PaintApp.Get().SetPrimaryToolColour(rgba);
+        else if (ev.button === 2) PaintApp.Get().SetSecondaryToolColour(rgba);
     }
 
     // H [0, 360],  S [0, 100], V [0, 100]
