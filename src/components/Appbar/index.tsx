@@ -24,9 +24,10 @@ export default function AppBar() {
         if (!openImageRef.current) return;
         openImageRef.current.click();
     };
-    const handleSaveImage = () => {
-        const source = PaintApp.Get().GetCanvasImage();
-        window.open(source);
+    const handleSaveImage = async () => {
+        const blobImage = await PaintApp.Get().GetCanvasImage();
+        const blobUrl = URL.createObjectURL(blobImage);
+        window.open(blobUrl, '_blank');
     };
 
     const [canvasMousePos, setCanvasMousePos] = useState<[number, number] | [undefined, undefined]>([undefined, undefined]);
