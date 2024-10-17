@@ -8,9 +8,11 @@ export default class Camera2D {
     public MaxZoom: number = 100.0;
     public MinZoom: number = 0.1;
 
-    constructor(screenWidth: number, screenHeight: number, left: number = 0, top: number = 0, near: number = -1, far: number = 1) {
+    constructor(screenWidth: number, screenHeight: number, initialZoomBy: number = 0.0, left: number = 0, top: number = 0, near: number = -1, far: number = 1) {
         this._viewMat = GLMath.CreateViewMatrix2D();
         this.UpdateProjectionMatrix(screenWidth, screenHeight, left, top, near, far);
+
+        this.ZoomBy(initialZoomBy);
     }
 
     public UpdateProjectionMatrix(screenWidth: number, screenHeight: number, left: number = 0, top: number = 0, near: number = -1, far: number = 1) {
@@ -35,6 +37,14 @@ export default class Camera2D {
         if (zoomBy < 0 && currentZoom <= this.MinZoom) return;
 
         this._viewMat = GLMath.UpdateViewMatrixZooming(this._viewMat, 1 + zoomBy, zoomCenter);
+    }
+
+    public SetZoom(zoom: number) {
+        this._viewMat = GLMath.SetViewMatrixScale(this._viewMat, [zoom, zoom, 1]);
+    }
+
+    public ResetZoom() {
+        this.SetZoom(1);
     }
 
     public MouseToWorld2D(mouseX: number, mouseY: number, canvasWidth: number, canvasHeight: number) {
