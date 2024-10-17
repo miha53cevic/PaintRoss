@@ -1,37 +1,25 @@
 import PaintApp from "..";
 import GLMath from "../glmath";
-import { RGBA } from "./colour";
+import { RGBA } from "../util/colour";
+import ColourPicker from "./colourPicker";
 
-export default class ColourPicker {
+export default class CircleColourPicker extends ColourPicker {
     private _image: ImageData;
 
-    public Radius: number = 50;
-
-    constructor(private _ctx: CanvasRenderingContext2D) {
-        this._image = _ctx.createImageData(_ctx.canvas.width, _ctx.canvas.height);
-
-        // Add color picking
-        _ctx.canvas.addEventListener('click', (ev) => {
-            this.PickColour(ev);
-        });
-        _ctx.canvas.addEventListener('contextmenu', (ev) => {
-            ev.preventDefault();
-            this.PickColour(ev);
-        });
+    public get Radius(): number {
+        return this.Size / 2;
     }
 
-    private PickColour(ev: MouseEvent) {
-        const rect = this._ctx.canvas.getBoundingClientRect();
-        const MOUSE_POS = {
-            X: ev.clientX - rect.left,
-            Y: ev.clientY - rect.top
-        };
-        const WIDTH = this._ctx.canvas.clientWidth;
-        const HEIGHT = this._ctx.canvas.clientHeight;
+    constructor(protected _ctx: CanvasRenderingContext2D) {
+        super(_ctx);
 
+        this._image = _ctx.createImageData(this.Size, this.Size);
+    }
+
+    protected override PickColour(canvasX: number, canvasY: number, mouseButton: number): void {
         // translate to 0,0 in middle
-        const sx = MOUSE_POS.X - WIDTH / 2;
-        const sy = MOUSE_POS.Y - HEIGHT / 2;
+        const sx = canvasX - this.Size / 2;
+        const sy = canvasY - this.Size / 2;
 
         // Check if in circle
         const distance = Math.sqrt((sx * sx) + (sy * sy));
@@ -42,7 +30,7 @@ export default class ColourPicker {
         this._ctx.putImageData(this._image, 0, 0);
 
         // draw circle on point
-        this.DrawChosenPoint(MOUSE_POS.X, MOUSE_POS.Y);
+        this.DrawChosenPoint(canvasX, canvasY);
 
         // Show chosen point rgb value
         const angle = GLMath.ToDegrees(Math.atan2(sy, sx) + Math.PI);
@@ -50,8 +38,8 @@ export default class ColourPicker {
         const rgb = this.HSVtoRGB(angle, radiusNormalized, 100);
         const rgba: RGBA = [rgb[0], rgb[1], rgb[2], 255];
 
-        if (ev.button === 0) PaintApp.Get().SetPrimaryToolColour(rgba);
-        else if (ev.button === 2) PaintApp.Get().SetSecondaryToolColour(rgba);
+        if (mouseButton === 0) PaintApp.Get().SetPrimaryToolColour(rgba);
+        else if (mouseButton === 2) PaintApp.Get().SetSecondaryToolColour(rgba);
     }
 
     // H [0, 360],  S [0, 100], V [0, 100]
@@ -90,17 +78,15 @@ export default class ColourPicker {
         return [Math.floor(r), Math.floor(g), Math.floor(b)];
     }
 
-    private DrawChosenPoint(x: number, y: number) {
+    private DrawChosenPoint(x: number, y: number, radius: number = 8) {
         this._ctx.strokeStyle = 'black';
         this._ctx.lineWidth = 1;
         this._ctx.beginPath();
-        this._ctx.arc(x, y, 4, 0, GLMath.ToRadian(360));
+        this._ctx.arc(x, y, radius, 0, GLMath.ToRadian(360));
         this._ctx.stroke();
     }
 
     public DrawPicker() {
-        const WIDTH = this._ctx.canvas.clientWidth;
-        const HEIGHT = this._ctx.canvas.clientHeight;
         const radius = this.Radius;
         for (let y = -radius; y <= radius; y++) {
             for (let x = -radius; x <= radius; x++) {
@@ -115,10 +101,10 @@ export default class ColourPicker {
                 const rgb = this.HSVtoRGB(GLMath.ToDegrees(angle), radiusNormalized, 100);
 
                 // translate from (0, 0) in middle back to (0, 0) in top left corner
-                const sx = x + WIDTH / 2;
-                const sy = y + HEIGHT / 2;
+                const sx = x + this.Size / 2;
+                const sy = y + this.Size / 2;
                 const offset = 4; // RGBA values for each pixel
-                const index = (WIDTH * sy + sx) * offset;
+                const index = (this.Size * sy + sx) * offset;
 
                 this._image.data[index + 0] = rgb[0];
                 this._image.data[index + 1] = rgb[1];
@@ -129,6 +115,6 @@ export default class ColourPicker {
         this._ctx.putImageData(this._image, 0, 0);
 
         // initial chosen circle is in the middle
-        this.DrawChosenPoint(WIDTH / 2, HEIGHT / 2);
+        this.DrawChosenPoint(this.Size / 2, this.Size / 2);
     }
 }
