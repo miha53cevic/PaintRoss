@@ -16,6 +16,8 @@ export interface PickResult {
 // https://stackoverflow.com/a/42533628
 export default class TriangularColourPicker extends ColourPicker {
     private _currentHue: number = 0.0;
+    private _currentSaturation: number = 1.0;
+    private _currentValue: number = 1.0;
 
     constructor(protected _ctx: CanvasRenderingContext2D) {
         super(_ctx);
@@ -41,9 +43,9 @@ export default class TriangularColourPicker extends ColourPicker {
         const result = this.Pick(canvasMouseX, canvasMouseY);
         if (result.Area === 'Wheel') {
             this._currentHue = result.Hue!;
-            // Default to full saturation and value on triangle when changing the wheel
-            result.Sat = 1;
-            result.Val = 1;
+        } else if (result.Area === 'Triangle') {
+            this._currentSaturation = result.Sat!;
+            this._currentValue = result.Val!;
         }
 
         if (result.Area === 'Wheel' || result.Area === 'Triangle') {
@@ -52,11 +54,11 @@ export default class TriangularColourPicker extends ColourPicker {
             const [wheelX, wheelY] = this.GetWheelPosition(this._currentHue);
             this.DrawChoosenPoint(wheelX, wheelY);
 
-            const [triangleX, triangleY] = this.GetTrianglePosition(result.Sat!, result.Val!);
+            const [triangleX, triangleY] = this.GetTrianglePosition(this._currentSaturation, this._currentValue);
             this.DrawChoosenPoint(triangleX, triangleY);
 
             // Update the colour in the PaintApp
-            const rgba: RGBA = this.HsvToRgb(this._currentHue, result.Sat!, result.Val!, 1);
+            const rgba: RGBA = this.HsvToRgb(this._currentHue, this._currentSaturation, this._currentValue, 1);
             if (mouseButton === 0) PaintApp.Get().SetPrimaryToolColour(rgba);
             else if (mouseButton === 2) PaintApp.Get().SetSecondaryToolColour(rgba);
         }
