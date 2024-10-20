@@ -71,7 +71,7 @@ export default class PaintApp {
             }
         });
 
-        const Zoom = (zoomAmount: number) => {
+        const ZoomBy = (zoomAmount: number) => {
             const [x, y] = this._app.GetMousePos();
             this._mainCamera2d.ZoomBy(zoomAmount, [x, y]);
         }
@@ -80,7 +80,7 @@ export default class PaintApp {
             const zoomSensitivity = 0.1;
             const wheelDelta = Math.sign(-evt.deltaY);
             const zoomAmount = wheelDelta * zoomSensitivity;
-            Zoom(zoomAmount);
+            ZoomBy(zoomAmount);
         });
 
         document.addEventListener('keypress', (evt) => {
@@ -93,10 +93,13 @@ export default class PaintApp {
                     this._canvasObj.DebugMode = !this._canvasObj.DebugMode;
                     break;
                 case '+':
-                    Zoom(zoomAmount);
+                    ZoomBy(zoomAmount);
                     break;
                 case '-':
-                    Zoom(-zoomAmount);
+                    ZoomBy(-zoomAmount);
+                    break;
+                case '.':
+                    this._mainCamera2d.ResetZoom();
                     break;
                 default:
                     Logger.Log("KeyPress", `Pressed ${evt.key}`);
@@ -105,6 +108,7 @@ export default class PaintApp {
 
         this._mainScene = new Scene2D();
         this._mainCamera2d = new Camera2D(gl.canvas.width, gl.canvas.height);
+        this._mainCamera2d.SetZoom(1.0001); // fix for linear filtering on base non zoomed in image
 
         const quad1 = new QuadObject(gl);
         quad1.Size = vec2.fromValues(100, 100);

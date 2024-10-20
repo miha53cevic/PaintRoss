@@ -3,7 +3,7 @@ import { CanvasImage } from "../objects/canvasObject";
 export default class ImageFormat {
     private constructor() { }
 
-    static CreatePNG(canvasImage: CanvasImage) {
+    static CreatePNG(canvasImage: CanvasImage): Promise<Blob> {
         const img = canvasImage;
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
@@ -14,8 +14,15 @@ export default class ImageFormat {
             imageData.data[i] = img.Pixels[i];
         }
         ctx.putImageData(imageData, 0, 0);
-        const source = canvas.toDataURL("image/png");
-        canvas.remove();
-        return source; // returns image url
+        return new Promise<Blob>((resolve, reject) => {
+            canvas.toBlob((blob) => {
+                canvas.remove();
+                if (blob) {
+                    resolve(blob);
+                } else {
+                    reject("Failed to create Blob from canvas");
+                }
+            }, "image/png");
+        });
     }
 }
