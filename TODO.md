@@ -2,9 +2,12 @@
 TODO plan za Projekt R
 
 ## Features
-- **Variable thickness lines** (-)
+- **Variable thickness lines** (+)
   - https://mattdesl.svbtle.com/drawing-lines-is-hard
   - https://blog.scottlogic.com/2019/11/18/drawing-lines-with-webgl.html
+
+- **Bugs**
+  - Holding middle click and left click with pen tool and moving mouuse around (-)
 
 - **Draw basic shapes** (-)
   - circle/elipse

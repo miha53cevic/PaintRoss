@@ -2,11 +2,9 @@ import { vec2 } from 'gl-matrix';
 import App from './app';
 import Camera2D from './camera2d';
 import Texture from './glo/texture';
-import BrushObject from './objects/brushObject';
 import CanvasObject from './objects/canvasObject';
-import CircleObject from './objects/circleObject';
+import LineObject from './objects/lineObject';
 import QuadObject from './objects/quadObject';
-import RectangleObject from './objects/rectangleObject';
 import Scene2D from './scene2d';
 import Pen from './tools/pen';
 import Tool from './tools/tool';
@@ -126,22 +124,15 @@ export default class PaintApp {
         this._canvasObj.Position = vec2.fromValues(gl.canvas.width / 2 - this._canvasObj.Size[0] / 2, gl.canvas.height / 2 - this._canvasObj.Size[1] / 2);
         this._canvasObj.DebugMode = false;
 
-        const circleElipse = new CircleObject(gl, 100);
-        circleElipse.Position = vec2.fromValues(0, 0);
-        circleElipse.Size = vec2.fromValues(20, 10);
-        circleElipse.SetColour([255, 255, 120, 255]);
-
-        const brushObject = new BrushObject(gl);
-        brushObject.Position = vec2.fromValues(100, 0);
-        brushObject.Size = vec2.fromValues(10, 10);
-
-        const rectangleObject = new RectangleObject(gl);
-        rectangleObject.Position = vec2.fromValues(150, 150);
-        rectangleObject.Size = vec2.fromValues(100, 100);
+        const lineObject = new LineObject(gl);
+        lineObject.SetPoints([[0, 0], [200, 600], [400, 200], [600, 400], [700, 300], [800, 0]]);
+        lineObject.Colour = [255, 0, 0, 255];
+        lineObject.Thickness = 10;
+        this._canvasObj.DrawOnCanvas(lineObject);
 
         this._selectedTool = new Pen(gl, this._canvasObj);
 
-        this._mainScene.Add([this._canvasObj, quad1, quad2, circleElipse, brushObject, rectangleObject]);
+        this._mainScene.Add([this._canvasObj, quad1, quad2]);
 
         this._app.OnResize = (width, height) => {
             this._mainCamera2d.UpdateProjectionMatrix(width, height);
