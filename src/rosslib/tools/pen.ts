@@ -6,6 +6,7 @@ export default class Pen extends Tool {
     private _points: [number, number][] = [];
     private _drawing = false;
     private _lineObject: LineObject;
+    private _maxPointHistory = 3;
 
     constructor(gl: WebGL2RenderingContext, canvasObj: CanvasObject) {
         super(gl, canvasObj);
@@ -35,11 +36,11 @@ export default class Pen extends Tool {
     public OnMouseMove(canvasX: number | undefined, canvasY: number | undefined): void {
         if (this._drawing) {
             if (!canvasX || !canvasY) return;
-            this._points.push([canvasX, canvasY]);
+            this._points.push([canvasX, canvasY]); // don't math.floor here, because on zoom in it will create artifacts
             this.RenderLines();
 
-            // After draw keep only the last point so you can continue line drawing in next iteration
-            this._points = [this._points[this._points.length - 1]]; // optimization for not keeping old points that are already drawn
+            // After draw keep only the last N point so you can continue line drawing in next iteration
+            this._points = this._points.slice(-this._maxPointHistory);
         }
     }
 
