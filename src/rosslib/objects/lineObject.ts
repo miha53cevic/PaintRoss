@@ -8,6 +8,7 @@ import VBO from "../glo/vbo";
 import { NormalizeRGBA, RGBA } from "../util/colour";
 import Object2D from "./object2d";
 
+// Resource for triangular line drawing used: https://mattdesl.svbtle.com/drawing-lines-is-hard
 const lineVertexShader =
     `#version 300 es
 in vec2 a_position;
@@ -36,8 +37,6 @@ void main() {
   FragColor = vec4(colour);
 }
 `;
-
-// Used this resource: https://mattdesl.svbtle.com/drawing-lines-is-hard
 
 export default class LineObject extends Object2D {
     private static _shader: Shader;
@@ -102,16 +101,17 @@ export default class LineObject extends Object2D {
          * 6 renderData points (3 path points)
          */
         const indicies: number[] = [];
-        for (let i = 0; i < renderData.length / 2 * 2; i += 2) { // For each pair of points connect with it's neighbour
-            indicies.push(i + 0);
-            indicies.push(i + 1);
-            indicies.push(i + 3);
-            indicies.push(i + 3);
-            indicies.push(i + 2);
-            indicies.push(i + 0);
+        let index = 0;
+        // For each pair of points connect with it's neighbour, so we have to stop at the second last pair (n-1 pairs, n path points)
+        for (let i = 0; i < renderData.length / 2 - 1; i++) {
+            indicies.push(index + 0);
+            indicies.push(index + 1);
+            indicies.push(index + 3);
+            indicies.push(index + 3);
+            indicies.push(index + 2);
+            indicies.push(index + 0);
+            index += 2;
         }
-        console.log(renderData)
-        console.log(indicies)
 
         this._vao.Bind();
         this._vbo.SetBufferData(renderData.flat(), this._gl.DYNAMIC_DRAW);
