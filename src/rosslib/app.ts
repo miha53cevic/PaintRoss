@@ -31,6 +31,8 @@ export default class App {
     public OnRender: RenderFunction = () => { };
     public OnResize: ResizeFunction = () => { };
 
+    public AppbarHeight = 48 + 24;
+
     public Run() {
         this.OnSetup(this._glCanvas, this._gl); // user extra setup
         requestAnimationFrame(() => this.Loop());
@@ -110,7 +112,7 @@ export default class App {
     private ResizeToFit() {
         const canvas = this._glCanvas;
         const displayWidth = window.innerWidth;
-        const displayHeight = window.innerHeight - 48; // appbar
+        const displayHeight = window.innerHeight - this.AppbarHeight; // appbar
 
         // Check if the canvas is not the same size.
         if (canvas.width != displayWidth ||

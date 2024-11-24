@@ -47,7 +47,7 @@ export default class LineObject extends Object2D {
     private _normals: [[number, number], number][] = [];
 
     public Colour: RGBA = [0, 0, 0, 255];
-    public Thickness: number = 5;
+    public Thickness: number = 1;
 
     constructor(gl: WebGL2RenderingContext) {
         super(gl);

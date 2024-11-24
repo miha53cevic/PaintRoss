@@ -1,7 +1,8 @@
-import CanvasObject from "../objects/canvasObject";
-import LineObject from "../objects/lineObject";
-import QuadObject from "../objects/quadObject";
-import Tool from "./tool";
+import CanvasObject from "../../objects/canvasObject";
+import LineObject from "../../objects/lineObject";
+import QuadObject from "../../objects/quadObject";
+import Tool from "../tool";
+import SplineToolOptions from "./splineOptions";
 
 type Point = [number, number];
 
@@ -29,7 +30,8 @@ function HalfPoint(p1: Point, p2: Point): Point {
 
 type SplineState = 'waiting for initial click' | 'waiting for initial release' | 'waiting for point edit finish';
 
-export default class Spline extends Tool {
+export default class SplineTool extends Tool {
+    private _splineOptions: SplineToolOptions = new SplineToolOptions();
     private _controlPoints: Point[] = [];
     private _lineObject: LineObject;
     private _state: SplineState = 'waiting for initial click';
@@ -132,6 +134,10 @@ export default class Spline extends Tool {
         }
     }
 
+    public GetOptions(): SplineToolOptions {
+        return this._splineOptions;
+    }
+
     public GetID(): string {
         return "Spline";
     }
@@ -139,7 +145,7 @@ export default class Spline extends Tool {
     public OnKeyPress(key: string): void {
     }
 
-    public OnDestroy(): void {
+    public OnExit(): void {
         this._canvasObj.CancelPreviewCanvas();
         this.RenderSpline(false);
         this._canvasObj.MergePreviewCanvas();
@@ -162,6 +168,7 @@ export default class Spline extends Tool {
                 curvePoints.push(Ct);
             }
             // Render linestrip
+            this._lineObject.Thickness = this._splineOptions.GetOption("BrushSize").Value as number;
             this._lineObject.Colour = this.ColourSelection.Primary;
             this._lineObject.SetPoints(curvePoints);
             this._canvasObj.DrawOnCanvas(this._lineObject);
@@ -172,6 +179,7 @@ export default class Spline extends Tool {
     }
 
     private RenderInitialLine() {
+        this._lineObject.Thickness = this._splineOptions.GetOption("BrushSize").Value as number;
         this._lineObject.Colour = this.ColourSelection.Primary;
         this._lineObject.SetPoints(this._controlPoints);
         this._canvasObj.DrawOnCanvas(this._lineObject);

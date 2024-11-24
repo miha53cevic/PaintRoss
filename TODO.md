@@ -8,6 +8,7 @@ TODO plan za Projekt R
 
 - **Bugs**
   - Holding middle click and left click with pen tool and moving mouuse around (-)
+  - Instantiate the tools once and then reuse them to keep their settings (+)
 
 - **Draw basic shapes** (-)
   - circle/elipse
@@ -29,7 +30,7 @@ TODO plan za Projekt R
   - Cut
   - Paste
 
-- **Brush Tool** (-)
+- **Brush Tool** (+)
   - Brush size option
 
 - **Undo/Redo** (-)
