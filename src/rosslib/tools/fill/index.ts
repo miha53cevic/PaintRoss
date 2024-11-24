@@ -24,7 +24,7 @@ export default class FillTool extends Tool {
     public OnKeyPress(key: string): void {
     }
 
-    public OnDestroy(): void {
+    public OnExit(): void {
         this._canvasObj.MergePreviewCanvas();
     }
 

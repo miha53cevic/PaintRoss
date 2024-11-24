@@ -31,7 +31,7 @@ export default class App {
     public OnRender: RenderFunction = () => { };
     public OnResize: ResizeFunction = () => { };
 
-    public AppbarHeight = 64;
+    public AppbarHeight = 48 + 24;
 
     public Run() {
         this.OnSetup(this._glCanvas, this._gl); // user extra setup

@@ -145,7 +145,7 @@ export default class SplineTool extends Tool {
     public OnKeyPress(key: string): void {
     }
 
-    public OnDestroy(): void {
+    public OnExit(): void {
         this._canvasObj.CancelPreviewCanvas();
         this.RenderSpline(false);
         this._canvasObj.MergePreviewCanvas();
@@ -168,6 +168,7 @@ export default class SplineTool extends Tool {
                 curvePoints.push(Ct);
             }
             // Render linestrip
+            this._lineObject.Thickness = this._splineOptions.GetOption("BrushSize").Value as number;
             this._lineObject.Colour = this.ColourSelection.Primary;
             this._lineObject.SetPoints(curvePoints);
             this._canvasObj.DrawOnCanvas(this._lineObject);
@@ -178,6 +179,7 @@ export default class SplineTool extends Tool {
     }
 
     private RenderInitialLine() {
+        this._lineObject.Thickness = this._splineOptions.GetOption("BrushSize").Value as number;
         this._lineObject.Colour = this.ColourSelection.Primary;
         this._lineObject.SetPoints(this._controlPoints);
         this._canvasObj.DrawOnCanvas(this._lineObject);

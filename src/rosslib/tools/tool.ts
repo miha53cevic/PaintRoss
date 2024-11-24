@@ -15,7 +15,7 @@ export default abstract class Tool {
     public abstract OnMouseUp(x: OptionalNumber, y: OptionalNumber, mouseButton: number): void;
     public abstract OnMouseMove(x: OptionalNumber, y: OptionalNumber): void;
     public abstract OnKeyPress(key: string): void;
-    public abstract OnDestroy(): void;
+    public abstract OnExit(): void; // on tool change
 
     public abstract GetID(): string;
 }
