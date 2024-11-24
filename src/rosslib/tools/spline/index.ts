@@ -1,7 +1,8 @@
-import CanvasObject from "../objects/canvasObject";
-import LineObject from "../objects/lineObject";
-import QuadObject from "../objects/quadObject";
-import Tool from "./tool";
+import CanvasObject from "../../objects/canvasObject";
+import LineObject from "../../objects/lineObject";
+import QuadObject from "../../objects/quadObject";
+import Tool from "../tool";
+import SplineToolOptions from "./splineOptions";
 
 type Point = [number, number];
 
@@ -29,7 +30,8 @@ function HalfPoint(p1: Point, p2: Point): Point {
 
 type SplineState = 'waiting for initial click' | 'waiting for initial release' | 'waiting for point edit finish';
 
-export default class Spline extends Tool {
+export default class SplineTool extends Tool {
+    private _splineOptions: SplineToolOptions = new SplineToolOptions();
     private _controlPoints: Point[] = [];
     private _lineObject: LineObject;
     private _state: SplineState = 'waiting for initial click';
@@ -130,6 +132,10 @@ export default class Spline extends Tool {
                 break;
             }
         }
+    }
+
+    public GetOptions(): SplineToolOptions {
+        return this._splineOptions;
     }
 
     public GetID(): string {

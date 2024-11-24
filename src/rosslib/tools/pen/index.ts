@@ -1,8 +1,11 @@
-import CanvasObject from "../objects/canvasObject";
-import LineObject from "../objects/lineObject";
-import Tool from "./tool";
+import CanvasObject from "../../objects/canvasObject";
+import LineObject from "../../objects/lineObject";
+import Tool from "../tool";
+import ToolOptions from "../toolOptions";
+import PenToolOptions from "./penToolOptions";
 
-export default class Pen extends Tool {
+export default class PenTool extends Tool {
+    private _penOptions = new PenToolOptions();
     private _points: [number, number][] = [];
     private _drawing = false;
     private _lineObject: LineObject;
@@ -11,6 +14,10 @@ export default class Pen extends Tool {
     constructor(gl: WebGL2RenderingContext, canvasObj: CanvasObject) {
         super(gl, canvasObj);
         this._lineObject = new LineObject(gl);
+    }
+
+    public GetOptions(): ToolOptions {
+        return this._penOptions;
     }
 
     public GetID(): string {
@@ -52,6 +59,7 @@ export default class Pen extends Tool {
     }
 
     private RenderLines() {
+        this._lineObject.Thickness = this._penOptions.GetOption('BrushSize').Value as number;
         this._lineObject.Colour = this.ColourSelection.Primary;
         this._lineObject.SetPoints(this._points);
         this._canvasObj.DrawOnCanvas(this._lineObject);

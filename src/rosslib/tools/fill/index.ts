@@ -1,8 +1,14 @@
 import FloodFill from 'q-floodfill';
-import Texture from "../glo/texture";
-import Tool from "./tool";
+import Texture from "../../glo/texture";
+import Tool from "../tool";
+import FillToolOptions from './fillToolOptions';
 
-export default class Fill extends Tool {
+export default class FillTool extends Tool {
+    private _fillOptions: FillToolOptions = new FillToolOptions();
+
+    public GetOptions(): FillToolOptions {
+        return this._fillOptions;
+    }
 
     public OnMouseDown(canvasX: number | undefined, canvasY: number | undefined, mouseButton: number): void {
         if (!canvasX || !canvasY) return;

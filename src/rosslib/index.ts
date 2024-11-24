@@ -6,7 +6,7 @@ import CanvasObject from './objects/canvasObject';
 import LineObject from './objects/lineObject';
 import QuadObject from './objects/quadObject';
 import Scene2D from './scene2d';
-import Pen from './tools/pen';
+import PenTool from './tools/pen';
 import Tool from './tools/tool';
 import { RGBA } from './util/colour';
 import { ImageEffectType } from './util/imageEffect';
@@ -130,7 +130,7 @@ export default class PaintApp {
         lineObject.Thickness = 10;
         this._canvasObj.DrawOnCanvas(lineObject);
 
-        this._selectedTool = new Pen(gl, this._canvasObj);
+        this._selectedTool = new PenTool(gl, this._canvasObj);
 
         this._mainScene.Add([this._canvasObj, quad1, quad2]);
 

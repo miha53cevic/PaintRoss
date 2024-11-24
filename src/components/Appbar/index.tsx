@@ -37,39 +37,58 @@ export default function AppBar() {
         });
     }, []);
 
+    const [currentTool, setCurrentTool] = useState<string>('Pen');
+    useEffect(() => {
+        PaintApp.Get().GetEventManager().Subscribe('ChangeTool', (toolId) => {
+            setCurrentTool(toolId as string);
+        });
+    }, []);
+
     return (
-        <nav className={`w-full h-12 bg-slate-950 text-slate-400 flex flex-row`}>
-            <div className="flex-grow flex flex-row">
-                <Dropdown
-                    title="File"
-                >
-                    <DropdownItem onClick={handleOpenImage}>
-                        Open Image
-                        <FileInput className="hidden" type="file" accept="image/*" inputRef={openImageRef} />
-                    </DropdownItem>
-                    <DropdownItem onClick={handleSaveImage}>Save Image</DropdownItem>
-                </Dropdown>
-                <Dropdown
-                    title="Image Effects"
-                >
-                    <DropdownItem onClick={() => PaintApp.Get().ApplyImageEffect('Grayscale')}>Grayscale</DropdownItem>
-                    <DropdownItem onClick={() => PaintApp.Get().ApplyImageEffect('InvertColors')}>Invert colours</DropdownItem>
-                    <DropdownItem onClick={() => PaintApp.Get().ApplyImageEffect('GaussianBlur')}>Blur</DropdownItem>
-                    <DropdownItem onClick={() => PaintApp.Get().ApplyImageEffect('BoxBlur')}>Box Blur</DropdownItem>
-                    <DropdownItem onClick={() => PaintApp.Get().ApplyImageEffect('Sharpen')}>Sharpen</DropdownItem>
-                    <DropdownItem onClick={() => PaintApp.Get().ApplyImageEffect('EdgeDetect')}>Edge detect</DropdownItem>
-                </Dropdown>
-                <Dropdown
-                    title="Help"
-                >
-                    <DropdownItem onClick={() => alert('Napravio Mihael Petričević')}>About</DropdownItem>
-                </Dropdown>
-            </div>
-            <Info>
-                <InfoItem>
-                    {`${canvasMousePos[0]}, ${canvasMousePos[1]}`}
-                </InfoItem>
-            </Info>
-        </nav>
+        <div>
+            <nav className={`w-full h-12 bg-slate-950 text-slate-400 flex flex-row`}>
+                <div className="flex-grow flex flex-row">
+                    <Dropdown
+                        title="File"
+                    >
+                        <DropdownItem onClick={handleOpenImage}>
+                            Open Image
+                            <FileInput className="hidden" type="file" accept="image/*" inputRef={openImageRef} />
+                        </DropdownItem>
+                        <DropdownItem onClick={handleSaveImage}>Save Image</DropdownItem>
+                    </Dropdown>
+                    <Dropdown
+                        title="Image Effects"
+                    >
+                        <DropdownItem onClick={() => PaintApp.Get().ApplyImageEffect('Grayscale')}>Grayscale</DropdownItem>
+                        <DropdownItem onClick={() => PaintApp.Get().ApplyImageEffect('InvertColors')}>Invert colours</DropdownItem>
+                        <DropdownItem onClick={() => PaintApp.Get().ApplyImageEffect('GaussianBlur')}>Blur</DropdownItem>
+                        <DropdownItem onClick={() => PaintApp.Get().ApplyImageEffect('BoxBlur')}>Box Blur</DropdownItem>
+                        <DropdownItem onClick={() => PaintApp.Get().ApplyImageEffect('Sharpen')}>Sharpen</DropdownItem>
+                        <DropdownItem onClick={() => PaintApp.Get().ApplyImageEffect('EdgeDetect')}>Edge detect</DropdownItem>
+                    </Dropdown>
+                    <Dropdown
+                        title="Help"
+                    >
+                        <DropdownItem onClick={() => alert('Napravio Mihael Petričević')}>About</DropdownItem>
+                    </Dropdown>
+                </div>
+                <Info>
+                    <InfoItem>
+                        {`${canvasMousePos[0]}, ${canvasMousePos[1]}`}
+                    </InfoItem>
+                </Info>
+            </nav>
+            <nav className="w-full h-6 bg-slate-900 text-slate-400 flex flex-row" key={currentTool}>
+                {PaintApp.Get().GetTool().GetOptions().GetAllOptions().map((option) => {
+                    return (
+                        <div key={option.Name} className="flex flex-row items-center p-2 gap-2">
+                            <span className="font-bold">{option.Name}</span>
+                            {option.Type === 'number' && <input type="number" defaultValue={option.Value as number} className="w-12" onChange={(e) => PaintApp.Get().GetTool().GetOptions().SetOption(option.Name, e.target.valueAsNumber)} />}
+                        </div>
+                    )
+                })}
+            </nav>
+        </div>
     );
 }
