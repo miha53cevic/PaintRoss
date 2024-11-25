@@ -85,6 +85,13 @@ export default function AppBar() {
                         <div key={option.Name} className="flex flex-row items-center p-2 gap-2">
                             <span className="font-bold">{option.Name}</span>
                             {option.Type === 'number' && <input type="number" defaultValue={option.Value as number} className="w-12" onChange={(e) => PaintApp.Get().GetTool().GetOptions().SetOption(option.Name, e.target.valueAsNumber)} />}
+                            {option.Type === 'string' && <input type="text" defaultValue={option.Value as string} onChange={(e) => PaintApp.Get().GetTool().GetOptions().SetOption(option.Name, e.target.value)} />}
+                            {option.Type === 'boolean' && <input type="checkbox" defaultChecked={option.Value as boolean} onChange={(e) => PaintApp.Get().GetTool().GetOptions().SetOption(option.Name, e.target.checked)} />}
+                            {option.Type === 'select' &&
+                                <select defaultValue={option.Value as string} onChange={(e) => PaintApp.Get().GetTool().GetOptions().SetOption(option.Name, e.target.value)}>
+                                    {option.PossibleValues!.map((possibleValue) => <option key={possibleValue as string} value={possibleValue as string}>{possibleValue as string}</option>)}
+                                </select>
+                            }
                         </div>
                     )
                 })}

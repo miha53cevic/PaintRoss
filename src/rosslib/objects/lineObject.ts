@@ -43,7 +43,6 @@ export default class LineObject extends Object2D {
     private _vao: VAO;
     private _vbo: VBO;
     private _ebo: EBO;
-    private _points: [number, number][] = [];
     private _normals: [[number, number], number][] = [];
 
     public Colour: RGBA = [0, 0, 0, 255];
@@ -59,7 +58,7 @@ export default class LineObject extends Object2D {
         this._ebo = new EBO(gl);
     }
 
-    public SetPoints(points: [number, number][]) {
+    public SetPoints(points: [number, number][], closedLoop: boolean = false) {
         // If it's only 1 point, we need a path for normals so duplicate it and move it from the original mouse position up and down
         if (points.length == 1) {
             const copy: [number, number] = [...points[0]];
@@ -67,7 +66,9 @@ export default class LineObject extends Object2D {
             points[0][0] += this.Thickness / 2;
             points[1][0] -= this.Thickness / 2;
         }
-        this._points = points;
+
+        // If a closed loop add the first point to the end
+        if (closedLoop) points.push(points[0]);
 
         this._normals = polyline_normals(points, false);
 
@@ -109,7 +110,7 @@ export default class LineObject extends Object2D {
             indicies.push(index + 3);
             indicies.push(index + 3);
             indicies.push(index + 2);
-            indicies.push(index + 0);
+            indicies.push(index + 0); // 6 indicies per quad
             index += 2;
         }
 
@@ -123,7 +124,7 @@ export default class LineObject extends Object2D {
     }
 
     public Render(camera: Camera2D) {
-        if (this._points.length === 0) return;
+        if (this._ebo.Count === 0) return; // No points to render (empty path)
 
         const modelMat = GLMath.CreateTransformationMatrix2D(this.Position, this.Rotation, this.Size);
 

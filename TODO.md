@@ -7,13 +7,13 @@ TODO plan za Projekt R
   - https://blog.scottlogic.com/2019/11/18/drawing-lines-with-webgl.html
 
 - **Bugs**
-  - Holding middle click and left click with pen tool and moving mouuse around (-)
+  - Holding middle click and left click with pen tool and moving mouse around (-)
   - Instantiate the tools once and then reuse them to keep their settings (+)
+  - When changing options trigger rerender of current tool maybe... (OnToolOptionChange function for each tool) (-)
 
-- **Draw basic shapes** (-)
+- **Draw basic shapes** (+)
   - circle/elipse
   - square/rectangle
-  - rounded square/rectangle
   - change fill style option (filled/outline)
   - manipulate shapes with hotpoints
 
