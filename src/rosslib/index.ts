@@ -8,6 +8,7 @@ import QuadObject from './objects/quadObject';
 import Scene2D from './scene2d';
 import FillTool from './tools/fill';
 import PenTool from './tools/pen';
+import ShapeTool from './tools/shape';
 import SplineTool from './tools/spline';
 import Tool from './tools/tool';
 import ToolManager from './tools/toolManager';
@@ -133,6 +134,7 @@ export default class PaintApp {
             new PenTool(gl, this._canvasObj),
             new SplineTool(gl, this._canvasObj),
             new FillTool(gl, this._canvasObj),
+            new ShapeTool(gl, this._canvasObj),
         ]);
 
         const lineObject = new LineObject(gl);

@@ -1,10 +1,9 @@
 import CanvasObject from "../../objects/canvasObject";
 import LineObject from "../../objects/lineObject";
 import QuadObject from "../../objects/quadObject";
+import { GetTouchingControlPoint, Point } from "../../util/controlPoints";
 import Tool from "../tool";
-import SplineToolOptions from "./splineOptions";
-
-type Point = [number, number];
+import SplineToolOptions from "./splineToolOptions";
 
 function CatmulRomSpline(P: Point[], t: number): Point {
     const tt = t * t;
@@ -31,7 +30,7 @@ function HalfPoint(p1: Point, p2: Point): Point {
 type SplineState = 'waiting for initial click' | 'waiting for initial release' | 'waiting for point edit finish';
 
 export default class SplineTool extends Tool {
-    private _splineOptions: SplineToolOptions = new SplineToolOptions();
+    private _splineToolOptions: SplineToolOptions = new SplineToolOptions();
     private _controlPoints: Point[] = [];
     private _lineObject: LineObject;
     private _state: SplineState = 'waiting for initial click';
@@ -64,7 +63,7 @@ export default class SplineTool extends Tool {
                     this._state = 'waiting for initial click';
                 }
                 if (mouseButton === 0) {
-                    const cp = this.GetTouchingControlPoint([canvasX, canvasY]);
+                    const cp = GetTouchingControlPoint([canvasX, canvasY], this._controlPoints, this.ControlPointSize);
                     this._selectedControlPoint = cp;
                     this.RenderSpline();
                 }
@@ -135,7 +134,7 @@ export default class SplineTool extends Tool {
     }
 
     public GetOptions(): SplineToolOptions {
-        return this._splineOptions;
+        return this._splineToolOptions;
     }
 
     public GetID(): string {
@@ -168,7 +167,7 @@ export default class SplineTool extends Tool {
                 curvePoints.push(Ct);
             }
             // Render linestrip
-            this._lineObject.Thickness = this._splineOptions.GetOption("BrushSize").Value as number;
+            this._lineObject.Thickness = this._splineToolOptions.GetOption("BrushSize").Value as number;
             this._lineObject.Colour = this.ColourSelection.Primary;
             this._lineObject.SetPoints(curvePoints);
             this._canvasObj.DrawOnCanvas(this._lineObject);
@@ -179,7 +178,7 @@ export default class SplineTool extends Tool {
     }
 
     private RenderInitialLine() {
-        this._lineObject.Thickness = this._splineOptions.GetOption("BrushSize").Value as number;
+        this._lineObject.Thickness = this._splineToolOptions.GetOption("BrushSize").Value as number;
         this._lineObject.Colour = this.ColourSelection.Primary;
         this._lineObject.SetPoints(this._controlPoints);
         this._canvasObj.DrawOnCanvas(this._lineObject);
@@ -201,28 +200,4 @@ export default class SplineTool extends Tool {
         }
     }
 
-    private InRect(point: Point, rectTopLeft: Point, rectSize: Point): boolean {
-        const dx = point[0] - rectTopLeft[0];
-        const dy = point[1] - rectTopLeft[1];
-
-        // If dx or dy are negative the point is on the left or above the rect
-        if (dx < 0 || dy < 0) return false;
-        // If dx or dy are greater then rectPos+rectSize then mouse is right or bottom of rect
-        if (dx > rectSize[0] || dy > rectSize[1]) return false;
-        // Otherwise point is in rect
-        return true;
-    }
-
-    private GetTouchingControlPoint(mousePos: Point): Point | null {
-        for (const cp of this._controlPoints) {
-            const cpTopLeft: Point = [
-                cp[0] - this.ControlPointSize[0] / 2,
-                cp[1] - this.ControlPointSize[1] / 2,
-            ];
-            if (this.InRect(mousePos, cpTopLeft, this.ControlPointSize)) {
-                return cp;
-            }
-        }
-        return null;
-    }
 }

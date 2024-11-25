@@ -4,10 +4,10 @@ import Tool from "../tool";
 import FillToolOptions from './fillToolOptions';
 
 export default class FillTool extends Tool {
-    private _fillOptions: FillToolOptions = new FillToolOptions();
+    private _fillToolOptions: FillToolOptions = new FillToolOptions();
 
     public GetOptions(): FillToolOptions {
-        return this._fillOptions;
+        return this._fillToolOptions;
     }
 
     public OnMouseDown(canvasX: number | undefined, canvasY: number | undefined, mouseButton: number): void {
@@ -15,10 +15,10 @@ export default class FillTool extends Tool {
         this.ExecuteFloodFill(canvasX, canvasY);
     }
 
-    public OnMouseUp(x: number | undefined, y: number | undefined, mouseButton: number): void {
+    public OnMouseUp(canvasX: number | undefined, canvasY: number | undefined, mouseButton: number): void {
     }
 
-    public OnMouseMove(x: number | undefined, y: number | undefined): void {
+    public OnMouseMove(canvasX: number | undefined, canvasY: number | undefined): void {
     }
 
     public OnKeyPress(key: string): void {

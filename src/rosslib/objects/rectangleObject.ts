@@ -9,6 +9,7 @@ export default class RectangleObject extends Object2D {
     private _quadObject: QuadObject;
 
     public Outlined = false;
+    public Thickness = 1;
 
     constructor(gl: WebGL2RenderingContext) {
         super(gl);
@@ -21,11 +22,11 @@ export default class RectangleObject extends Object2D {
             [1, 0],
             [1, 1],
             [0, 1],
-            [0, 0]
-        ]);
+        ], true);
     }
 
     public Render(camera: Camera2D): void {
+        this._lineObject.Thickness = this.Thickness;
         if (this.Outlined) this._lineObject.Render(camera);
         else this._quadObject.Render(camera);
     }
@@ -54,11 +55,17 @@ export default class RectangleObject extends Object2D {
     }
 
     get Size() {
-        return this._lineObject.Size;
+        return this._quadObject.Size;
     }
 
     set Size(value) {
-        this._lineObject.Size = value;
+        // lineObject size is not used since scaling lines would make them thicker
+        this._lineObject.SetPoints([
+            [0, 0],
+            [value[0], 0],
+            [value[0], value[1]],
+            [0, value[1]],
+        ], true);
         this._quadObject.Size = value;
     }
 }

@@ -9,34 +9,35 @@ export default class CircleObject extends Object2D {
     private _triangleFanObject: TriangleFanObject;
 
     public Outlined = false;
+    public Thickness = 1;
+    public LineSegments = 100;
 
-    public constructor(gl: WebGL2RenderingContext, segments: number = 100) {
+    public constructor(gl: WebGL2RenderingContext) {
         super(gl);
 
         this._lineObject = new LineObject(gl);
         this._triangleFanObject = new TriangleFanObject(gl);
-        this.RecreateCircle(segments);
+
+        const c: [number, number] = [this.Size[0] / 2, this.Size[1] / 2]; // center should be half the size
+        const r: [number, number] = [this.Size[0] / 2, this.Size[1] / 2]; // radius should be half the size
+        this._triangleFanObject.SetPoints(this.CreateCirclePoints(c[0], c[1], r));
+        this._lineObject.SetPoints(this.CreateCirclePoints(c[0], c[1], r), true); // closed path
     }
 
-    public RecreateCircle(segments: number) {
-        this.CreateCirclePoints(segments);
-    }
-
-    private CreateCirclePoints(segments: number) {
-        const linePoints: [number, number][] = [];
-        const step = 2 * Math.PI / segments;
-        for (let i = 0; i < segments; i++) {
+    private CreateCirclePoints(cx = 0, cy = 0, radius: [number, number] = [1, 1]): [number, number][] {
+        const circlePoints: [number, number][] = [];
+        const step = 2 * Math.PI / this.LineSegments;
+        for (let i = 0; i < this.LineSegments; i++) {
             const angle = i * step;
-            const x = Math.cos(angle);
-            const y = Math.sin(angle);
-            linePoints.push([x, y]);
+            const x = cx + radius[0] * Math.cos(angle);
+            const y = cy + radius[1] * Math.sin(angle);
+            circlePoints.push([x, y]);
         }
-        linePoints.push(linePoints[0]); // add first point to the end to close the circle
-        this._lineObject.SetPoints(linePoints);
-        this._triangleFanObject.SetPoints(linePoints);
+        return circlePoints;
     }
 
     public Render(camera: Camera2D): void {
+        this._lineObject.Thickness = this.Thickness;
         if (this.Outlined) this._lineObject.Render(camera);
         else {
             this._triangleFanObject.Render(camera);
@@ -67,11 +68,15 @@ export default class CircleObject extends Object2D {
     }
 
     get Size() {
-        return this._lineObject.Size;
+        return this._triangleFanObject.Size;
     }
 
     set Size(value) {
-        this._lineObject.Size = value;
+        // LineObject size would make the lines thicker (set the points instead)
+        const c: [number, number] = [value[0] / 2, value[1] / 2]; // center should be half the size
+        const r: [number, number] = [value[0] / 2, value[1] / 2]; // radius should be half the size
+        this._lineObject.SetPoints(this.CreateCirclePoints(c[0], c[1], r), true); // closed path
+
         this._triangleFanObject.Size = value;
     }
 }

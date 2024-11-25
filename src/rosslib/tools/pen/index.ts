@@ -47,6 +47,7 @@ export default class PenTool extends Tool {
             this.RenderLines();
 
             // After draw keep only the last N point so you can continue line drawing in next iteration
+            // Keeping multiple points helps to draw smooth lines (fix gaps between points)
             this._points = this._points.slice(-this._maxPointHistory);
         }
     }
