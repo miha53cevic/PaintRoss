@@ -108,6 +108,8 @@ export default class ShapeTool extends Tool {
     }
 
     public OnExit(): void {
+        this._canvasObj.CancelPreviewCanvas();
+        this.RenderShape(false);
         this._canvasObj.MergePreviewCanvas();
     }
 
