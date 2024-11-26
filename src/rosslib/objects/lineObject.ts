@@ -67,10 +67,15 @@ export default class LineObject extends Object2D {
             points[1][0] -= this.Thickness / 2;
         }
 
-        // If a closed loop add the first point to the end
-        if (closedLoop) points.push(points[0]);
+        this._normals = polyline_normals(points, closedLoop);
 
-        this._normals = polyline_normals(points, false);
+
+        // If a closed loop add the first point to the end 
+        // (must be done after normals are calculated, otherwise the first normal has infinity mitter)
+        if (closedLoop) {
+            points.push(points[0]);
+            this._normals.push(this._normals[0]);
+        }
 
         /**
          * Each poinnt has [x, y, normal_x, normal_y, miter] data or 5 floats

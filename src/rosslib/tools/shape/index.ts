@@ -52,7 +52,7 @@ export default class ShapeTool extends Tool {
                     this._canvasObj.CancelPreviewCanvas();
                     this.RenderShape(false);
                     this._canvasObj.MergePreviewCanvas();
-                    this._state = 'waiting for initial point';
+                    this.ResetState();
                 }
                 if (mouseButton === 0) {
                     const cp = GetTouchingControlPoint([canvasX, canvasY], this._controlPoints, this.ControlPointSize);
@@ -119,6 +119,7 @@ export default class ShapeTool extends Tool {
         this._canvasObj.CancelPreviewCanvas();
         this.RenderShape(false);
         this._canvasObj.MergePreviewCanvas();
+        this.ResetState();
     }
 
     public GetID(): string {
@@ -142,6 +143,7 @@ export default class ShapeTool extends Tool {
     }
 
     private RenderShape(drawControlPoints = true): void {
+        if (this._controlPoints.length < 2) return;
         const p1 = this._controlPoints[0];
         const p4 = this._controlPoints[1];
         const width = p4[0] - p1[0];
@@ -173,5 +175,11 @@ export default class ShapeTool extends Tool {
                 break;
             }
         }
+    }
+
+    private ResetState(): void {
+        this._state = 'waiting for initial point';
+        this._controlPoints = [];
+        this._selectedControlPoint = null;
     }
 }

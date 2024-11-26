@@ -75,7 +75,7 @@ export default class SplineTool extends Tool {
                     this._canvasObj.CancelPreviewCanvas();
                     this.RenderSpline(false);
                     this._canvasObj.MergePreviewCanvas();
-                    this._state = 'waiting for initial click';
+                    this.ResetState();
                 }
                 if (mouseButton === 0) {
                     const cp = GetTouchingControlPoint([canvasX, canvasY], this._controlPoints, this.ControlPointSize);
@@ -163,6 +163,7 @@ export default class SplineTool extends Tool {
         this._canvasObj.CancelPreviewCanvas();
         this.RenderSpline(false);
         this._canvasObj.MergePreviewCanvas();
+        this.ResetState();
     }
 
     private RenderSpline(renderControlPoints: boolean = true) {
@@ -215,4 +216,9 @@ export default class SplineTool extends Tool {
         }
     }
 
+    private ResetState() {
+        this._controlPoints = [];
+        this._selectedControlPoint = null;
+        this._state = 'waiting for initial click';
+    }
 }
