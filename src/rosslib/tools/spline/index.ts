@@ -3,6 +3,7 @@ import LineObject from "../../objects/lineObject";
 import QuadObject from "../../objects/quadObject";
 import { GetTouchingControlPoint, Point } from "../../util/controlPoints";
 import Tool from "../tool";
+import { ToolOption } from "../toolOptions";
 import SplineToolOptions from "./splineToolOptions";
 
 function CatmulRomSpline(P: Point[], t: number): Point {
@@ -30,7 +31,6 @@ function HalfPoint(p1: Point, p2: Point): Point {
 type SplineState = 'waiting for initial click' | 'waiting for initial release' | 'waiting for point edit finish';
 
 export default class SplineTool extends Tool {
-    private _splineToolOptions: SplineToolOptions = new SplineToolOptions();
     private _controlPoints: Point[] = [];
     private _lineObject: LineObject;
     private _state: SplineState = 'waiting for initial click';
@@ -40,8 +40,23 @@ export default class SplineTool extends Tool {
     public ControlPointSize: Point = [10, 10];
 
     constructor(gl: WebGL2RenderingContext, canvasObj: CanvasObject) {
-        super(gl, canvasObj);
+        super(gl, canvasObj, new SplineToolOptions());
         this._lineObject = new LineObject(gl);
+    }
+
+    public OnToolOptionChange(option: ToolOption): void {
+        switch (this._state) {
+            case 'waiting for initial click': {
+                this._canvasObj.CancelPreviewCanvas();
+                this.RenderInitialLine();
+                break;
+            }
+            case 'waiting for point edit finish': {
+                this._canvasObj.CancelPreviewCanvas();
+                this.RenderSpline();
+                break;
+            }
+        }
     }
 
     public OnMouseDown(canvasX: number | undefined, canvasY: number | undefined, mouseButton: number): void {
@@ -60,7 +75,7 @@ export default class SplineTool extends Tool {
                     this._canvasObj.CancelPreviewCanvas();
                     this.RenderSpline(false);
                     this._canvasObj.MergePreviewCanvas();
-                    this._state = 'waiting for initial click';
+                    this.ResetState();
                 }
                 if (mouseButton === 0) {
                     const cp = GetTouchingControlPoint([canvasX, canvasY], this._controlPoints, this.ControlPointSize);
@@ -134,7 +149,7 @@ export default class SplineTool extends Tool {
     }
 
     public GetOptions(): SplineToolOptions {
-        return this._splineToolOptions;
+        return this._toolOptions;
     }
 
     public GetID(): string {
@@ -148,6 +163,7 @@ export default class SplineTool extends Tool {
         this._canvasObj.CancelPreviewCanvas();
         this.RenderSpline(false);
         this._canvasObj.MergePreviewCanvas();
+        this.ResetState();
     }
 
     private RenderSpline(renderControlPoints: boolean = true) {
@@ -167,7 +183,7 @@ export default class SplineTool extends Tool {
                 curvePoints.push(Ct);
             }
             // Render linestrip
-            this._lineObject.Thickness = this._splineToolOptions.GetOption("BrushSize").Value as number;
+            this._lineObject.Thickness = this._toolOptions.GetOption("BrushSize").Value as number;
             this._lineObject.Colour = this.ColourSelection.Primary;
             this._lineObject.SetPoints(curvePoints);
             this._canvasObj.DrawOnCanvas(this._lineObject);
@@ -178,7 +194,7 @@ export default class SplineTool extends Tool {
     }
 
     private RenderInitialLine() {
-        this._lineObject.Thickness = this._splineToolOptions.GetOption("BrushSize").Value as number;
+        this._lineObject.Thickness = this._toolOptions.GetOption("BrushSize").Value as number;
         this._lineObject.Colour = this.ColourSelection.Primary;
         this._lineObject.SetPoints(this._controlPoints);
         this._canvasObj.DrawOnCanvas(this._lineObject);
@@ -200,4 +216,9 @@ export default class SplineTool extends Tool {
         }
     }
 
+    private ResetState() {
+        this._controlPoints = [];
+        this._selectedControlPoint = null;
+        this._state = 'waiting for initial click';
+    }
 }

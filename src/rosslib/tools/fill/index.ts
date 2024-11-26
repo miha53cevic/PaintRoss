@@ -1,13 +1,17 @@
 import FloodFill from 'q-floodfill';
 import Texture from "../../glo/texture";
+import CanvasObject from '../../objects/canvasObject';
 import Tool from "../tool";
+import { ToolOption } from '../toolOptions';
 import FillToolOptions from './fillToolOptions';
 
 export default class FillTool extends Tool {
-    private _fillToolOptions: FillToolOptions = new FillToolOptions();
 
-    public GetOptions(): FillToolOptions {
-        return this._fillToolOptions;
+    constructor(gl: WebGL2RenderingContext, canvasObj: CanvasObject) {
+        super(gl, canvasObj, new FillToolOptions());
+    }
+
+    public OnToolOptionChange(option: ToolOption): void {
     }
 
     public OnMouseDown(canvasX: number | undefined, canvasY: number | undefined, mouseButton: number): void {

@@ -9,7 +9,7 @@ TODO plan za Projekt R
 - **Bugs**
   - Holding middle click and left click with pen tool and moving mouse around (-)
   - Instantiate the tools once and then reuse them to keep their settings (+)
-  - When changing options trigger rerender of current tool maybe... (OnToolOptionChange function for each tool) (-)
+  - When changing options trigger rerender of current tool maybe... (OnToolOptionChange function for each tool) (+)
 
 - **Draw basic shapes** (+)
   - circle/elipse
