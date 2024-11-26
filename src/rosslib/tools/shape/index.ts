@@ -4,12 +4,12 @@ import QuadObject from "../../objects/quadObject";
 import RectangleObject from "../../objects/rectangleObject";
 import { GetTouchingControlPoint, Point } from "../../util/controlPoints";
 import Tool from "../tool";
+import { ToolOption } from "../toolOptions";
 import ShapeToolOptions from "./shapeToolOptions";
 
 type ShapeState = 'waiting for initial point' | 'waiting for initial release' | 'waiting for controlpoint edit finish';
 
 export default class ShapeTool extends Tool {
-    private _shapeToolOptions: ShapeToolOptions = new ShapeToolOptions();
     private _state: ShapeState = 'waiting for initial point';
     private _circleObject: CircleObject;
     private _rectangleObject: RectangleObject;
@@ -19,13 +19,21 @@ export default class ShapeTool extends Tool {
     public ControlPointSize: Point = [10, 10];
 
     constructor(_gl: WebGL2RenderingContext, _canvasObj: CanvasObject) {
-        super(_gl, _canvasObj);
+        super(_gl, _canvasObj, new ShapeToolOptions());
         this._circleObject = new CircleObject(_gl);
         this._rectangleObject = new RectangleObject(_gl);
     }
 
-    public GetOptions(): ShapeToolOptions {
-        return this._shapeToolOptions;
+    public OnToolOptionChange(option: ToolOption): void {
+        switch (this._state) {
+            case 'waiting for initial point':
+            case 'waiting for initial release':
+            case 'waiting for controlpoint edit finish': {
+                this._canvasObj.CancelPreviewCanvas();
+                this.RenderShape();
+                break;
+            }
+        }
     }
 
     public OnMouseDown(canvasX: number | undefined, canvasY: number | undefined, mouseButton: number): void {
@@ -139,14 +147,14 @@ export default class ShapeTool extends Tool {
         const width = p4[0] - p1[0];
         const height = p4[1] - p1[1];
 
-        switch (this._shapeToolOptions.GetOption("Type").Value) {
+        switch (this._toolOptions.GetOption("Type").Value) {
             case 'Rectangle': {
                 this._rectangleObject.Position = [p1[0], p1[1]];
                 this._rectangleObject.Size = [width, height];
                 this._rectangleObject.SetColour(this.ColourSelection.Primary)
 
-                this._rectangleObject.Outlined = this._shapeToolOptions.GetOption("FillMode").Value === "Outline";
-                this._rectangleObject.Thickness = this._shapeToolOptions.GetOption("BrushSize").Value as number;
+                this._rectangleObject.Outlined = this._toolOptions.GetOption("FillMode").Value === "Outline";
+                this._rectangleObject.Thickness = this._toolOptions.GetOption("BrushSize").Value as number;
 
                 this._canvasObj.DrawOnCanvas(this._rectangleObject);
                 if (drawControlPoints) this.RenderControlPoints();
@@ -157,8 +165,8 @@ export default class ShapeTool extends Tool {
                 this._circleObject.Size = [width, height];
                 this._circleObject.SetColour(this.ColourSelection.Primary)
 
-                this._circleObject.Outlined = this._shapeToolOptions.GetOption("FillMode").Value === "Outline";
-                this._circleObject.Thickness = this._shapeToolOptions.GetOption("BrushSize").Value as number;
+                this._circleObject.Outlined = this._toolOptions.GetOption("FillMode").Value === "Outline";
+                this._circleObject.Thickness = this._toolOptions.GetOption("BrushSize").Value as number;
 
                 this._canvasObj.DrawOnCanvas(this._circleObject);
                 if (drawControlPoints) this.RenderControlPoints();

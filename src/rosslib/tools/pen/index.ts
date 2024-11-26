@@ -1,27 +1,25 @@
 import CanvasObject from "../../objects/canvasObject";
 import LineObject from "../../objects/lineObject";
 import Tool from "../tool";
-import ToolOptions from "../toolOptions";
+import { ToolOption } from "../toolOptions";
 import PenToolOptions from "./penToolOptions";
 
 export default class PenTool extends Tool {
-    private _penOptions = new PenToolOptions();
     private _points: [number, number][] = [];
     private _drawing = false;
     private _lineObject: LineObject;
     private _maxPointHistory = 3;
 
     constructor(gl: WebGL2RenderingContext, canvasObj: CanvasObject) {
-        super(gl, canvasObj);
+        super(gl, canvasObj, new PenToolOptions());
         this._lineObject = new LineObject(gl);
-    }
-
-    public GetOptions(): ToolOptions {
-        return this._penOptions;
     }
 
     public GetID(): string {
         return "Pen";
+    }
+
+    public OnToolOptionChange(option: ToolOption): void {
     }
 
     public OnMouseDown(canvasX: number | undefined, canvasY: number | undefined, mouseButton: number): void {
@@ -60,7 +58,7 @@ export default class PenTool extends Tool {
     }
 
     private RenderLines() {
-        this._lineObject.Thickness = this._penOptions.GetOption('BrushSize').Value as number;
+        this._lineObject.Thickness = this._toolOptions.GetOption('BrushSize').Value as number;
         this._lineObject.Colour = this.ColourSelection.Primary;
         this._lineObject.SetPoints(this._points);
         this._canvasObj.DrawOnCanvas(this._lineObject);
