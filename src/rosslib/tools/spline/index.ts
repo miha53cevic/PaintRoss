@@ -1,6 +1,7 @@
 import CanvasObject from "../../objects/canvasObject";
 import LineObject from "../../objects/lineObject";
 import QuadObject from "../../objects/quadObject";
+import { ColourSelection } from "../../util/colour";
 import { GetTouchingControlPoint, Point } from "../../util/controlPoints";
 import Tool from "../tool";
 import { ToolOption } from "../toolOptions";
@@ -46,11 +47,17 @@ export default class SplineTool extends Tool {
 
     public OnToolOptionChange(option: ToolOption): void {
         switch (this._state) {
-            case 'waiting for initial click': {
+            case 'waiting for point edit finish': {
                 this._canvasObj.CancelPreviewCanvas();
-                this.RenderInitialLine();
+                this.RenderSpline(false);
                 break;
             }
+        }
+    }
+
+    public OnColourSelectionChange(colourSelection: ColourSelection): void {
+        console.log(this._state)
+        switch (this._state) {
             case 'waiting for point edit finish': {
                 this._canvasObj.CancelPreviewCanvas();
                 this.RenderSpline();

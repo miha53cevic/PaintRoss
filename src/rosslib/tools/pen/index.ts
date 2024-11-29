@@ -1,5 +1,6 @@
 import CanvasObject from "../../objects/canvasObject";
 import LineObject from "../../objects/lineObject";
+import { ColourSelection } from "../../util/colour";
 import Tool from "../tool";
 import { ToolOption } from "../toolOptions";
 import PenToolOptions from "./penToolOptions";
@@ -17,6 +18,9 @@ export default class PenTool extends Tool {
 
     public GetID(): string {
         return "Pen";
+    }
+
+    public OnColourSelectionChange(colourSelection: ColourSelection): void {
     }
 
     public OnToolOptionChange(option: ToolOption): void {

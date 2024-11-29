@@ -10,7 +10,6 @@ import FillTool from './tools/fill';
 import PenTool from './tools/pen';
 import ShapeTool from './tools/shape';
 import SplineTool from './tools/spline';
-import Tool from './tools/tool';
 import ToolManager from './tools/toolManager';
 import { RGBA } from './util/colour';
 import { ImageEffectType } from './util/imageEffect';
@@ -43,7 +42,7 @@ export default class PaintApp {
             const mousePos = this._app.GetMousePos();
             const mouseWorld = this._mainCamera2d.MouseToWorld2D(mousePos[0], mousePos[1], glCanvas.width, glCanvas.height);
             const canvasPos = this._canvasObj.MouseToCanvasCoordinates(mouseWorld[0], mouseWorld[1]);
-            this._toolManager.GetSelectedTool().OnMouseDown(canvasPos[0], canvasPos[1], ev.button);
+            this._toolManager.GetSelectedTool()?.OnMouseDown(canvasPos[0], canvasPos[1], ev.button);
             if (ev.button === 1) {
                 panningStartPos = this._app.GetMousePos();
                 panning = true;
@@ -54,7 +53,7 @@ export default class PaintApp {
             const mousePos = this._app.GetMousePos();
             const mouseWorld = this._mainCamera2d.MouseToWorld2D(mousePos[0], mousePos[1], glCanvas.width, glCanvas.height);
             const canvasPos = this._canvasObj.MouseToCanvasCoordinates(mouseWorld[0], mouseWorld[1]);
-            this._toolManager.GetSelectedTool().OnMouseMove(canvasPos[0], canvasPos[1]);
+            this._toolManager.GetSelectedTool()?.OnMouseMove(canvasPos[0], canvasPos[1]);
             if (panning) {
                 const [x, y] = this._app.GetMousePos();
                 const dx = x - panningStartPos[0];
@@ -69,7 +68,7 @@ export default class PaintApp {
             const mousePos = this._app.GetMousePos();
             const mouseWorld = this._mainCamera2d.MouseToWorld2D(mousePos[0], mousePos[1], glCanvas.width, glCanvas.height);
             const canvasPos = this._canvasObj.MouseToCanvasCoordinates(mouseWorld[0], mouseWorld[1]);
-            this._toolManager.GetSelectedTool().OnMouseUp(canvasPos[0], canvasPos[1], ev.button);
+            this._toolManager.GetSelectedTool()?.OnMouseUp(canvasPos[0], canvasPos[1], ev.button);
             if (ev.button === 1) {
                 panning = false;
             }
@@ -188,16 +187,20 @@ export default class PaintApp {
     }
 
     public GetToolColour() {
-        return this._toolManager.GetSelectedTool().ColourSelection;
+        return this._toolManager.GetSelectedTool()?.ColourSelection;
     }
 
     public SetPrimaryToolColour(colour: RGBA) {
-        this._toolManager.GetSelectedTool().ColourSelection.Primary = colour;
+        const selectedTool = this._toolManager.GetSelectedTool();
+        if (!selectedTool) return;
+        selectedTool.ColourSelection.Primary = colour;
         this.GetEventManager().Notify('ChangePrimaryColour', colour);
     }
 
     public SetSecondaryToolColour(colour: RGBA) {
-        this._toolManager.GetSelectedTool().ColourSelection.Secondary = colour;
+        const selectedTool = this._toolManager.GetSelectedTool();
+        if (!selectedTool) return;
+        selectedTool.ColourSelection.Secondary = colour;
         this.GetEventManager().Notify('ChangeSecondaryColour', colour);
     }
 
@@ -206,12 +209,8 @@ export default class PaintApp {
     }
 
     public SetTool(toolId: string) {
-        const oldTool = this._toolManager.GetSelectedTool();
-        oldTool.OnExit();
-        const newTool = this._toolManager.GetTool(toolId);
-        newTool.ColourSelection = oldTool.ColourSelection; // keep colour selection
         this._toolManager.SetSelectedTool(toolId);
-        this.GetEventManager().Notify('ChangeTool', newTool.GetID());
+        this.GetEventManager().Notify('ChangeTool', toolId);
     }
 
     public ApplyImageEffect(effect: KernelOperation | ImageEffectType) {
@@ -231,10 +230,6 @@ export default class PaintApp {
 
     public GetToolManager() {
         return this._toolManager;
-    }
-
-    public HelperCreateTool<T extends Tool>(func: (gl: WebGL2RenderingContext, canvasObject: CanvasObject) => T) {
-        return func(this._app.GetGLContext(), this._canvasObj);
     }
 
     public static Init(canvas: HTMLCanvasElement) {

@@ -2,6 +2,7 @@ import CanvasObject from "../../objects/canvasObject";
 import CircleObject from "../../objects/circleObject";
 import QuadObject from "../../objects/quadObject";
 import RectangleObject from "../../objects/rectangleObject";
+import { ColourSelection } from "../../util/colour";
 import { GetTouchingControlPoint, Point } from "../../util/controlPoints";
 import Tool from "../tool";
 import { ToolOption } from "../toolOptions";
@@ -25,6 +26,18 @@ export default class ShapeTool extends Tool {
     }
 
     public OnToolOptionChange(option: ToolOption): void {
+        switch (this._state) {
+            case 'waiting for initial point':
+            case 'waiting for initial release':
+            case 'waiting for controlpoint edit finish': {
+                this._canvasObj.CancelPreviewCanvas();
+                this.RenderShape();
+                break;
+            }
+        }
+    }
+
+    public OnColourSelectionChange(colourSelection: ColourSelection): void {
         switch (this._state) {
             case 'waiting for initial point':
             case 'waiting for initial release':
