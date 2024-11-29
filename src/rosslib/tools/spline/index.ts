@@ -49,7 +49,7 @@ export default class SplineTool extends Tool {
         switch (this._state) {
             case 'waiting for point edit finish': {
                 this._canvasObj.CancelPreviewCanvas();
-                this.RenderSpline(false);
+                this.RenderSpline();
                 break;
             }
         }
