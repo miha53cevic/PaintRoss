@@ -21,6 +21,9 @@ TODO plan za Projekt R
 - **Color picker Tool** (-)
   - Get canvas pixel colour
 
+- **CheckerMark Pattern On Canvas** (-)
+  - Show checkermark pattern on alpha 0 on canvas
+
 - **Resize options** (-)
   - resize image
   - resize canvas
