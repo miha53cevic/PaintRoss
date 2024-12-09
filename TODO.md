@@ -10,6 +10,7 @@ TODO plan za Projekt R
   - Holding middle click and left click with pen tool and moving mouse around (-)
   - Instantiate the tools once and then reuse them to keep their settings (+)
   - When changing options trigger rerender of current tool maybe... (OnToolOptionChange function for each tool) (+)
+  - When changing colours trigger rerender of current tool (OnColourSelectionChange) (+)
 
 - **Draw basic shapes** (+)
   - circle/elipse
@@ -19,6 +20,9 @@ TODO plan za Projekt R
 
 - **Color picker Tool** (-)
   - Get canvas pixel colour
+
+- **CheckerMark Pattern On Canvas** (-)
+  - Show checkermark pattern on alpha 0 on canvas
 
 - **Resize options** (-)
   - resize image

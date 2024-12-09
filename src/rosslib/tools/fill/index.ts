@@ -1,17 +1,21 @@
 import FloodFill from 'q-floodfill';
 import Texture from "../../glo/texture";
 import CanvasObject from '../../objects/canvasObject';
+import { ColourSelection } from '../../util/colour';
 import Tool from "../tool";
 import { ToolOption } from '../toolOptions';
 import FillToolOptions from './fillToolOptions';
 
 export default class FillTool extends Tool {
-
-    constructor(gl: WebGL2RenderingContext, canvasObj: CanvasObject) {
-        super(gl, canvasObj, new FillToolOptions());
+    constructor(gl: WebGL2RenderingContext, canvasObj: CanvasObject, colourSelection: ColourSelection) {
+        super(gl, canvasObj, new FillToolOptions(), colourSelection);
     }
 
     public OnToolOptionChange(option: ToolOption): void {
+    }
+
+    public OnColourSelectionChange(colourSelection: ColourSelection): void {
+        if (!this.IsActive) return;
     }
 
     public OnMouseDown(canvasX: number | undefined, canvasY: number | undefined, mouseButton: number): void {

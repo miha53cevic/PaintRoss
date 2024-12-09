@@ -20,16 +20,19 @@ export default class ToolManager {
         return tool;
     }
 
-    public GetSelectedTool(): Tool {
-        if (this._selectedTool === null) throw new Error("No tool selected");
+    public GetSelectedTool(): Tool | null {
         return this._selectedTool;
     }
 
     public SetSelectedTool(name: string): void {
-        const tool = this.GetTool(name);
-        if (tool !== null) {
-            this._selectedTool = tool;
-        }
+        const oldTool = this.GetSelectedTool();
+        oldTool?.OnExit();
+
+        if (oldTool) oldTool.IsActive = false;
+
+        const newTool = this.GetTool(name);
+        newTool.IsActive = true;
+        this._selectedTool = newTool;
     }
 
     public GetTools(): Tool[] {

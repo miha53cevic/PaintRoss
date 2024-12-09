@@ -2,6 +2,7 @@ import CanvasObject from "../../objects/canvasObject";
 import CircleObject from "../../objects/circleObject";
 import QuadObject from "../../objects/quadObject";
 import RectangleObject from "../../objects/rectangleObject";
+import { ColourSelection } from "../../util/colour";
 import { GetTouchingControlPoint, Point } from "../../util/controlPoints";
 import Tool from "../tool";
 import { ToolOption } from "../toolOptions";
@@ -18,13 +19,26 @@ export default class ShapeTool extends Tool {
 
     public ControlPointSize: Point = [10, 10];
 
-    constructor(_gl: WebGL2RenderingContext, _canvasObj: CanvasObject) {
-        super(_gl, _canvasObj, new ShapeToolOptions());
+    constructor(_gl: WebGL2RenderingContext, _canvasObj: CanvasObject, colourSelection: ColourSelection) {
+        super(_gl, _canvasObj, new ShapeToolOptions(), colourSelection);
         this._circleObject = new CircleObject(_gl);
         this._rectangleObject = new RectangleObject(_gl);
     }
 
     public OnToolOptionChange(option: ToolOption): void {
+        switch (this._state) {
+            case 'waiting for initial point':
+            case 'waiting for initial release':
+            case 'waiting for controlpoint edit finish': {
+                this._canvasObj.CancelPreviewCanvas();
+                this.RenderShape();
+                break;
+            }
+        }
+    }
+
+    public OnColourSelectionChange(colourSelection: ColourSelection): void {
+        if (!this.IsActive) return; // Only update if the tool is active
         switch (this._state) {
             case 'waiting for initial point':
             case 'waiting for initial release':

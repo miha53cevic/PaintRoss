@@ -1,5 +1,6 @@
 import CanvasObject from "../../objects/canvasObject";
 import LineObject from "../../objects/lineObject";
+import { ColourSelection } from "../../util/colour";
 import Tool from "../tool";
 import { ToolOption } from "../toolOptions";
 import PenToolOptions from "./penToolOptions";
@@ -10,13 +11,17 @@ export default class PenTool extends Tool {
     private _lineObject: LineObject;
     private _maxPointHistory = 3;
 
-    constructor(gl: WebGL2RenderingContext, canvasObj: CanvasObject) {
-        super(gl, canvasObj, new PenToolOptions());
+    constructor(gl: WebGL2RenderingContext, canvasObj: CanvasObject, colourSelection: ColourSelection) {
+        super(gl, canvasObj, new PenToolOptions(), colourSelection);
         this._lineObject = new LineObject(gl);
     }
 
     public GetID(): string {
         return "Pen";
+    }
+
+    public OnColourSelectionChange(colourSelection: ColourSelection): void {
+        if (!this.IsActive) return;
     }
 
     public OnToolOptionChange(option: ToolOption): void {

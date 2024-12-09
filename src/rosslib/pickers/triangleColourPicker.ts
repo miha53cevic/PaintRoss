@@ -1,6 +1,6 @@
 import PaintApp from "..";
 import GLMath from "../glmath";
-import { RGBA } from "../util/colour";
+import { HSVToRGB, RGBA, RGBToHSV } from "../util/colour";
 import ColourPicker from "./colourPicker";
 
 type Area = 'Outside' | 'Wheel' | 'Triangle';
@@ -15,7 +15,7 @@ export interface PickResult {
 // Modified code from:
 // https://stackoverflow.com/a/42533628
 export default class TriangularColourPicker extends ColourPicker {
-    private _currentHue: number = 0.0;
+    private _currentHue: number = 0.0; // in radians
     private _currentSaturation: number = 1.0;
     private _currentValue: number = 1.0;
 
@@ -58,7 +58,7 @@ export default class TriangularColourPicker extends ColourPicker {
             this.DrawChoosenPoint(triangleX, triangleY);
 
             // Update the colour in the PaintApp
-            const rgba: RGBA = this.HsvToRgb(this._currentHue, this._currentSaturation, this._currentValue, 1);
+            const rgba: RGBA = HSVToRGB(this._currentHue, this._currentSaturation, this._currentValue);
             if (mouseButton === 0) PaintApp.Get().SetPrimaryToolColour(rgba);
             else if (mouseButton === 2) PaintApp.Get().SetSecondaryToolColour(rgba);
         }
@@ -105,10 +105,10 @@ export default class TriangularColourPicker extends ColourPicker {
                     color = [0, 0, 0, 0];
                 } else if (result.Area === 'Wheel') {
                     // Wheel
-                    color = this.HsvToRgb(result.Hue!, sat, val, 1);
+                    color = HSVToRGB(result.Hue!, sat, val);
                 } else {
                     // Triangle
-                    color = this.HsvToRgb(hue, result.Sat!, result.Val!, 1);
+                    color = HSVToRGB(hue, result.Sat!, result.Val!);
                 }
                 const index = (y * this.Size + x) * 4;
                 data[index] = color[0];
@@ -119,28 +119,6 @@ export default class TriangularColourPicker extends ColourPicker {
         }
 
         this._ctx.putImageData(imgData, 0, 0);
-    }
-
-    private HsvToRgb(hue: number, sat: number, val: number, alpha: number): [number, number, number, number] {
-        const chroma = val * sat;
-        const step = Math.PI / 3;
-        const interm = chroma * (1 - Math.abs((hue / step) % 2 - 1));
-        const shift = val - chroma;
-        if (hue < 1 * step) return this.Rgb(shift + chroma, shift + interm, shift + 0, alpha);
-        if (hue < 2 * step) return this.Rgb(shift + interm, shift + chroma, shift + 0, alpha);
-        if (hue < 3 * step) return this.Rgb(shift + 0, shift + chroma, shift + interm, alpha);
-        if (hue < 4 * step) return this.Rgb(shift + 0, shift + interm, shift + chroma, alpha);
-        if (hue < 5 * step) return this.Rgb(shift + interm, shift + 0, shift + chroma, alpha);
-        return this.Rgb(shift + chroma, shift + 0, shift + interm, alpha);
-    }
-
-    private Rgb(red: number, green: number, blue: number, alpha: number): [number, number, number, number] {
-        return [
-            Math.min(255, Math.round(red * 255)),
-            Math.min(255, Math.round(green * 255)),
-            Math.min(255, Math.round(blue * 255)),
-            Math.min(255, Math.round(alpha * 255))
-        ];
     }
 
     public GetWheelPosition(hue: number): [number, number] {
@@ -165,5 +143,20 @@ export default class TriangularColourPicker extends ColourPicker {
         this._ctx.beginPath();
         this._ctx.arc(x, y, radius, 0, GLMath.ToRadian(360));
         this._ctx.stroke();
+    }
+
+    public SetPick(colour: RGBA): void {
+        const [hue, sat, val] = RGBToHSV(colour);
+        this._currentHue = hue;
+        this._currentSaturation = sat;
+        this._currentValue = val;
+
+        this.DrawPicker(hue, 1, 1);
+
+        const [wheelX, wheelY] = this.GetWheelPosition(this._currentHue);
+        this.DrawChoosenPoint(wheelX, wheelY);
+
+        const [triangleX, triangleY] = this.GetTrianglePosition(this._currentSaturation, this._currentValue);
+        this.DrawChoosenPoint(triangleX, triangleY);
     }
 }

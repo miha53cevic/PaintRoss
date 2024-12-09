@@ -8,11 +8,11 @@ import QuadObject from './objects/quadObject';
 import Scene2D from './scene2d';
 import FillTool from './tools/fill';
 import PenTool from './tools/pen';
+import PickerTool from './tools/picker';
 import ShapeTool from './tools/shape';
 import SplineTool from './tools/spline';
-import Tool from './tools/tool';
 import ToolManager from './tools/toolManager';
-import { RGBA } from './util/colour';
+import { ColourSelection, RGBA } from './util/colour';
 import { ImageEffectType } from './util/imageEffect';
 import ImageFormat from './util/imageFormat';
 import { KernelOperation } from './util/imageKernel';
@@ -26,6 +26,7 @@ export default class PaintApp {
     private _mainCamera2d: Camera2D;
     private _canvasObj: CanvasObject;
     private _toolManager: ToolManager;
+    private _colourSelection: ColourSelection;
 
     private constructor(private readonly _htmlCanvas: HTMLCanvasElement) {
         Logger.Enable();
@@ -35,6 +36,7 @@ export default class PaintApp {
         const glCanvas = this._app.GetGLCanvas();
 
         this._toolManager = new ToolManager();
+        this._colourSelection = new ColourSelection();
 
         let panning = false;
         let panningStartPos: [number, number] = [0, 0];
@@ -43,7 +45,7 @@ export default class PaintApp {
             const mousePos = this._app.GetMousePos();
             const mouseWorld = this._mainCamera2d.MouseToWorld2D(mousePos[0], mousePos[1], glCanvas.width, glCanvas.height);
             const canvasPos = this._canvasObj.MouseToCanvasCoordinates(mouseWorld[0], mouseWorld[1]);
-            this._toolManager.GetSelectedTool().OnMouseDown(canvasPos[0], canvasPos[1], ev.button);
+            this._toolManager.GetSelectedTool()?.OnMouseDown(canvasPos[0], canvasPos[1], ev.button);
             if (ev.button === 1) {
                 panningStartPos = this._app.GetMousePos();
                 panning = true;
@@ -54,7 +56,7 @@ export default class PaintApp {
             const mousePos = this._app.GetMousePos();
             const mouseWorld = this._mainCamera2d.MouseToWorld2D(mousePos[0], mousePos[1], glCanvas.width, glCanvas.height);
             const canvasPos = this._canvasObj.MouseToCanvasCoordinates(mouseWorld[0], mouseWorld[1]);
-            this._toolManager.GetSelectedTool().OnMouseMove(canvasPos[0], canvasPos[1]);
+            this._toolManager.GetSelectedTool()?.OnMouseMove(canvasPos[0], canvasPos[1]);
             if (panning) {
                 const [x, y] = this._app.GetMousePos();
                 const dx = x - panningStartPos[0];
@@ -69,7 +71,7 @@ export default class PaintApp {
             const mousePos = this._app.GetMousePos();
             const mouseWorld = this._mainCamera2d.MouseToWorld2D(mousePos[0], mousePos[1], glCanvas.width, glCanvas.height);
             const canvasPos = this._canvasObj.MouseToCanvasCoordinates(mouseWorld[0], mouseWorld[1]);
-            this._toolManager.GetSelectedTool().OnMouseUp(canvasPos[0], canvasPos[1], ev.button);
+            this._toolManager.GetSelectedTool()?.OnMouseUp(canvasPos[0], canvasPos[1], ev.button);
             if (ev.button === 1) {
                 panning = false;
             }
@@ -131,10 +133,11 @@ export default class PaintApp {
         this._canvasObj.DebugMode = false;
 
         this._toolManager.RegisterTools([
-            new PenTool(gl, this._canvasObj),
-            new SplineTool(gl, this._canvasObj),
-            new FillTool(gl, this._canvasObj),
-            new ShapeTool(gl, this._canvasObj),
+            new PenTool(gl, this._canvasObj, this._colourSelection),
+            new SplineTool(gl, this._canvasObj, this._colourSelection),
+            new FillTool(gl, this._canvasObj, this._colourSelection),
+            new ShapeTool(gl, this._canvasObj, this._colourSelection),
+            new PickerTool(gl, this._canvasObj, this._colourSelection),
         ]);
 
         const lineObject = new LineObject(gl);
@@ -188,16 +191,16 @@ export default class PaintApp {
     }
 
     public GetToolColour() {
-        return this._toolManager.GetSelectedTool().ColourSelection;
+        return this._colourSelection;
     }
 
     public SetPrimaryToolColour(colour: RGBA) {
-        this._toolManager.GetSelectedTool().ColourSelection.Primary = colour;
+        this._colourSelection.Primary = colour;
         this.GetEventManager().Notify('ChangePrimaryColour', colour);
     }
 
     public SetSecondaryToolColour(colour: RGBA) {
-        this._toolManager.GetSelectedTool().ColourSelection.Secondary = colour;
+        this._colourSelection.Secondary = colour;
         this.GetEventManager().Notify('ChangeSecondaryColour', colour);
     }
 
@@ -206,12 +209,8 @@ export default class PaintApp {
     }
 
     public SetTool(toolId: string) {
-        const oldTool = this._toolManager.GetSelectedTool();
-        oldTool.OnExit();
-        const newTool = this._toolManager.GetTool(toolId);
-        newTool.ColourSelection = oldTool.ColourSelection; // keep colour selection
         this._toolManager.SetSelectedTool(toolId);
-        this.GetEventManager().Notify('ChangeTool', newTool.GetID());
+        this.GetEventManager().Notify('ChangeTool', toolId);
     }
 
     public ApplyImageEffect(effect: KernelOperation | ImageEffectType) {
@@ -231,10 +230,6 @@ export default class PaintApp {
 
     public GetToolManager() {
         return this._toolManager;
-    }
-
-    public HelperCreateTool<T extends Tool>(func: (gl: WebGL2RenderingContext, canvasObject: CanvasObject) => T) {
-        return func(this._app.GetGLContext(), this._canvasObj);
     }
 
     public static Init(canvas: HTMLCanvasElement) {
