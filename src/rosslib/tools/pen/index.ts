@@ -11,8 +11,8 @@ export default class PenTool extends Tool {
     private _lineObject: LineObject;
     private _maxPointHistory = 3;
 
-    constructor(gl: WebGL2RenderingContext, canvasObj: CanvasObject) {
-        super(gl, canvasObj, new PenToolOptions());
+    constructor(gl: WebGL2RenderingContext, canvasObj: CanvasObject, colourSelection: ColourSelection) {
+        super(gl, canvasObj, new PenToolOptions(), colourSelection);
         this._lineObject = new LineObject(gl);
     }
 
@@ -21,6 +21,7 @@ export default class PenTool extends Tool {
     }
 
     public OnColourSelectionChange(colourSelection: ColourSelection): void {
+        if (!this.IsActive) return;
     }
 
     public OnToolOptionChange(option: ToolOption): void {

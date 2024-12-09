@@ -7,12 +7,13 @@ type OptionalNumber = number | undefined;
 
 export default abstract class Tool {
 
-    public readonly ColourSelection: ColourSelection = new ColourSelection();
+    public IsActive: boolean = false;
 
     constructor(
         protected readonly _gl: WebGL2RenderingContext,
         protected readonly _canvasObj: CanvasObject,
         protected readonly _toolOptions: ToolOptions,
+        public readonly ColourSelection: ColourSelection,
     ) {
         Logger.Log(this.constructor.name, "Tool created");
         _toolOptions.Subscribe(this.OnToolOptionChange.bind(this)); // bez bind(this) funkcija nema pristup varijablama klase

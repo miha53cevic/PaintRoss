@@ -1,3 +1,4 @@
+import { RGBA } from "../util/colour";
 
 export default abstract class ColourPicker {
     public Size: number = 400;
@@ -7,19 +8,26 @@ export default abstract class ColourPicker {
         this._ctx.canvas.height = this.Size;
 
         // Add color picking
-        _ctx.canvas.addEventListener('click', (ev) => {
-            const { X, Y } = this.TransformLocalMouseToCanvasMouse(ev);
-            this.PickColour(X, Y, ev.button);
-        });
-        _ctx.canvas.addEventListener('contextmenu', (ev) => {
-            ev.preventDefault();
-            const { X, Y } = this.TransformLocalMouseToCanvasMouse(ev);
-            this.PickColour(X, Y, ev.button);
-        });
+        _ctx.canvas.addEventListener('click', this.PickListener);
+        _ctx.canvas.addEventListener('contextmenu', this.PickListener);
+    }
+
+    // Must be arrow function because they inherit the 'this' context, otherwise 'this' would be the canvas element
+    // Also trying to bind the function doesn't work because bind creates a new function and the event listener doesn't know about it
+    // when trying to remove the event listener
+    private PickListener = (e: MouseEvent) => {
+        const { X, Y } = this.TransformLocalMouseToCanvasMouse(e);
+        this.PickColour(X, Y, e.button);
+    }
+
+    public OnExit(): void {
+        this._ctx.canvas.removeEventListener('click', this.PickListener);
+        this._ctx.canvas.removeEventListener('contextmenu', this.PickListener);
     }
 
     protected abstract PickColour(canvasX: number, canvasY: number, mouseButton: number): void;
     public abstract DrawPicker(): void;
+    public abstract SetPick(colour: RGBA): void;
 
     private TransformLocalMouseToCanvasMouse(ev: MouseEvent): { X: number, Y: number } {
         const rect = this._ctx.canvas.getBoundingClientRect();
@@ -28,7 +36,7 @@ export default abstract class ColourPicker {
             Y: ev.clientY - rect.top
         };
 
-        const localMousePositionNormalized = {
+        const localMousePositionNormalized = { // 0.0 to 1.0
             X: localMousePosition.X / rect.width,
             Y: localMousePosition.Y / rect.height
         };

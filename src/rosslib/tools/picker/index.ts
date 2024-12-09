@@ -6,8 +6,8 @@ import PickerToolOptions from "./pickerToolOptions";
 
 export default class PickerTool extends Tool {
 
-    constructor(gl: WebGL2RenderingContext, canvasObj: CanvasObject) {
-        super(gl, canvasObj, new PickerToolOptions());
+    constructor(gl: WebGL2RenderingContext, canvasObj: CanvasObject, colourSelection: ColourSelection) {
+        super(gl, canvasObj, new PickerToolOptions(), colourSelection);
     }
 
     public OnMouseDown(canvasX: number | undefined, canvasY: number | undefined, mouseButton: number): void {
@@ -31,6 +31,7 @@ export default class PickerTool extends Tool {
     }
 
     public OnColourSelectionChange(colourSelection: ColourSelection): void {
+        if (!this.IsActive) return;
     }
 
     public OnExit(): void {

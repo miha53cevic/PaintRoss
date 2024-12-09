@@ -40,8 +40,8 @@ export default class SplineTool extends Tool {
     public LineSegments = 200;
     public ControlPointSize: Point = [10, 10];
 
-    constructor(gl: WebGL2RenderingContext, canvasObj: CanvasObject) {
-        super(gl, canvasObj, new SplineToolOptions());
+    constructor(gl: WebGL2RenderingContext, canvasObj: CanvasObject, colourSelection: ColourSelection) {
+        super(gl, canvasObj, new SplineToolOptions(), colourSelection);
         this._lineObject = new LineObject(gl);
     }
 
@@ -56,7 +56,7 @@ export default class SplineTool extends Tool {
     }
 
     public OnColourSelectionChange(colourSelection: ColourSelection): void {
-        console.log(this._state)
+        if (!this.IsActive) return;
         switch (this._state) {
             case 'waiting for point edit finish': {
                 this._canvasObj.CancelPreviewCanvas();

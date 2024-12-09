@@ -19,8 +19,8 @@ export default class ShapeTool extends Tool {
 
     public ControlPointSize: Point = [10, 10];
 
-    constructor(_gl: WebGL2RenderingContext, _canvasObj: CanvasObject) {
-        super(_gl, _canvasObj, new ShapeToolOptions());
+    constructor(_gl: WebGL2RenderingContext, _canvasObj: CanvasObject, colourSelection: ColourSelection) {
+        super(_gl, _canvasObj, new ShapeToolOptions(), colourSelection);
         this._circleObject = new CircleObject(_gl);
         this._rectangleObject = new RectangleObject(_gl);
     }
@@ -38,6 +38,7 @@ export default class ShapeTool extends Tool {
     }
 
     public OnColourSelectionChange(colourSelection: ColourSelection): void {
+        if (!this.IsActive) return; // Only update if the tool is active
         switch (this._state) {
             case 'waiting for initial point':
             case 'waiting for initial release':

@@ -28,8 +28,10 @@ export default class ToolManager {
         const oldTool = this.GetSelectedTool();
         oldTool?.OnExit();
 
+        if (oldTool) oldTool.IsActive = false;
+
         const newTool = this.GetTool(name);
-        if (oldTool) newTool.ColourSelection.AssignColours(oldTool.ColourSelection); // copy colours from old tool
+        newTool.IsActive = true;
         this._selectedTool = newTool;
     }
 

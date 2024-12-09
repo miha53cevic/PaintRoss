@@ -12,7 +12,7 @@ import PickerTool from './tools/picker';
 import ShapeTool from './tools/shape';
 import SplineTool from './tools/spline';
 import ToolManager from './tools/toolManager';
-import { RGBA } from './util/colour';
+import { ColourSelection, RGBA } from './util/colour';
 import { ImageEffectType } from './util/imageEffect';
 import ImageFormat from './util/imageFormat';
 import { KernelOperation } from './util/imageKernel';
@@ -26,6 +26,7 @@ export default class PaintApp {
     private _mainCamera2d: Camera2D;
     private _canvasObj: CanvasObject;
     private _toolManager: ToolManager;
+    private _colourSelection: ColourSelection;
 
     private constructor(private readonly _htmlCanvas: HTMLCanvasElement) {
         Logger.Enable();
@@ -35,6 +36,7 @@ export default class PaintApp {
         const glCanvas = this._app.GetGLCanvas();
 
         this._toolManager = new ToolManager();
+        this._colourSelection = new ColourSelection();
 
         let panning = false;
         let panningStartPos: [number, number] = [0, 0];
@@ -131,11 +133,11 @@ export default class PaintApp {
         this._canvasObj.DebugMode = false;
 
         this._toolManager.RegisterTools([
-            new PenTool(gl, this._canvasObj),
-            new SplineTool(gl, this._canvasObj),
-            new FillTool(gl, this._canvasObj),
-            new ShapeTool(gl, this._canvasObj),
-            new PickerTool(gl, this._canvasObj),
+            new PenTool(gl, this._canvasObj, this._colourSelection),
+            new SplineTool(gl, this._canvasObj, this._colourSelection),
+            new FillTool(gl, this._canvasObj, this._colourSelection),
+            new ShapeTool(gl, this._canvasObj, this._colourSelection),
+            new PickerTool(gl, this._canvasObj, this._colourSelection),
         ]);
 
         const lineObject = new LineObject(gl);
@@ -189,20 +191,16 @@ export default class PaintApp {
     }
 
     public GetToolColour() {
-        return this._toolManager.GetSelectedTool()?.ColourSelection;
+        return this._colourSelection;
     }
 
     public SetPrimaryToolColour(colour: RGBA) {
-        const selectedTool = this._toolManager.GetSelectedTool();
-        if (!selectedTool) return;
-        selectedTool.ColourSelection.Primary = colour;
+        this._colourSelection.Primary = colour;
         this.GetEventManager().Notify('ChangePrimaryColour', colour);
     }
 
     public SetSecondaryToolColour(colour: RGBA) {
-        const selectedTool = this._toolManager.GetSelectedTool();
-        if (!selectedTool) return;
-        selectedTool.ColourSelection.Secondary = colour;
+        this._colourSelection.Secondary = colour;
         this.GetEventManager().Notify('ChangeSecondaryColour', colour);
     }
 
