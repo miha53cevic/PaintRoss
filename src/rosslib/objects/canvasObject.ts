@@ -2,6 +2,7 @@ import { vec2 } from "gl-matrix";
 import Camera2D from "../camera2d";
 import FrameBuffer from "../glo/framebuffer";
 import Texture from "../glo/texture";
+import { RGBA } from "../util/colour";
 import ImageEffect, { ImageEffectType } from "../util/imageEffect";
 import ImageKernel, { KernelOperation } from "../util/imageKernel";
 import ImageOperation from "../util/imageOperation";
@@ -117,8 +118,18 @@ export default class CanvasObject extends Object2D {
         };
     }
 
+    public GetColourAt(canvasX: number, canvasY: number): RGBA {
+        const canvasImage = this.GetCanvasImage();
+        const index = (canvasY * canvasImage.Width + canvasX) * 4;
+        return [
+            canvasImage.Pixels[index],
+            canvasImage.Pixels[index + 1],
+            canvasImage.Pixels[index + 2],
+            canvasImage.Pixels[index + 3],
+        ];
+    }
+
     public GetCanvasCamera() {
-        // divide left,right,bottom,top with zoom (since top and left are 0, 0/zoom is always zero)
         return new Camera2D(this.Size[0], this.Size[1]);
     }
 

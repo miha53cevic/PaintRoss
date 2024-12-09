@@ -19,8 +19,8 @@ export class ColourSelection {
     private _listeners: ColourSelectionListener[] = [];
 
     public AssignColours(colourSelection: ColourSelection) {
-        this.Primary = colourSelection.Primary;
-        this.Secondary = colourSelection.Secondary;
+        this.Primary = [...colourSelection.Primary];
+        this.Secondary = [...colourSelection.Secondary];
     }
 
     public get Primary() {
