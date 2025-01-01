@@ -95,7 +95,6 @@ export default class TriangularColourPicker extends ColourPicker {
     public DrawPicker(hue: number = 0.0, sat: number = 1.0, val: number = 1.0): void {
         const imgData = this._ctx.createImageData(this.Size, this.Size);
         const data = imgData.data;
-
         for (let y = 0; y < this.Size; y++) {
             for (let x = 0; x < this.Size; x++) {
                 const result = this.Pick(x, y);
@@ -147,11 +146,11 @@ export default class TriangularColourPicker extends ColourPicker {
 
     public SetPick(colour: RGBA): void {
         const [hue, sat, val] = RGBToHSV(colour);
-        this._currentHue = hue;
+        if (hue !== 0) this._currentHue = hue; // if the colour is black or white hue is always 0 so keep the previous selected hue
         this._currentSaturation = sat;
         this._currentValue = val;
 
-        this.DrawPicker(hue, 1, 1);
+        this.DrawPicker(this._currentHue, 1, 1);
 
         const [wheelX, wheelY] = this.GetWheelPosition(this._currentHue);
         this.DrawChoosenPoint(wheelX, wheelY);

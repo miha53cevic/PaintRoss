@@ -37,7 +37,7 @@ export default function CPicker() {
 
     const handlePickerChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         setPickerType(e.target.value as PickerType);
-    }
+    };
 
     return (
         <div className="absolute bottom-4 left-4 bg-slate-950 text-slate-400 rounded-2xl flex flex-col items-center justify-center w-[300px] h-[300px] p-4 gap-4">
