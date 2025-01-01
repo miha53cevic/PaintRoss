@@ -22,7 +22,7 @@ TODO plan za Projekt R
 - **Color picker Tool** (+)
   - Get canvas pixel colour
 
-- **CheckerMark Pattern On Canvas** (-)
+- **CheckerMark Pattern On Canvas** (+)
   - Show checkermark pattern on alpha 0 on canvas
 
 - **Resize options** (-)
@@ -54,7 +54,7 @@ TODO plan za Projekt R
   - Blending Layers
   - Layer UI
 
-- **Eraser Tool** (-)
+- **Eraser Tool** (+)
   - Eraser brush size option
 
 

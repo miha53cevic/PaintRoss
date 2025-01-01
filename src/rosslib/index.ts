@@ -17,6 +17,7 @@ import { ImageEffectType } from './util/imageEffect';
 import ImageFormat from './util/imageFormat';
 import { KernelOperation } from './util/imageKernel';
 import Logger from './util/logger';
+import EraserTool from './tools/eraser';
 
 export default class PaintApp {
     private static _instance: PaintApp | null = null;
@@ -126,6 +127,7 @@ export default class PaintApp {
         const quad2 = new QuadObject(gl);
         quad2.Size = vec2.fromValues(100, 100);
         quad2.Position = vec2.fromValues(100, 100);
+        quad2.Colour = [0, 255, 0, 0];
 
         this._canvasObj = new CanvasObject(gl);
         this._canvasObj.Size = vec2.fromValues(800, 600);
@@ -138,6 +140,7 @@ export default class PaintApp {
             new FillTool(gl, this._canvasObj, this._colourSelection),
             new ShapeTool(gl, this._canvasObj, this._colourSelection),
             new PickerTool(gl, this._canvasObj, this._colourSelection),
+            new EraserTool(gl, this._canvasObj, this._colourSelection),
         ]);
 
         const lineObject = new LineObject(gl);
