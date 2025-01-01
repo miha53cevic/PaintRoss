@@ -11,6 +11,7 @@ TODO plan za Projekt R
   - Instantiate the tools once and then reuse them to keep their settings (+)
   - When changing options trigger rerender of current tool maybe... (OnToolOptionChange function for each tool) (+)
   - When changing colours trigger rerender of current tool (OnColourSelectionChange) (+)
+  - Triangular Colour Picker wheel not changing on initial state (+)
 
 - **Draw basic shapes** (+)
   - circle/elipse
@@ -18,10 +19,10 @@ TODO plan za Projekt R
   - change fill style option (filled/outline)
   - manipulate shapes with hotpoints
 
-- **Color picker Tool** (-)
+- **Color picker Tool** (+)
   - Get canvas pixel colour
 
-- **CheckerMark Pattern On Canvas** (-)
+- **CheckerMark Pattern On Canvas** (+)
   - Show checkermark pattern on alpha 0 on canvas
 
 - **Resize options** (-)
@@ -53,7 +54,7 @@ TODO plan za Projekt R
   - Blending Layers
   - Layer UI
 
-- **Eraser Tool** (-)
+- **Eraser Tool** (+)
   - Eraser brush size option
 
 

@@ -38,9 +38,15 @@ uniform int u_usingTexture;
 uniform float u_kernel[9];
 uniform float u_kernelWeight;
 uniform int u_effect;
- 
-void main() {
-  if (u_usingTexture == 1) {
+
+float chessboardPattern(float u, float v, vec2 size) {
+    float chessboard = floor(u * size.x) + floor(v * size.y);
+    chessboard = fract(chessboard * 0.5); // equals mod(x,1.0), returns fractional part (.5 or .0)
+    bool isEven = chessboard == 0.0; 
+    return isEven ? 1.0 : 0.5; // white for even and gray for odd
+}
+
+vec3 applyEffects() {
     vec2 onePixel = vec2(1) / vec2(textureSize(textureSampler, 0));
 
     vec4 colorSum =
@@ -63,11 +69,26 @@ void main() {
     // invert colors
     if (u_effect == 2) colorSum = vec4(1.0) - colorSum;
 
-    FragColor = vec4((colorSum).rgb, 1);
+    return colorSum.rgb;
+}
+ 
+void main() {
+  vec2 chessboardSize = vec2(16.0);
+  vec3 outColour = vec3(1);
+
+  if (u_usingTexture == 1) {
+    if (texture(textureSampler, textureCoords).a == 0.0) { // if alpha is 0 use chessboard pattern
+        outColour = vec3(chessboardPattern(textureCoords.x, textureCoords.y, chessboardSize));
+    }
+    else outColour = applyEffects();
   }
-  else {
-    FragColor = vec4(u_colour);
+  else { // otherwise use solid colour
+    if (u_colour.a == 0.0) {
+        outColour = vec3(chessboardPattern(textureCoords.x, textureCoords.y, chessboardSize));
+    }
+    else outColour = u_colour.rgb;
   }
+  FragColor = vec4(outColour, 1);
 }
 `;
 
