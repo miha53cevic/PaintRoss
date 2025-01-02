@@ -1,14 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import { useForm } from "react-hook-form";
 import PaintApp from "../../rosslib";
-import Modal from "../Modal";
 import { Dropdown, DropdownItem, FileInput } from "./Dropdown";
 import { Info, InfoItem } from "./Info";
-
-interface ResizeImageFormData {
-    width: number,
-    height: number,
-}
+import ResizeCanvasModal from "./Modals/ResizeCanvasModal";
+import ResizeImageModal from "./Modals/ResizeImageModal";
 
 export default function AppBar() {
     const openImageRef = useRef<HTMLInputElement>(null);
@@ -52,46 +47,12 @@ export default function AppBar() {
     }, []);
 
     const [openResizeImageDialog, setOpenResizeImageDialog] = useState(false);
-    const { handleSubmit, register } = useForm<ResizeImageFormData>({
-        defaultValues: {
-            width: PaintApp.Get().GetCanvasImageSize()[0],
-            height: PaintApp.Get().GetCanvasImageSize()[1],
-        }
-    });
-    const onResizeImageSubmit = (data: ResizeImageFormData) => {
-        PaintApp.Get().ResizeImage(data.width, data.height);
-    };
+    const [openResizeCanvasDialog, setOpenResizeCanvasDialog] = useState(false);
 
     return (
         <div>
-            <Modal open={openResizeImageDialog} handleClose={() => setOpenResizeImageDialog(false)}
-                title="Resize Image"
-                submitButtonText="Resize"
-                forForm="resizeImageForm"
-            >
-                <form id="resizeImageForm" className="flex flex-col gap-4" onSubmit={handleSubmit(onResizeImageSubmit)}>
-                    <table>
-                        <tbody>
-                            <tr>
-                                <td>
-                                    <p>Width</p>
-                                </td>
-                                <td>
-                                    <input type="number" {...register('width', { valueAsNumber: true })} className="text-slate-800 w-full" />
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <p>Height</p>
-                                </td>
-                                <td>
-                                    <input type="number" {...register('height', { valueAsNumber: true })} className="text-slate-800 w-full" />
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </form>
-            </Modal>
+            <ResizeImageModal open={openResizeImageDialog} handleClose={() => setOpenResizeImageDialog(false)} />
+            <ResizeCanvasModal open={openResizeCanvasDialog} handleClose={() => setOpenResizeCanvasDialog(false)} />
             <nav className={`w-full h-12 bg-slate-950 text-slate-400 flex flex-row`}>
                 <div className="flex-grow flex flex-row">
                     <Dropdown title="File">
@@ -111,7 +72,7 @@ export default function AppBar() {
                     </Dropdown>
                     <Dropdown title="Image">
                         <DropdownItem onClick={() => setOpenResizeImageDialog(true)}>Resize Image</DropdownItem>
-                        <DropdownItem>Resize Canvas</DropdownItem>
+                        <DropdownItem onClick={() => setOpenResizeCanvasDialog(true)}>Resize Canvas</DropdownItem>
                     </Dropdown>
                     <Dropdown title="Help">
                         <DropdownItem onClick={() => alert('Napravio Mihael Petričević')}>About</DropdownItem>

@@ -16,12 +16,30 @@ export interface CanvasImage {
     Pixels: Uint8Array,
 }
 
+export enum CanvasAnchor {
+    TopLeft = 'TopLeft',
+    Top = 'Top',
+    TopRight = 'TopRight',
+    Left = 'Left',
+    Middle = 'Middle',
+    Right = 'Right',
+    BottomLeft = 'BottomLeft',
+    Bottom = 'Bottom',
+    BottomRight = 'BottomRight',
+}
+
+export type CanvasObjectListener = (canvasObject: CanvasObject) => void;
+export type CanvasObjectEvent = 'SizeChanged';
+
 export default class CanvasObject extends Object2D {
     private _quadCanvas: QuadObject;
     private _frameBuffer: FrameBuffer;
     private _previewFrameBuffer: FrameBuffer;
     private _texture: Texture;
     private _previewTexture: Texture;
+    private _listeners: Map<CanvasObjectEvent, CanvasObjectListener[]> = new Map([
+        ['SizeChanged', []]
+    ]);
 
     public DebugMode = false;
 
@@ -204,6 +222,86 @@ export default class CanvasObject extends Object2D {
         }
     }
 
+    public ResizeCanvasImage(newSizeX: number, newSizeY: number) {
+        // Get a copy of the old texture
+        const oldTexture = Texture.CopyTexture(this._gl, this._previewTexture);
+        // resize textures to canvas and clear them (set Size(value) is called)
+        this.Size = [newSizeX, newSizeY];
+        // Draw the old texture as a fullscreenQuad on the new texture
+        this.DrawFullscreenTextureOnCanvas(oldTexture);
+        this.MergePreviewCanvas();
+    }
+
+    public ResizeCanvasOnAnchor(anchor: CanvasAnchor, newSizeX: number, newSizeY: number) {
+        // Get a copy of the old texture
+        const oldTexture = Texture.CopyTexture(this._gl, this._previewTexture);
+        // resize textures to canvas and clear them (set Size(value) is called)
+        this.Size = [newSizeX, newSizeY];
+        // Draw the old texture with it's size based on anchor on new texture
+        const oldTextureQuad = new QuadObject(this._gl);
+        oldTextureQuad.Texture = oldTexture;
+        oldTextureQuad.Size = oldTexture.Size;
+        // Set position based on anchor point
+        const xDelta = Math.abs(newSizeX - oldTexture.Size[0]); // size change amount
+        const yDelta = Math.abs(newSizeY - oldTexture.Size[1]);
+        let position: [number, number];
+        switch (anchor) {
+            case CanvasAnchor.TopLeft:
+                position = [0, 0];
+                break;
+            case CanvasAnchor.Top:
+                position = [xDelta / 2, 0];
+                break;
+            case CanvasAnchor.TopRight:
+                position = [xDelta, 0];
+                break;
+            case CanvasAnchor.Left:
+                position = [0, yDelta / 2];
+                break;
+            case CanvasAnchor.Middle:
+                position = [xDelta / 2, yDelta / 2];
+                break;
+            case CanvasAnchor.Right:
+                position = [xDelta, yDelta / 2];
+                break;
+            case CanvasAnchor.BottomLeft:
+                position = [0, yDelta];
+                break;
+            case CanvasAnchor.Bottom:
+                position = [xDelta / 2, yDelta];
+                break;
+            case CanvasAnchor.BottomRight:
+                position = [xDelta, yDelta];
+                break;
+        }
+        oldTextureQuad.Position = position;
+        this.DrawOnCanvas(oldTextureQuad);
+        this.MergePreviewCanvas();
+    }
+
+    public Subscribe(event: CanvasObjectEvent, listener: CanvasObjectListener) {
+        const eventListeners = this._listeners.get(event);
+        if (!eventListeners) throw new Error(`Event ${event} does not exist`);
+        eventListeners.push(listener);
+        Logger.Log(this.constructor.name, `CanvasObject Subscribed`);
+    }
+
+    public Unsubscribe(event: CanvasObjectEvent, listener: CanvasObjectListener) {
+        const eventListeners = this._listeners.get(event);
+        if (!eventListeners) throw new Error(`Event ${event} does not exist`);
+
+        this._listeners.set(event, eventListeners.filter(l => l === listener));
+        Logger.Log(this.constructor.name, `CanvasObject Unsubscribed`);
+    }
+
+    public Notify(event: CanvasObjectEvent) {
+        const eventListeners = this._listeners.get(event);
+        if (!eventListeners) throw new Error(`Event ${event} does not exist`);
+        eventListeners.forEach(l => l(this));
+
+        Logger.Log(this.constructor.name, `Event ${event} notified`);
+    }
+
     get Position() {
         return this._quadCanvas.Position;
     }
@@ -230,15 +328,14 @@ export default class CanvasObject extends Object2D {
         this._quadCanvas.Size = value;
         Logger.Log("Event", "Updating canvas size");
 
-        // Get a copy of the old texture
-        const oldTexture = Texture.CopyTexture(this._gl, this._previewTexture);
         // Resize textures to new canvas size
         Texture.ResizeTexture(this._gl, this._texture, value[0], value[1], null);
         Texture.ResizeTexture(this._gl, this._previewTexture, value[0], value[1], null);
-        // Clear the resized textures
+        // Clear the resized textures (the original image is lost use ResizeCanvasImage to keep image)
         this.ClearCanvas();
         this.MergePreviewCanvas();
-        // Draw the old texture as a fullscreenQuad on the new texture
-        this.DrawFullscreenTextureOnCanvas(oldTexture);
+
+        this.Notify('SizeChanged');
     }
+
 }

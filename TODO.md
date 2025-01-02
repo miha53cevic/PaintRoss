@@ -27,8 +27,8 @@ TODO plan za Projekt R
 - **CheckerMark Pattern On Canvas** (+)
   - Show checkermark pattern on alpha 0 on canvas
 
-- **Resize options** (-)
-  - resize image (+)
+- **Resize options** (+)
+  - resize image
   - resize canvas
 
 - **Image Tools** (-)

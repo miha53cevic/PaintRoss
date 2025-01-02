@@ -2,7 +2,7 @@ import { vec2 } from 'gl-matrix';
 import App from './app';
 import Camera2D from './camera2d';
 import Texture from './glo/texture';
-import CanvasObject from './objects/canvasObject';
+import CanvasObject, { CanvasAnchor } from './objects/canvasObject';
 import LineObject from './objects/lineObject';
 import QuadObject from './objects/quadObject';
 import Scene2D from './scene2d';
@@ -216,6 +216,10 @@ export default class PaintApp {
         this.GetEventManager().Notify('ChangeTool', toolId);
     }
 
+    public GetCanvasObject() {
+        return this._canvasObj;
+    }
+
     public ApplyImageEffect(effect: KernelOperation | ImageEffectType) {
         switch (effect) {
             case 'Grayscale':
@@ -231,11 +235,12 @@ export default class PaintApp {
         }
     }
 
-    public ResizeImage(newSizeX: number, newSizeY: number) {
-        this._canvasObj.Size = [newSizeX, newSizeY];
+    public ResizeCanvasImage(newSizeX: number, newSizeY: number) {
+        this._canvasObj.ResizeCanvasImage(newSizeX, newSizeY);
     }
 
-    public ResizeCanvasWithAnchor(anchor: unknown) {
+    public ResizeCanvasWithAnchor(anchor: CanvasAnchor, newSizeX: number, newSizeY: number) {
+        this._canvasObj.ResizeCanvasOnAnchor(anchor, newSizeX, newSizeY);
     }
 
     public GetToolManager() {
