@@ -34,10 +34,13 @@ export default class CanvasObject extends Object2D {
         this._previewTexture = Texture.CreateTexture(gl, super.Size[0], super.Size[1], null);
         this.BindAttachemntsToFrameBuffers(this._texture, this._previewTexture);
 
-
         // Setup quad to render the framebuffer textures into
         this._quadCanvas = new QuadObject(gl); // canvasQuad u global space
         this._quadCanvas.Texture = this._previewTexture; // postavi framebuffer texture za kasnije renderiranje
+
+        // Clear initial textures
+        this.ClearCanvas();
+        this.MergePreviewCanvas();
     }
 
     private BindAttachemntsToFrameBuffers(texture: Texture, previewTexture: Texture) {
@@ -226,16 +229,16 @@ export default class CanvasObject extends Object2D {
     set Size(value) {
         this._quadCanvas.Size = value;
         Logger.Log("Event", "Updating canvas size");
-        // Resize textures to new canvas size
-        // TODO kaj kad je slika stara nutri, moram kopirat staru i napraviti veci canvas nekak
-        this._gl.deleteTexture(this._texture.Handle);
-        this._gl.deleteTexture(this._previewTexture.Handle);
-        this._texture = Texture.CreateTexture(this._gl, this.Size[0], this.Size[1], null);
-        this._previewTexture = Texture.CreateTexture(this._gl, this.Size[0], this.Size[1], null);
-        this.BindAttachemntsToFrameBuffers(this._texture, this._previewTexture);
 
-        this._quadCanvas.Texture = this._previewTexture;
+        // Get a copy of the old texture
+        const oldTexture = Texture.CopyTexture(this._gl, this._previewTexture);
+        // Resize textures to new canvas size
+        Texture.ResizeTexture(this._gl, this._texture, value[0], value[1], null);
+        Texture.ResizeTexture(this._gl, this._previewTexture, value[0], value[1], null);
+        // Clear the resized textures
         this.ClearCanvas();
         this.MergePreviewCanvas();
+        // Draw the old texture as a fullscreenQuad on the new texture
+        this.DrawFullscreenTextureOnCanvas(oldTexture);
     }
 }

@@ -6,6 +6,7 @@ import CanvasObject from './objects/canvasObject';
 import LineObject from './objects/lineObject';
 import QuadObject from './objects/quadObject';
 import Scene2D from './scene2d';
+import EraserTool from './tools/eraser';
 import FillTool from './tools/fill';
 import PenTool from './tools/pen';
 import PickerTool from './tools/picker';
@@ -17,7 +18,6 @@ import { ImageEffectType } from './util/imageEffect';
 import ImageFormat from './util/imageFormat';
 import { KernelOperation } from './util/imageKernel';
 import Logger from './util/logger';
-import EraserTool from './tools/eraser';
 
 export default class PaintApp {
     private static _instance: PaintApp | null = null;
@@ -120,8 +120,8 @@ export default class PaintApp {
         const quad1 = new QuadObject(gl);
         quad1.Size = vec2.fromValues(100, 100);
         quad1.Position = vec2.fromValues(0, 0);
-        Texture.LoadImage(gl, '/test.png').then(result => {
-            quad1.Texture = result.Texture;
+        Texture.LoadImage(gl, '/test.png').then(texture => {
+            quad1.Texture = texture;
         });
 
         const quad2 = new QuadObject(gl);
@@ -174,9 +174,9 @@ export default class PaintApp {
 
     public async LoadImage(url: string) {
         const gl = this._app.GetGLContext();
-        const { Texture: texture, ImgSize: imgSize } = await Texture.LoadImage(gl, url);
-        this._canvasObj.Size = imgSize;
-        this._canvasObj.DrawFullscreenTextureOnCanvas(texture);
+        const imageTexture = await Texture.LoadImage(gl, url);
+        this._canvasObj.Size = imageTexture.Size;
+        this._canvasObj.DrawFullscreenTextureOnCanvas(imageTexture);
         this.GetEventManager().Notify('OpenImage');
     }
 
@@ -189,7 +189,7 @@ export default class PaintApp {
         else return [Math.floor(canvasPos[0]), Math.floor(canvasPos[1])]; // remove decimals
     }
 
-    public GetCanvasImageSize() {
+    public GetCanvasImageSize(): [number, number] {
         return [this._canvasObj.Size[0], this._canvasObj.Size[1]];
     }
 
@@ -229,6 +229,13 @@ export default class PaintApp {
                 this._canvasObj.ApplyImageKernel(effect);
                 break;
         }
+    }
+
+    public ResizeImage(newSizeX: number, newSizeY: number) {
+        this._canvasObj.Size = [newSizeX, newSizeY];
+    }
+
+    public ResizeCanvasWithAnchor(anchor: unknown) {
     }
 
     public GetToolManager() {

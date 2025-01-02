@@ -1,7 +1,14 @@
 import { useEffect, useRef, useState } from "react";
+import { useForm } from "react-hook-form";
 import PaintApp from "../../rosslib";
+import Modal from "../Modal";
 import { Dropdown, DropdownItem, FileInput } from "./Dropdown";
 import { Info, InfoItem } from "./Info";
+
+interface ResizeImageFormData {
+    width: number,
+    height: number,
+}
 
 export default function AppBar() {
     const openImageRef = useRef<HTMLInputElement>(null);
@@ -44,22 +51,57 @@ export default function AppBar() {
         });
     }, []);
 
+    const [openResizeImageDialog, setOpenResizeImageDialog] = useState(false);
+    const { handleSubmit, register } = useForm<ResizeImageFormData>({
+        defaultValues: {
+            width: PaintApp.Get().GetCanvasImageSize()[0],
+            height: PaintApp.Get().GetCanvasImageSize()[1],
+        }
+    });
+    const onResizeImageSubmit = (data: ResizeImageFormData) => {
+        PaintApp.Get().ResizeImage(data.width, data.height);
+    };
+
     return (
         <div>
+            <Modal open={openResizeImageDialog} handleClose={() => setOpenResizeImageDialog(false)}
+                title="Resize Image"
+                submitButtonText="Resize"
+                forForm="resizeImageForm"
+            >
+                <form id="resizeImageForm" className="flex flex-col gap-4" onSubmit={handleSubmit(onResizeImageSubmit)}>
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <p>Width</p>
+                                </td>
+                                <td>
+                                    <input type="number" {...register('width', { valueAsNumber: true })} className="text-slate-800 w-full" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <p>Height</p>
+                                </td>
+                                <td>
+                                    <input type="number" {...register('height', { valueAsNumber: true })} className="text-slate-800 w-full" />
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </form>
+            </Modal>
             <nav className={`w-full h-12 bg-slate-950 text-slate-400 flex flex-row`}>
                 <div className="flex-grow flex flex-row">
-                    <Dropdown
-                        title="File"
-                    >
+                    <Dropdown title="File">
                         <DropdownItem onClick={handleOpenImage}>
                             Open Image
                             <FileInput className="hidden" type="file" accept="image/*" inputRef={openImageRef} />
                         </DropdownItem>
                         <DropdownItem onClick={handleSaveImage}>Save Image</DropdownItem>
                     </Dropdown>
-                    <Dropdown
-                        title="Image Effects"
-                    >
+                    <Dropdown title="Image Effects">
                         <DropdownItem onClick={() => PaintApp.Get().ApplyImageEffect('Grayscale')}>Grayscale</DropdownItem>
                         <DropdownItem onClick={() => PaintApp.Get().ApplyImageEffect('InvertColors')}>Invert colours</DropdownItem>
                         <DropdownItem onClick={() => PaintApp.Get().ApplyImageEffect('GaussianBlur')}>Blur</DropdownItem>
@@ -67,9 +109,11 @@ export default function AppBar() {
                         <DropdownItem onClick={() => PaintApp.Get().ApplyImageEffect('Sharpen')}>Sharpen</DropdownItem>
                         <DropdownItem onClick={() => PaintApp.Get().ApplyImageEffect('EdgeDetect')}>Edge detect</DropdownItem>
                     </Dropdown>
-                    <Dropdown
-                        title="Help"
-                    >
+                    <Dropdown title="Image">
+                        <DropdownItem onClick={() => setOpenResizeImageDialog(true)}>Resize Image</DropdownItem>
+                        <DropdownItem>Resize Canvas</DropdownItem>
+                    </Dropdown>
+                    <Dropdown title="Help">
                         <DropdownItem onClick={() => alert('Napravio Mihael Petričević')}>About</DropdownItem>
                     </Dropdown>
                 </div>

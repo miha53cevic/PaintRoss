@@ -1,11 +1,12 @@
 import Logger from "../util/logger";
+import FrameBuffer from "./framebuffer";
 
 export default class Texture {
-    private constructor(private readonly _gl: WebGL2RenderingContext, public readonly Handle: WebGLTexture) {
+    private constructor(private readonly _gl: WebGL2RenderingContext, public readonly Handle: WebGLTexture, private _size: [number, number]) {
     }
 
     public static LoadImage(gl: WebGL2RenderingContext, url: string) {
-        return new Promise<{ Texture: Texture, ImgSize: [number, number] }>((resolve, reject) => {
+        return new Promise<Texture>((resolve, reject) => {
             try {
                 const handle = gl.createTexture();
                 if (!handle) throw new Error("Error creating texture");
@@ -31,7 +32,7 @@ export default class Texture {
                     gl.bindTexture(gl.TEXTURE_2D, null);
 
                     image.remove();
-                    resolve({ Texture: new Texture(gl, handle), ImgSize: [imgWidth, imgHeight] });
+                    resolve(new Texture(gl, handle, [imgWidth, imgHeight]));
                 });
             } catch (err) {
                 reject(err);
@@ -49,7 +50,30 @@ export default class Texture {
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
         gl.bindTexture(gl.TEXTURE_2D, null);
 
-        return new Texture(gl, handle);
+        return new Texture(gl, handle, [imageWidth, imageHeight]);
+    }
+
+    public static ResizeTexture(gl: WebGL2RenderingContext, texture: Texture, newImageWidth: number, newImageHeight: number, newImageData: Uint8Array | Uint8ClampedArray | null) {
+        gl.bindTexture(gl.TEXTURE_2D, texture.Handle);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, newImageWidth, newImageHeight, 0, gl.RGBA, gl.UNSIGNED_BYTE, newImageData);
+        gl.bindTexture(gl.TEXTURE_2D, null);
+
+        texture._size = [newImageWidth, newImageHeight];
+    }
+
+    public static CopyTexture(gl: WebGL2RenderingContext, texture: Texture): Texture {
+        const framebuffer = new FrameBuffer(gl);
+        framebuffer.AddTextureAttachment(texture);
+
+        const copy = this.CreateTexture(gl, texture.Size[0], texture.Size[1], null);
+
+        framebuffer.Bind();
+        gl.bindTexture(gl.TEXTURE_2D, copy.Handle);
+        gl.copyTexSubImage2D(gl.TEXTURE_2D, 0, 0, 0, 0, 0, texture.Size[0], texture.Size[1]);
+        gl.bindTexture(gl.TEXTURE_2D, null);
+        framebuffer.Unbind();
+
+        return copy;
     }
 
     // texture_unit must be from gl.TEXTURE1, gl.TEXTURE2...
@@ -60,4 +84,7 @@ export default class Texture {
         this._gl.bindTexture(this._gl.TEXTURE_2D, this.Handle);
     }
 
+    public get Size() {
+        return this._size;
+    }
 }
