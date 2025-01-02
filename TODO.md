@@ -18,6 +18,8 @@ TODO plan za Projekt R
   - square/rectangle
   - change fill style option (filled/outline)
   - manipulate shapes with hotpoints
+  - rotate shapes (-)
+  - move shapes (-)
 
 - **Color picker Tool** (+)
   - Get canvas pixel colour
@@ -25,7 +27,7 @@ TODO plan za Projekt R
 - **CheckerMark Pattern On Canvas** (+)
   - Show checkermark pattern on alpha 0 on canvas
 
-- **Resize options** (-)
+- **Resize options** (+)
   - resize image
   - resize canvas
 
@@ -57,7 +59,10 @@ TODO plan za Projekt R
 - **Eraser Tool** (+)
   - Eraser brush size option
 
-
 - **Text** (-)
   - Find library for drawing text
+
+- **BrushCursor**
+  - circular cursor that shows which pixels will change
+  - for pen and eraser
 

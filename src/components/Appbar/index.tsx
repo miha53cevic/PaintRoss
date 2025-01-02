@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import PaintApp from "../../rosslib";
 import { Dropdown, DropdownItem, FileInput } from "./Dropdown";
 import { Info, InfoItem } from "./Info";
+import ResizeCanvasModal from "./Modals/ResizeCanvasModal";
+import ResizeImageModal from "./Modals/ResizeImageModal";
 
 export default function AppBar() {
     const openImageRef = useRef<HTMLInputElement>(null);
@@ -44,22 +46,23 @@ export default function AppBar() {
         });
     }, []);
 
+    const [openResizeImageDialog, setOpenResizeImageDialog] = useState(false);
+    const [openResizeCanvasDialog, setOpenResizeCanvasDialog] = useState(false);
+
     return (
         <div>
+            <ResizeImageModal open={openResizeImageDialog} handleClose={() => setOpenResizeImageDialog(false)} />
+            <ResizeCanvasModal open={openResizeCanvasDialog} handleClose={() => setOpenResizeCanvasDialog(false)} />
             <nav className={`w-full h-12 bg-slate-950 text-slate-400 flex flex-row`}>
                 <div className="flex-grow flex flex-row">
-                    <Dropdown
-                        title="File"
-                    >
+                    <Dropdown title="File">
                         <DropdownItem onClick={handleOpenImage}>
                             Open Image
                             <FileInput className="hidden" type="file" accept="image/*" inputRef={openImageRef} />
                         </DropdownItem>
                         <DropdownItem onClick={handleSaveImage}>Save Image</DropdownItem>
                     </Dropdown>
-                    <Dropdown
-                        title="Image Effects"
-                    >
+                    <Dropdown title="Image Effects">
                         <DropdownItem onClick={() => PaintApp.Get().ApplyImageEffect('Grayscale')}>Grayscale</DropdownItem>
                         <DropdownItem onClick={() => PaintApp.Get().ApplyImageEffect('InvertColors')}>Invert colours</DropdownItem>
                         <DropdownItem onClick={() => PaintApp.Get().ApplyImageEffect('GaussianBlur')}>Blur</DropdownItem>
@@ -67,9 +70,11 @@ export default function AppBar() {
                         <DropdownItem onClick={() => PaintApp.Get().ApplyImageEffect('Sharpen')}>Sharpen</DropdownItem>
                         <DropdownItem onClick={() => PaintApp.Get().ApplyImageEffect('EdgeDetect')}>Edge detect</DropdownItem>
                     </Dropdown>
-                    <Dropdown
-                        title="Help"
-                    >
+                    <Dropdown title="Image">
+                        <DropdownItem onClick={() => setOpenResizeImageDialog(true)}>Resize Image</DropdownItem>
+                        <DropdownItem onClick={() => setOpenResizeCanvasDialog(true)}>Resize Canvas</DropdownItem>
+                    </Dropdown>
+                    <Dropdown title="Help">
                         <DropdownItem onClick={() => alert('Napravio Mihael Petričević')}>About</DropdownItem>
                     </Dropdown>
                 </div>
