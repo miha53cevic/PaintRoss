@@ -177,6 +177,7 @@ export default class PaintApp {
         const imageTexture = await Texture.LoadImage(gl, url);
         this._canvasObj.Size = imageTexture.Size;
         this._canvasObj.DrawFullscreenTextureOnCanvas(imageTexture);
+        this._canvasObj.MergePreviewCanvas();
         this.GetEventManager().Notify('OpenImage');
     }
 
