@@ -1,5 +1,6 @@
 import { vec2 } from 'gl-matrix';
 import App from './app';
+import BrushCursor from './BrushCursor';
 import Camera2D from './camera2d';
 import Texture from './glo/texture';
 import CanvasObject, { CanvasAnchor } from './objects/canvasObject';
@@ -39,6 +40,8 @@ export default class PaintApp {
         this._toolManager = new ToolManager();
         this._colourSelection = new ColourSelection();
 
+        BrushCursor.Init(gl);
+
         let panning = false;
         let panningStartPos: [number, number] = [0, 0];
 
@@ -48,7 +51,7 @@ export default class PaintApp {
                 mousePos[0],
                 mousePos[1],
                 glCanvas.width,
-                glCanvas.height,
+                glCanvas.height
             );
             const canvasPos = this._canvasObj.MouseToCanvasCoordinates(mouseWorld[0], mouseWorld[1]);
             this._toolManager.GetSelectedTool()?.OnMouseDown(canvasPos[0], canvasPos[1], ev.button);
@@ -64,10 +67,11 @@ export default class PaintApp {
                 mousePos[0],
                 mousePos[1],
                 glCanvas.width,
-                glCanvas.height,
+                glCanvas.height
             );
             const canvasPos = this._canvasObj.MouseToCanvasCoordinates(mouseWorld[0], mouseWorld[1]);
             this._toolManager.GetSelectedTool()?.OnMouseMove(canvasPos[0], canvasPos[1]);
+            if (canvasPos[0] && canvasPos[1]) BrushCursor.Get().SetBrushCursorPosition(mouseWorld[0], mouseWorld[1]);
             if (panning) {
                 const [x, y] = this._app.GetMousePos();
                 const dx = x - panningStartPos[0];
@@ -84,7 +88,7 @@ export default class PaintApp {
                 mousePos[0],
                 mousePos[1],
                 glCanvas.width,
-                glCanvas.height,
+                glCanvas.height
             );
             const canvasPos = this._canvasObj.MouseToCanvasCoordinates(mouseWorld[0], mouseWorld[1]);
             this._toolManager.GetSelectedTool()?.OnMouseUp(canvasPos[0], canvasPos[1], ev.button);
@@ -148,7 +152,7 @@ export default class PaintApp {
         this._canvasObj.Size = vec2.fromValues(800, 600);
         this._canvasObj.Position = vec2.fromValues(
             gl.canvas.width / 2 - this._canvasObj.Size[0] / 2,
-            gl.canvas.height / 2 - this._canvasObj.Size[1] / 2,
+            gl.canvas.height / 2 - this._canvasObj.Size[1] / 2
         );
         this._canvasObj.DebugMode = false;
 
@@ -176,7 +180,7 @@ export default class PaintApp {
 
         this._toolManager.SetSelectedTool('Pen');
 
-        this._mainScene.Add([this._canvasObj, quad1, quad2]);
+        this._mainScene.Add([this._canvasObj, quad1, quad2, BrushCursor.Get().GetObject2D()]);
 
         this._app.OnResize = (width, height) => {
             this._mainCamera2d.UpdateProjectionMatrix(width, height);
@@ -212,7 +216,7 @@ export default class PaintApp {
             mousePos[0],
             mousePos[1],
             glCanvas.width,
-            glCanvas.height,
+            glCanvas.height
         );
         const canvasPos = this._canvasObj.MouseToCanvasCoordinates(worldMousePos[0], worldMousePos[1]);
         if (!canvasPos[0] && !canvasPos[1]) return [undefined, undefined];

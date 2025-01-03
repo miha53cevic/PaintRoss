@@ -1,3 +1,4 @@
+import BrushCursor from '../../BrushCursor';
 import CanvasObject from '../../objects/canvasObject';
 import CircleObject from '../../objects/circleObject';
 import LineObject from '../../objects/lineObject';
@@ -37,8 +38,8 @@ export default class EraserTool extends Tool {
     }
 
     public OnMouseMove(canvasX: number | undefined, canvasY: number | undefined): void {
+        if (!canvasX || !canvasY) return;
         if (this._drawing) {
-            if (!canvasX || !canvasY) return;
             this._points.push([canvasX, canvasY]); // don't math.floor here, because on zoom in it will create artifacts
             this.RenderEraserLines();
 
@@ -46,6 +47,9 @@ export default class EraserTool extends Tool {
             // Keeping multiple points helps to draw smooth lines (fix gaps between points)
             this._points = this._points.slice(-this._maxPointHistory);
         }
+
+        const brushSize = this._toolOptions.GetOption('BrushSize').Value as number;
+        BrushCursor.Get().SetBrushCursorSize(brushSize);
     }
 
     public OnKeyPress(key: string): void {}
@@ -60,6 +64,7 @@ export default class EraserTool extends Tool {
 
     public OnExit(): void {
         this._canvasObj.MergePreviewCanvas();
+        BrushCursor.Get().ResetBrushCursorSize();
     }
 
     public GetID(): string {
