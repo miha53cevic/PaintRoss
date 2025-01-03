@@ -12,6 +12,7 @@ interface EventTypeList extends TEventTypeList {
     ChangeSecondaryColour: (colour: RGBA) => void;
     OpenImage: () => void;
     ChangeCanvasCoordinates: (canvasPos: [number, number] | [undefined, undefined]) => void;
+    CanvasObjResize: (newSize: [number, number]) => void;
 }
 type EventType = keyof EventTypeList;
 type EventListenerParameter<T extends EventType> = Parameters<EventTypeList[T]>[0];

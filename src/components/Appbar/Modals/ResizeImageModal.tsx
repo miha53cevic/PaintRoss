@@ -23,10 +23,10 @@ export default function ResizeImageModal({ open, handleClose }: Props) {
 
     useEffect(() => {
         PaintApp.Get()
-            .GetCanvasObject()
-            .Subscribe('SizeChanged', (canvasObject) => {
-                setValue('width', canvasObject.Size[0]);
-                setValue('height', canvasObject.Size[1]);
+            .GetEventManager()
+            .Subscribe('CanvasObjResize', (newSize) => {
+                setValue('width', newSize[0]);
+                setValue('height', newSize[1]);
             });
     }, [setValue]);
 

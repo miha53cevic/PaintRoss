@@ -182,6 +182,10 @@ export default class PaintApp {
 
         this._mainScene.Add([this._canvasObj, quad1, quad2, BrushCursor.Get().GetObject2D()]);
 
+        this._canvasObj.Subscribe('SizeChanged', () => {
+            this._app.GetEventManager().Notify('CanvasObjResize', [this._canvasObj.Size[0], this._canvasObj.Size[1]]);
+        });
+
         this._app.OnResize = (width, height) => {
             this._mainCamera2d.UpdateProjectionMatrix(width, height);
         };
@@ -248,10 +252,6 @@ export default class PaintApp {
     public SetTool(toolId: string) {
         this._toolManager.SetSelectedTool(toolId);
         this.GetEventManager().Notify('ChangeTool', toolId);
-    }
-
-    public GetCanvasObject() {
-        return this._canvasObj;
     }
 
     public ApplyImageEffect(effect: KernelOperation | ImageEffectType) {
