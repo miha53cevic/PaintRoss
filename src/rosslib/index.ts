@@ -1,6 +1,6 @@
 import { vec2 } from 'gl-matrix';
 import App from './app';
-import BrushCursor from './BrushCursor';
+import BrushCursor from './brushCursor';
 import Camera2D from './camera2d';
 import Texture from './glo/texture';
 import CanvasObject, { CanvasAnchor } from './objects/canvasObject';

@@ -1,4 +1,4 @@
-import BrushCursor from '../../BrushCursor';
+import BrushCursor from '../../brushCursor';
 import CanvasObject from '../../objects/canvasObject';
 import LineObject from '../../objects/lineObject';
 import { ColourSelection } from '../../util/colour';

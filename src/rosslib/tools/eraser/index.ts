@@ -1,4 +1,4 @@
-import BrushCursor from '../../BrushCursor';
+import BrushCursor from '../../brushCursor';
 import CanvasObject from '../../objects/canvasObject';
 import CircleObject from '../../objects/circleObject';
 import LineObject from '../../objects/lineObject';
