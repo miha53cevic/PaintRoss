@@ -1,5 +1,5 @@
 export default class ImageOperation {
-    private constructor() { }
+    private constructor() {}
 
     static FlipImage(width: number, height: number, imageData: Uint8Array): Uint8Array {
         const flippedData = new Uint8Array(imageData.length);

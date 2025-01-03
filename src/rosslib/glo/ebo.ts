@@ -5,7 +5,7 @@ export default class EBO {
 
     constructor(private readonly _gl: WebGL2RenderingContext) {
         const vbo = _gl.createBuffer();
-        if (!vbo) throw Error("Error when creating element buffer object");
+        if (!vbo) throw Error('Error when creating element buffer object');
         this._ebo = vbo;
     }
 

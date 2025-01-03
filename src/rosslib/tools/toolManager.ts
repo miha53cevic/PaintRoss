@@ -1,17 +1,16 @@
-import Tool from "./tool";
+import Tool from './tool';
 
 export default class ToolManager {
     private _tools: Map<string, Tool> = new Map();
     private _selectedTool: Tool | null = null;
 
     public RegisterTool(tool: Tool): void {
-        if (this._tools.has(tool.GetID()))
-            throw new Error(`Tool with ID ${tool.GetID()} already exists`);
+        if (this._tools.has(tool.GetID())) throw new Error(`Tool with ID ${tool.GetID()} already exists`);
         this._tools.set(tool.GetID(), tool);
     }
 
     public RegisterTools(tools: Tool[]): void {
-        tools.forEach(tool => this.RegisterTool(tool));
+        tools.forEach((tool) => this.RegisterTool(tool));
     }
 
     public GetTool(name: string): Tool {

@@ -1,5 +1,5 @@
-import { vec2 } from "gl-matrix";
-import Camera2D from "../camera2d";
+import { vec2 } from 'gl-matrix';
+import Camera2D from '../camera2d';
 
 export default abstract class Object2D {
     private _position: vec2 = vec2.fromValues(0, 0);
@@ -30,7 +30,7 @@ export default abstract class Object2D {
         this._size = value;
     }
 
-    constructor(protected readonly _gl: WebGL2RenderingContext) { }
+    constructor(protected readonly _gl: WebGL2RenderingContext) {}
 
     public abstract Render(camera: Camera2D): void;
 }

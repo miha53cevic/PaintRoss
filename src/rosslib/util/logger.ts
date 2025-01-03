@@ -15,14 +15,14 @@ export default class Logger {
     }
 
     static Debug(message: string): void {
-        this.Log("DEBUG", message);
+        this.Log('DEBUG', message);
     }
 
     static Warn(message: string): void {
-        this.Log("WARN", message);
+        this.Log('WARN', message);
     }
 
     static Error(message: string): void {
-        this.Log("ERROR", message);
+        this.Log('ERROR', message);
     }
 }

@@ -1,11 +1,11 @@
-import CanvasObject from "../../objects/canvasObject";
-import LineObject from "../../objects/lineObject";
-import QuadObject from "../../objects/quadObject";
-import { ColourSelection } from "../../util/colour";
-import { GetTouchingControlPoint, Point } from "../../util/controlPoints";
-import Tool from "../tool";
-import { ToolOption } from "../toolOptions";
-import SplineToolOptions from "./splineToolOptions";
+import CanvasObject from '../../objects/canvasObject';
+import LineObject from '../../objects/lineObject';
+import QuadObject from '../../objects/quadObject';
+import { ColourSelection } from '../../util/colour';
+import { GetTouchingControlPoint, Point } from '../../util/controlPoints';
+import Tool from '../tool';
+import { ToolOption } from '../toolOptions';
+import SplineToolOptions from './splineToolOptions';
 
 function CatmulRomSpline(P: Point[], t: number): Point {
     const tt = t * t;
@@ -23,10 +23,7 @@ function CatmulRomSpline(P: Point[], t: number): Point {
 }
 
 function HalfPoint(p1: Point, p2: Point): Point {
-    return [
-        (p1[0] + p2[0]) / 2,
-        (p1[1] + p2[1]) / 2
-    ];
+    return [(p1[0] + p2[0]) / 2, (p1[1] + p2[1]) / 2];
 }
 
 type SplineState = 'waiting for initial click' | 'waiting for initial release' | 'waiting for point edit finish';
@@ -78,7 +75,8 @@ export default class SplineTool extends Tool {
                 break;
             }
             case 'waiting for point edit finish': {
-                if (mouseButton === 2) { // finish with right click
+                if (mouseButton === 2) {
+                    // finish with right click
                     this._canvasObj.CancelPreviewCanvas();
                     this.RenderSpline(false);
                     this._canvasObj.MergePreviewCanvas();
@@ -104,14 +102,7 @@ export default class SplineTool extends Tool {
                     const middlePoint = HalfPoint(p1, p4);
                     const p2 = HalfPoint(p1, middlePoint);
                     const p3 = HalfPoint(middlePoint, p4);
-                    this._controlPoints = [
-                        p1,
-                        p1,
-                        p2,
-                        p3,
-                        p4,
-                        p4,
-                    ];
+                    this._controlPoints = [p1, p1, p2, p3, p4, p4];
                     this.RenderSpline();
                     this._state = 'waiting for point edit finish';
                 }
@@ -160,11 +151,10 @@ export default class SplineTool extends Tool {
     }
 
     public GetID(): string {
-        return "Spline";
+        return 'Spline';
     }
 
-    public OnKeyPress(key: string): void {
-    }
+    public OnKeyPress(key: string): void {}
 
     public OnExit(): void {
         this._canvasObj.CancelPreviewCanvas();
@@ -174,7 +164,7 @@ export default class SplineTool extends Tool {
     }
 
     private RenderSpline(renderControlPoints: boolean = true) {
-        let numberOfConnectedSplines = (this._controlPoints.length - 2); // makni rubne kontrolne točke
+        let numberOfConnectedSplines = this._controlPoints.length - 2; // makni rubne kontrolne točke
         numberOfConnectedSplines -= 1; // za 2 imamo 1, za 3 imamo 2, za 4 imamo 3 spline-a... (odnosno length(controlPoints)-3)
         for (let j = 0; j < numberOfConnectedSplines; j++) {
             const curvePoints: Point[] = [];
@@ -190,7 +180,7 @@ export default class SplineTool extends Tool {
                 curvePoints.push(Ct);
             }
             // Render linestrip
-            this._lineObject.Thickness = this._toolOptions.GetOption("BrushSize").Value as number;
+            this._lineObject.Thickness = this._toolOptions.GetOption('BrushSize').Value as number;
             this._lineObject.Colour = this.ColourSelection.Primary;
             this._lineObject.SetPoints(curvePoints);
             this._canvasObj.DrawOnCanvas(this._lineObject);
@@ -201,7 +191,7 @@ export default class SplineTool extends Tool {
     }
 
     private RenderInitialLine() {
-        this._lineObject.Thickness = this._toolOptions.GetOption("BrushSize").Value as number;
+        this._lineObject.Thickness = this._toolOptions.GetOption('BrushSize').Value as number;
         this._lineObject.Colour = this.ColourSelection.Primary;
         this._lineObject.SetPoints(this._controlPoints);
         this._canvasObj.DrawOnCanvas(this._lineObject);
@@ -214,10 +204,7 @@ export default class SplineTool extends Tool {
             if (this._selectedControlPoint === controlPoint) {
                 quad.Colour = [255, 255, 0, 255];
             } else quad.Colour = [255, 0, 0, 255];
-            const pos: Point = [
-                controlPoint[0] - quad.Size[0] / 2,
-                controlPoint[1] - quad.Size[1] / 2,
-            ];
+            const pos: Point = [controlPoint[0] - quad.Size[0] / 2, controlPoint[1] - quad.Size[1] / 2];
             quad.Position = pos;
             this._canvasObj.DrawOnCanvas(quad);
         }

@@ -1,4 +1,4 @@
-import ToolOptions from "../toolOptions";
+import ToolOptions from '../toolOptions';
 
 export default class EraserToolOptions extends ToolOptions {
     constructor() {
@@ -7,7 +7,7 @@ export default class EraserToolOptions extends ToolOptions {
                 Name: 'BrushSize',
                 Type: 'number',
                 Value: 1,
-            }
+            },
         ]);
     }
 }

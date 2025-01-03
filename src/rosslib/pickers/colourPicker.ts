@@ -1,4 +1,4 @@
-import { RGBA } from "../util/colour";
+import { RGBA } from '../util/colour';
 
 export default abstract class ColourPicker {
     public Size: number = 400;
@@ -18,7 +18,7 @@ export default abstract class ColourPicker {
     private PickListener = (e: MouseEvent) => {
         const { X, Y } = this.TransformLocalMouseToCanvasMouse(e);
         this.PickColour(X, Y, e.button);
-    }
+    };
 
     public OnExit(): void {
         this._ctx.canvas.removeEventListener('click', this.PickListener);
@@ -29,22 +29,26 @@ export default abstract class ColourPicker {
     public abstract DrawPicker(): void;
     public abstract SetPick(colour: RGBA): void;
 
-    private TransformLocalMouseToCanvasMouse(ev: MouseEvent): { X: number, Y: number } {
+    private TransformLocalMouseToCanvasMouse(ev: MouseEvent): {
+        X: number;
+        Y: number;
+    } {
         const rect = this._ctx.canvas.getBoundingClientRect();
         const localMousePosition = {
             X: ev.clientX - rect.left,
-            Y: ev.clientY - rect.top
+            Y: ev.clientY - rect.top,
         };
 
-        const localMousePositionNormalized = { // 0.0 to 1.0
+        const localMousePositionNormalized = {
+            // 0.0 to 1.0
             X: localMousePosition.X / rect.width,
-            Y: localMousePosition.Y / rect.height
+            Y: localMousePosition.Y / rect.height,
         };
 
         // If canvas is 400x400px the actual canvas size could be 200x200px so we need to transform the mouse position
         const canvasMousePosition = {
             X: localMousePositionNormalized.X * this.Size,
-            Y: localMousePositionNormalized.Y * this.Size
+            Y: localMousePositionNormalized.Y * this.Size,
         };
 
         return canvasMousePosition;

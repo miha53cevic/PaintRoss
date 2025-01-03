@@ -1,10 +1,10 @@
-import Logger from "../util/logger";
+import Logger from '../util/logger';
 
 export interface ToolOption {
-    Name: string,
-    Type: 'number' | 'string' | 'boolean' | 'select',
-    Value: unknown,
-    PossibleValues?: unknown[],
+    Name: string;
+    Type: 'number' | 'string' | 'boolean' | 'select';
+    Value: unknown;
+    PossibleValues?: unknown[];
 }
 
 export type ToolOptionListener = (option: ToolOption) => void;
@@ -14,7 +14,7 @@ export default abstract class ToolOptions {
     protected _listeners: ToolOptionListener[] = [];
 
     constructor(initialOptions: ToolOption[]) {
-        initialOptions.forEach(option => {
+        initialOptions.forEach((option) => {
             this._options.set(option.Name, option);
         });
     }
@@ -40,11 +40,11 @@ export default abstract class ToolOptions {
     }
 
     public Unsubscribe(listener: ToolOptionListener): void {
-        this._listeners = this._listeners.filter(l => l !== listener);
+        this._listeners = this._listeners.filter((l) => l !== listener);
         Logger.Log(this.constructor.name, `OnToolChange Unsubscribed`);
     }
 
     public Notify(option: ToolOption): void {
-        this._listeners.forEach(listener => listener(option));
+        this._listeners.forEach((listener) => listener(option));
     }
 }

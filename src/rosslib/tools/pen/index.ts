@@ -1,9 +1,10 @@
-import CanvasObject from "../../objects/canvasObject";
-import LineObject from "../../objects/lineObject";
-import { ColourSelection } from "../../util/colour";
-import Tool from "../tool";
-import { ToolOption } from "../toolOptions";
-import PenToolOptions from "./penToolOptions";
+import BrushCursor from '../../BrushCursor';
+import CanvasObject from '../../objects/canvasObject';
+import LineObject from '../../objects/lineObject';
+import { ColourSelection } from '../../util/colour';
+import Tool from '../tool';
+import { ToolOption } from '../toolOptions';
+import PenToolOptions from './penToolOptions';
 
 export default class PenTool extends Tool {
     private _points: [number, number][] = [];
@@ -17,15 +18,14 @@ export default class PenTool extends Tool {
     }
 
     public GetID(): string {
-        return "Pen";
+        return 'Pen';
     }
 
     public OnColourSelectionChange(colourSelection: ColourSelection): void {
         if (!this.IsActive) return;
     }
 
-    public OnToolOptionChange(option: ToolOption): void {
-    }
+    public OnToolOptionChange(option: ToolOption): void {}
 
     public OnMouseDown(canvasX: number | undefined, canvasY: number | undefined, mouseButton: number): void {
         if (!canvasX || !canvasY) return;
@@ -44,8 +44,8 @@ export default class PenTool extends Tool {
     }
 
     public OnMouseMove(canvasX: number | undefined, canvasY: number | undefined): void {
+        if (!canvasX || !canvasY) return;
         if (this._drawing) {
-            if (!canvasX || !canvasY) return;
             this._points.push([canvasX, canvasY]); // don't math.floor here, because on zoom in it will create artifacts
             this.RenderLines();
 
@@ -53,13 +53,16 @@ export default class PenTool extends Tool {
             // Keeping multiple points helps to draw smooth lines (fix gaps between points)
             this._points = this._points.slice(-this._maxPointHistory);
         }
+
+        const brushSize = this._toolOptions.GetOption('BrushSize').Value as number;
+        BrushCursor.Get().SetBrushCursorSize(brushSize);
     }
 
-    public OnKeyPress(key: string): void {
-    }
+    public OnKeyPress(key: string): void {}
 
     public OnExit(): void {
         this._canvasObj.MergePreviewCanvas();
+        BrushCursor.Get().ResetBrushCursorSize();
     }
 
     private RenderLines() {

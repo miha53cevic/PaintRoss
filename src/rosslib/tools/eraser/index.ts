@@ -1,10 +1,11 @@
-import CanvasObject from "../../objects/canvasObject";
-import CircleObject from "../../objects/circleObject";
-import LineObject from "../../objects/lineObject";
-import { ColourSelection } from "../../util/colour";
-import Tool from "../tool";
-import { ToolOption } from "../toolOptions";
-import EraserToolOptions from "./eraserToolOptions";
+import BrushCursor from '../../BrushCursor';
+import CanvasObject from '../../objects/canvasObject';
+import CircleObject from '../../objects/circleObject';
+import LineObject from '../../objects/lineObject';
+import { ColourSelection } from '../../util/colour';
+import Tool from '../tool';
+import { ToolOption } from '../toolOptions';
+import EraserToolOptions from './eraserToolOptions';
 
 export default class EraserTool extends Tool {
     private _points: [number, number][] = [];
@@ -37,8 +38,8 @@ export default class EraserTool extends Tool {
     }
 
     public OnMouseMove(canvasX: number | undefined, canvasY: number | undefined): void {
+        if (!canvasX || !canvasY) return;
         if (this._drawing) {
-            if (!canvasX || !canvasY) return;
             this._points.push([canvasX, canvasY]); // don't math.floor here, because on zoom in it will create artifacts
             this.RenderEraserLines();
 
@@ -46,10 +47,12 @@ export default class EraserTool extends Tool {
             // Keeping multiple points helps to draw smooth lines (fix gaps between points)
             this._points = this._points.slice(-this._maxPointHistory);
         }
+
+        const brushSize = this._toolOptions.GetOption('BrushSize').Value as number;
+        BrushCursor.Get().SetBrushCursorSize(brushSize);
     }
 
-    public OnKeyPress(key: string): void {
-    }
+    public OnKeyPress(key: string): void {}
 
     public OnToolOptionChange(option: ToolOption): void {
         if (option.Name === 'BrushSize') {
@@ -57,11 +60,11 @@ export default class EraserTool extends Tool {
         }
     }
 
-    public OnColourSelectionChange(colourSelection: ColourSelection): void {
-    }
+    public OnColourSelectionChange(colourSelection: ColourSelection): void {}
 
     public OnExit(): void {
         this._canvasObj.MergePreviewCanvas();
+        BrushCursor.Get().ResetBrushCursorSize();
     }
 
     public GetID(): string {

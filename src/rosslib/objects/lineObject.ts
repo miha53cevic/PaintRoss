@@ -1,16 +1,15 @@
-import polyline_normals from "polyline-normals";
-import Camera2D from "../camera2d";
-import GLMath from "../glmath";
-import EBO from "../glo/ebo";
-import Shader from "../glo/shader";
-import VAO from "../glo/vao";
-import VBO from "../glo/vbo";
-import { NormalizeRGBA, RGBA } from "../util/colour";
-import Object2D from "./object2d";
+import polyline_normals from 'polyline-normals';
+import Camera2D from '../camera2d';
+import GLMath from '../glmath';
+import EBO from '../glo/ebo';
+import Shader from '../glo/shader';
+import VAO from '../glo/vao';
+import VBO from '../glo/vbo';
+import { NormalizeRGBA, RGBA } from '../util/colour';
+import Object2D from './object2d';
 
 // Resource for triangular line drawing used: https://mattdesl.svbtle.com/drawing-lines-is-hard
-const lineVertexShader =
-    `#version 300 es
+const lineVertexShader = `#version 300 es
 in vec2 a_position;
 in vec2 a_normal;
 in float a_miter;
@@ -25,8 +24,7 @@ void main() {
   gl_Position = u_projMat * u_viewMat * u_modelMat * vec4(pos, 0.0, 1.0);
 }
 `;
-const lineFragShader =
-    `#version 300 es
+const lineFragShader = `#version 300 es
 precision highp float;
 
 uniform vec4 colour;
@@ -69,8 +67,7 @@ export default class LineObject extends Object2D {
 
         this._normals = polyline_normals(points, closedLoop);
 
-
-        // If a closed loop add the first point to the end 
+        // If a closed loop add the first point to the end
         // (must be done after normals are calculated, otherwise the first normal has infinity mitter)
         if (closedLoop) {
             points.push(points[0]);

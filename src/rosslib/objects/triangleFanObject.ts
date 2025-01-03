@@ -1,13 +1,12 @@
-import Camera2D from "../camera2d";
-import GLMath from "../glmath";
-import Shader from "../glo/shader";
-import VAO from "../glo/vao";
-import VBO from "../glo/vbo";
-import { NormalizeRGBA, RGBA } from "../util/colour";
-import Object2D from "./object2d";
+import Camera2D from '../camera2d';
+import GLMath from '../glmath';
+import Shader from '../glo/shader';
+import VAO from '../glo/vao';
+import VBO from '../glo/vbo';
+import { NormalizeRGBA, RGBA } from '../util/colour';
+import Object2D from './object2d';
 
-const triangleFanVertexShader =
-    `#version 300 es
+const triangleFanVertexShader = `#version 300 es
 in vec2 a_position;
 
 uniform mat4 u_modelMat;
@@ -19,8 +18,7 @@ void main() {
   gl_Position = pos;
 }
 `;
-const triangleFanFragSHader =
-    `#version 300 es
+const triangleFanFragSHader = `#version 300 es
 precision highp float;
 
 uniform vec4 colour;
@@ -43,7 +41,8 @@ export default class TriangleFanObject extends Object2D {
     constructor(gl: WebGL2RenderingContext) {
         super(gl);
 
-        if (!TriangleFanObject._shader) TriangleFanObject._shader = new Shader(gl, triangleFanVertexShader, triangleFanFragSHader);
+        if (!TriangleFanObject._shader)
+            TriangleFanObject._shader = new Shader(gl, triangleFanVertexShader, triangleFanFragSHader);
 
         this._vao = new VAO(gl);
         this._vbo = new VBO(gl);

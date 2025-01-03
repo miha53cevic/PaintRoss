@@ -1,4 +1,4 @@
-import ToolOptions from "../toolOptions";
+import ToolOptions from '../toolOptions';
 
 export default class FillToolOptions extends ToolOptions {
     constructor() {

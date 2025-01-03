@@ -1,7 +1,6 @@
-import { glMatrix, mat4, vec2, vec3 } from "gl-matrix";
+import { glMatrix, mat4, vec2, vec3 } from 'gl-matrix';
 
 export default class GLMath {
-
     static CreateTransformationMatrix(position: vec3, rotation: vec3, scale: vec3) {
         const mat = mat4.create();
         mat4.fromTranslation(mat, position);
@@ -26,7 +25,11 @@ export default class GLMath {
         return mat;
     }
 
-    static CreateViewMatrix2D(pan: vec2 = vec2.fromValues(0, 0), zoom: number = 1.0, zoomCenter: vec2 = vec2.fromValues(0, 0)) {
+    static CreateViewMatrix2D(
+        pan: vec2 = vec2.fromValues(0, 0),
+        zoom: number = 1.0,
+        zoomCenter: vec2 = vec2.fromValues(0, 0),
+    ) {
         let mat = mat4.create();
         mat = this.UpdateViewMatrixZooming(mat, zoom, zoomCenter);
         mat = this.UpdateViewMatrixPanning(mat, pan);
@@ -41,7 +44,11 @@ export default class GLMath {
 
     static SetViewMatrixScale(viewMatrix: mat4, scale: vec3) {
         const currentScale = this.GetViewMatrixScale(viewMatrix);
-        const scaleRatio = vec3.fromValues(scale[0] / currentScale[0], scale[1] / currentScale[1], scale[2] / currentScale[2]); // scaleRatio = newScale / currentScale (scaleRatio * currentScale = newScale)
+        const scaleRatio = vec3.fromValues(
+            scale[0] / currentScale[0],
+            scale[1] / currentScale[1],
+            scale[2] / currentScale[2],
+        ); // scaleRatio = newScale / currentScale (scaleRatio * currentScale = newScale)
         const scaledMat = mat4.create();
         mat4.scale(scaledMat, viewMatrix, scaleRatio);
         return scaledMat;
@@ -68,7 +75,14 @@ export default class GLMath {
         return updatedViewMatrix;
     }
 
-    static CreateOrthoProjectionMatrix(left: number, right: number, bottom: number, top: number, nearPlane: number = -1, farPlane: number = 1) {
+    static CreateOrthoProjectionMatrix(
+        left: number,
+        right: number,
+        bottom: number,
+        top: number,
+        nearPlane: number = -1,
+        farPlane: number = 1,
+    ) {
         const mat = mat4.create();
         mat4.ortho(mat, left, right, bottom, top, nearPlane, farPlane);
         return mat;
