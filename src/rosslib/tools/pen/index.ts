@@ -1,9 +1,9 @@
-import CanvasObject from "../../objects/canvasObject";
-import LineObject from "../../objects/lineObject";
-import { ColourSelection } from "../../util/colour";
-import Tool from "../tool";
-import { ToolOption } from "../toolOptions";
-import PenToolOptions from "./penToolOptions";
+import CanvasObject from '../../objects/canvasObject';
+import LineObject from '../../objects/lineObject';
+import { ColourSelection } from '../../util/colour';
+import Tool from '../tool';
+import { ToolOption } from '../toolOptions';
+import PenToolOptions from './penToolOptions';
 
 export default class PenTool extends Tool {
     private _points: [number, number][] = [];
@@ -17,15 +17,14 @@ export default class PenTool extends Tool {
     }
 
     public GetID(): string {
-        return "Pen";
+        return 'Pen';
     }
 
     public OnColourSelectionChange(colourSelection: ColourSelection): void {
         if (!this.IsActive) return;
     }
 
-    public OnToolOptionChange(option: ToolOption): void {
-    }
+    public OnToolOptionChange(option: ToolOption): void {}
 
     public OnMouseDown(canvasX: number | undefined, canvasY: number | undefined, mouseButton: number): void {
         if (!canvasX || !canvasY) return;
@@ -55,8 +54,7 @@ export default class PenTool extends Tool {
         }
     }
 
-    public OnKeyPress(key: string): void {
-    }
+    public OnKeyPress(key: string): void {}
 
     public OnExit(): void {
         this._canvasObj.MergePreviewCanvas();

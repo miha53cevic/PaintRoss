@@ -3,7 +3,7 @@ export default class VBO {
 
     constructor(private readonly _gl: WebGL2RenderingContext) {
         const vbo = _gl.createBuffer();
-        if (!vbo) throw Error("Error when creating vertex buffer object");
+        if (!vbo) throw Error('Error when creating vertex buffer object');
         this._vbo = vbo;
     }
 

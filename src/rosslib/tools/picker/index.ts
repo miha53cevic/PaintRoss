@@ -1,11 +1,10 @@
-import CanvasObject from "../../objects/canvasObject";
-import { ColourSelection } from "../../util/colour";
-import Tool from "../tool";
-import { ToolOption } from "../toolOptions";
-import PickerToolOptions from "./pickerToolOptions";
+import CanvasObject from '../../objects/canvasObject';
+import { ColourSelection } from '../../util/colour';
+import Tool from '../tool';
+import { ToolOption } from '../toolOptions';
+import PickerToolOptions from './pickerToolOptions';
 
 export default class PickerTool extends Tool {
-
     constructor(gl: WebGL2RenderingContext, canvasObj: CanvasObject, colourSelection: ColourSelection) {
         super(gl, canvasObj, new PickerToolOptions(), colourSelection);
     }
@@ -18,26 +17,21 @@ export default class PickerTool extends Tool {
         }
     }
 
-    public OnMouseUp(canvasX: number | undefined, canvasY: number | undefined, mouseButton: number): void {
-    }
+    public OnMouseUp(canvasX: number | undefined, canvasY: number | undefined, mouseButton: number): void {}
 
-    public OnMouseMove(canvasX: number | undefined, canvasY: number | undefined): void {
-    }
+    public OnMouseMove(canvasX: number | undefined, canvasY: number | undefined): void {}
 
-    public OnKeyPress(key: string): void {
-    }
+    public OnKeyPress(key: string): void {}
 
-    public OnToolOptionChange(option: ToolOption): void {
-    }
+    public OnToolOptionChange(option: ToolOption): void {}
 
     public OnColourSelectionChange(colourSelection: ColourSelection): void {
         if (!this.IsActive) return;
     }
 
-    public OnExit(): void {
-    }
+    public OnExit(): void {}
 
     public GetID(): string {
-        return "Picker";
+        return 'Picker';
     }
 }

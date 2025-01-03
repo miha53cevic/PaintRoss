@@ -1,7 +1,7 @@
-import PaintApp from "..";
-import GLMath from "../glmath";
-import { HSVToRGB, RGBA, RGBToHSV } from "../util/colour";
-import ColourPicker from "./colourPicker";
+import PaintApp from '..';
+import GLMath from '../glmath';
+import { HSVToRGB, RGBA, RGBToHSV } from '../util/colour';
+import ColourPicker from './colourPicker';
 
 type Area = 'Outside' | 'Wheel' | 'Triangle';
 
@@ -32,7 +32,7 @@ export default class TriangularColourPicker extends ColourPicker {
     }
 
     get InnerRadius(): number {
-        return this.Size * 5 / 12;
+        return (this.Size * 5) / 12;
     }
 
     get OuterRadius(): number {
@@ -81,8 +81,8 @@ export default class TriangularColourPicker extends ColourPicker {
             const x1 = (x - this.CenterX) / this.InnerRadius;
             const y1 = (y - this.CenterY) / this.InnerRadius;
             if (0 * x1 + 2 * y1 > 1) return { Area: 'Outside' };
-            else if (sqrt3 * x1 + (-1) * y1 > 1) return { Area: 'Outside' };
-            else if (-sqrt3 * x1 + (-1) * y1 > 1) return { Area: 'Outside' };
+            else if (sqrt3 * x1 + -1 * y1 > 1) return { Area: 'Outside' };
+            else if (-sqrt3 * x1 + -1 * y1 > 1) return { Area: 'Outside' };
             else {
                 // Triangle
                 const sat = (1 - 2 * y1) / (sqrt3 * x1 - y1 + 2);
@@ -122,17 +122,14 @@ export default class TriangularColourPicker extends ColourPicker {
 
     public GetWheelPosition(hue: number): [number, number] {
         const middleRadius = (this.InnerRadius + this.OuterRadius) / 2;
-        return [
-            this.CenterX + middleRadius * Math.sin(hue),
-            this.CenterY - middleRadius * Math.cos(hue)
-        ];
+        return [this.CenterX + middleRadius * Math.sin(hue), this.CenterY - middleRadius * Math.cos(hue)];
     }
 
     public GetTrianglePosition(sat: number, val: number): [number, number] {
         const sqrt3 = Math.sqrt(3);
         return [
-            this.CenterX + this.InnerRadius * (2 * val - sat * val - 1) * sqrt3 / 2,
-            this.CenterY + this.InnerRadius * (1 - 3 * sat * val) / 2
+            this.CenterX + (this.InnerRadius * (2 * val - sat * val - 1) * sqrt3) / 2,
+            this.CenterY + (this.InnerRadius * (1 - 3 * sat * val)) / 2,
         ];
     }
 

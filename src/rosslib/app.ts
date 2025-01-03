@@ -17,7 +17,7 @@ export default class App {
     constructor(canvas: HTMLCanvasElement) {
         // Get opengl context
         const gl = canvas.getContext('webgl2');
-        if (!gl) throw new Error("Error creating webgl2 context");
+        if (!gl) throw new Error('Error creating webgl2 context');
         gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true); // flip image data for opengl's bottom to top, only for dom loaded images
 
         this._glCanvas = canvas;
@@ -26,10 +26,10 @@ export default class App {
         this.Setup(); // resize canvas to fullscreen & setup events
     }
 
-    public OnSetup: SetupFunction = () => { };
-    public OnUpdate: UpdateFunction = () => { };
-    public OnRender: RenderFunction = () => { };
-    public OnResize: ResizeFunction = () => { };
+    public OnSetup: SetupFunction = () => {};
+    public OnUpdate: UpdateFunction = () => {};
+    public OnRender: RenderFunction = () => {};
+    public OnResize: ResizeFunction = () => {};
 
     public AppbarHeight = 48 + 24;
 
@@ -65,18 +65,22 @@ export default class App {
 
     private Setup() {
         // Event for finding mouse position on click
-        this._glCanvas.addEventListener("mousemove", (evt) => {
-            const { X, Y } = this.CalculateMousePos(this._glCanvas, evt);
-            this._mousePos = [X, Y];
-        }, false);
+        this._glCanvas.addEventListener(
+            'mousemove',
+            (evt) => {
+                const { X, Y } = this.CalculateMousePos(this._glCanvas, evt);
+                this._mousePos = [X, Y];
+            },
+            false,
+        );
 
         // Disable right click context menu
-        this._glCanvas.addEventListener("contextmenu", (ev) => {
+        this._glCanvas.addEventListener('contextmenu', (ev) => {
             ev.preventDefault();
         });
 
         // Event for canvas resize
-        window.addEventListener("resize", () => {
+        window.addEventListener('resize', () => {
             this.ResizeToFit();
             // Call user code on resize
             this.OnResize(this._glCanvas.width, this._glCanvas.height);
@@ -105,7 +109,7 @@ export default class App {
         const rect = canvas.getBoundingClientRect();
         return {
             X: evt.clientX - rect.left,
-            Y: evt.clientY - rect.top
+            Y: evt.clientY - rect.top,
         };
     }
 
@@ -115,9 +119,7 @@ export default class App {
         const displayHeight = window.innerHeight - this.AppbarHeight; // appbar
 
         // Check if the canvas is not the same size.
-        if (canvas.width != displayWidth ||
-            canvas.height != displayHeight) {
-
+        if (canvas.width != displayWidth || canvas.height != displayHeight) {
             // Make the canvas the same size
             canvas.width = displayWidth;
             canvas.height = displayHeight;

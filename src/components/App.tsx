@@ -1,6 +1,6 @@
-import AppBar from "./Appbar";
-import CPicker from "./CPicker";
-import Toolbar from "./Toolbar";
+import AppBar from './Appbar';
+import CPicker from './CPicker';
+import Toolbar from './Toolbar';
 
 export default function App() {
     return (
@@ -8,6 +8,6 @@ export default function App() {
             <AppBar />
             <Toolbar />
             <CPicker />
-        </main >
+        </main>
     );
 }

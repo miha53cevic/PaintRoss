@@ -1,12 +1,12 @@
-import CanvasObject from "../../objects/canvasObject";
-import CircleObject from "../../objects/circleObject";
-import QuadObject from "../../objects/quadObject";
-import RectangleObject from "../../objects/rectangleObject";
-import { ColourSelection } from "../../util/colour";
-import { GetTouchingControlPoint, Point } from "../../util/controlPoints";
-import Tool from "../tool";
-import { ToolOption } from "../toolOptions";
-import ShapeToolOptions from "./shapeToolOptions";
+import CanvasObject from '../../objects/canvasObject';
+import CircleObject from '../../objects/circleObject';
+import QuadObject from '../../objects/quadObject';
+import RectangleObject from '../../objects/rectangleObject';
+import { ColourSelection } from '../../util/colour';
+import { GetTouchingControlPoint, Point } from '../../util/controlPoints';
+import Tool from '../tool';
+import { ToolOption } from '../toolOptions';
+import ShapeToolOptions from './shapeToolOptions';
 
 type ShapeState = 'waiting for initial point' | 'waiting for initial release' | 'waiting for controlpoint edit finish';
 
@@ -62,7 +62,8 @@ export default class ShapeTool extends Tool {
                 break;
             }
             case 'waiting for controlpoint edit finish': {
-                if (mouseButton === 2) { // finish with right click
+                if (mouseButton === 2) {
+                    // finish with right click
                     this._canvasObj.CancelPreviewCanvas();
                     this.RenderShape(false);
                     this._canvasObj.MergePreviewCanvas();
@@ -126,8 +127,7 @@ export default class ShapeTool extends Tool {
         }
     }
 
-    public OnKeyPress(key: string): void {
-    }
+    public OnKeyPress(key: string): void {}
 
     public OnExit(): void {
         this._canvasObj.CancelPreviewCanvas();
@@ -137,7 +137,7 @@ export default class ShapeTool extends Tool {
     }
 
     public GetID(): string {
-        return "Shape";
+        return 'Shape';
     }
 
     private RenderControlPoints() {
@@ -147,10 +147,7 @@ export default class ShapeTool extends Tool {
             if (this._selectedControlPoint === controlPoint) {
                 quad.Colour = [255, 255, 0, 255];
             } else quad.Colour = [255, 0, 0, 255];
-            const pos: Point = [
-                controlPoint[0] - quad.Size[0] / 2,
-                controlPoint[1] - quad.Size[1] / 2,
-            ];
+            const pos: Point = [controlPoint[0] - quad.Size[0] / 2, controlPoint[1] - quad.Size[1] / 2];
             quad.Position = pos;
             this._canvasObj.DrawOnCanvas(quad);
         }
@@ -163,14 +160,14 @@ export default class ShapeTool extends Tool {
         const width = p4[0] - p1[0];
         const height = p4[1] - p1[1];
 
-        switch (this._toolOptions.GetOption("Type").Value) {
+        switch (this._toolOptions.GetOption('Type').Value) {
             case 'Rectangle': {
                 this._rectangleObject.Position = [p1[0], p1[1]];
                 this._rectangleObject.Size = [width, height];
-                this._rectangleObject.SetColour(this.ColourSelection.Primary)
+                this._rectangleObject.SetColour(this.ColourSelection.Primary);
 
-                this._rectangleObject.Outlined = this._toolOptions.GetOption("FillMode").Value === "Outline";
-                this._rectangleObject.Thickness = this._toolOptions.GetOption("BrushSize").Value as number;
+                this._rectangleObject.Outlined = this._toolOptions.GetOption('FillMode').Value === 'Outline';
+                this._rectangleObject.Thickness = this._toolOptions.GetOption('BrushSize').Value as number;
 
                 this._canvasObj.DrawOnCanvas(this._rectangleObject);
                 if (drawControlPoints) this.RenderControlPoints();
@@ -179,10 +176,10 @@ export default class ShapeTool extends Tool {
             case 'Ellipse': {
                 this._circleObject.Position = [p1[0], p1[1]];
                 this._circleObject.Size = [width, height];
-                this._circleObject.SetColour(this.ColourSelection.Primary)
+                this._circleObject.SetColour(this.ColourSelection.Primary);
 
-                this._circleObject.Outlined = this._toolOptions.GetOption("FillMode").Value === "Outline";
-                this._circleObject.Thickness = this._toolOptions.GetOption("BrushSize").Value as number;
+                this._circleObject.Outlined = this._toolOptions.GetOption('FillMode').Value === 'Outline';
+                this._circleObject.Thickness = this._toolOptions.GetOption('BrushSize').Value as number;
 
                 this._canvasObj.DrawOnCanvas(this._circleObject);
                 if (drawControlPoints) this.RenderControlPoints();

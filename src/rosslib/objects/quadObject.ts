@@ -1,16 +1,15 @@
-import Camera2D from "../camera2d";
-import GLMath from "../glmath";
-import Shader from "../glo/shader";
-import Texture from "../glo/texture";
-import VAO from "../glo/vao";
-import VBO from "../glo/vbo";
-import { NormalizeRGBA, RGBA } from "../util/colour";
-import ImageEffect from "../util/imageEffect";
-import ImageKernel, { Kernel } from "../util/imageKernel";
-import Object2D from "./object2d";
+import Camera2D from '../camera2d';
+import GLMath from '../glmath';
+import Shader from '../glo/shader';
+import Texture from '../glo/texture';
+import VAO from '../glo/vao';
+import VBO from '../glo/vbo';
+import { NormalizeRGBA, RGBA } from '../util/colour';
+import ImageEffect from '../util/imageEffect';
+import ImageKernel, { Kernel } from '../util/imageKernel';
+import Object2D from './object2d';
 
-const vertexShader =
-    `#version 300 es
+const vertexShader = `#version 300 es
 in vec2 a_position;
 in vec2 a_textureCoords;
 out vec2 textureCoords;
@@ -25,8 +24,7 @@ void main() {
   textureCoords = a_textureCoords;
 }
 `;
-const fragShader =
-    `#version 300 es
+const fragShader = `#version 300 es
 precision highp float;
 
 in vec2 textureCoords;
@@ -94,13 +92,9 @@ void main() {
 
 export default class QuadObject extends Object2D {
     private static _verticies = [
-        0.0, 1.0, 0.0, 0.0,
-        1.0, 1.0, 1.0, 0.0,
-        1.0, 0.0, 1.0, 1.0,
+        0.0, 1.0, 0.0, 0.0, 1.0, 1.0, 1.0, 0.0, 1.0, 0.0, 1.0, 1.0,
 
-        1.0, 0.0, 1.0, 1.0,
-        0.0, 0.0, 0.0, 1.0,
-        0.0, 1.0, 0, 0, 0.0,
+        1.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0, 0, 0.0,
     ];
     private static _shader: Shader;
     private static _vao: VAO;
@@ -117,7 +111,6 @@ export default class QuadObject extends Object2D {
             QuadObject._shader = new Shader(gl, vertexShader, fragShader);
             QuadObject._vao = new VAO(gl);
             QuadObject._vbo = new VBO(gl);
-
 
             QuadObject._vao.Bind();
             QuadObject._vbo.SetBufferData(QuadObject._verticies);
@@ -143,8 +136,7 @@ export default class QuadObject extends Object2D {
             this.Texture.Use();
             shader.SetInt(shader.GetUniformLocation('textureSampler'), 1);
             shader.SetInt(shader.GetUniformLocation('u_usingTexture'), 1);
-        }
-        else {
+        } else {
             shader.SetInt(shader.GetUniformLocation('textureSampler'), 0); // use placeholder texture
             shader.SetInt(shader.GetUniformLocation('u_usingTexture'), 0);
         }

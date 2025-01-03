@@ -1,11 +1,11 @@
-import Texture from "./texture";
+import Texture from './texture';
 
 export default class FrameBuffer {
     private _frameBuffer: WebGLFramebuffer;
 
     constructor(private readonly _gl: WebGL2RenderingContext) {
         const frameBuffer = _gl.createFramebuffer();
-        if (!frameBuffer) throw new Error("Error creating framebuffer in canvas");
+        if (!frameBuffer) throw new Error('Error creating framebuffer in canvas');
         this._frameBuffer = frameBuffer;
     }
 

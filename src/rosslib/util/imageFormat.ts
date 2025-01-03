@@ -1,12 +1,12 @@
-import { CanvasImage } from "../objects/canvasObject";
+import { CanvasImage } from '../objects/canvasObject';
 
 export default class ImageFormat {
-    private constructor() { }
+    private constructor() {}
 
     static CreatePNG(canvasImage: CanvasImage): Promise<Blob> {
         const img = canvasImage;
         const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
+        const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
         ctx.canvas.width = img.Width;
         ctx.canvas.height = img.Height;
         const imageData = ctx.createImageData(img.Width, img.Height);
@@ -20,9 +20,9 @@ export default class ImageFormat {
                 if (blob) {
                     resolve(blob);
                 } else {
-                    reject("Failed to create Blob from canvas");
+                    reject('Failed to create Blob from canvas');
                 }
-            }, "image/png");
+            }, 'image/png');
         });
     }
 }

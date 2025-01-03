@@ -1,7 +1,7 @@
-import PaintApp from "..";
-import GLMath from "../glmath";
-import { HSVToRGB, RGBA, RGBToHSV } from "../util/colour";
-import ColourPicker from "./colourPicker";
+import PaintApp from '..';
+import GLMath from '../glmath';
+import { HSVToRGB, RGBA, RGBToHSV } from '../util/colour';
+import ColourPicker from './colourPicker';
 
 export default class CircleColourPicker extends ColourPicker {
     private _image: ImageData;
@@ -22,7 +22,7 @@ export default class CircleColourPicker extends ColourPicker {
         const sy = canvasY - this.Size / 2;
 
         // Check if in circle
-        const distance = Math.sqrt((sx * sx) + (sy * sy));
+        const distance = Math.sqrt(sx * sx + sy * sy);
         if (distance > this.Radius) return;
 
         // Reset previous position (just redraw circle)
@@ -54,7 +54,7 @@ export default class CircleColourPicker extends ColourPicker {
         const radius = this.Radius;
         for (let y = -radius; y <= radius; y++) {
             for (let x = -radius; x <= radius; x++) {
-                const distance = Math.sqrt((x * x) + (y * y));
+                const distance = Math.sqrt(x * x + y * y);
                 if (distance > radius) continue;
 
                 // angle of (x,y) point to center

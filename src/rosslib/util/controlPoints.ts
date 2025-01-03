@@ -12,12 +12,13 @@ export function InRect(point: Point, rectTopLeft: Point, rectSize: Point): boole
     return true;
 }
 
-export function GetTouchingControlPoint(mousePos: Point, controlPoints: Point[], controlPointSize: Point): Point | null {
+export function GetTouchingControlPoint(
+    mousePos: Point,
+    controlPoints: Point[],
+    controlPointSize: Point,
+): Point | null {
     for (const cp of controlPoints) {
-        const cpTopLeft: Point = [
-            cp[0] - controlPointSize[0] / 2,
-            cp[1] - controlPointSize[1] / 2,
-        ];
+        const cpTopLeft: Point = [cp[0] - controlPointSize[0] / 2, cp[1] - controlPointSize[1] / 2];
         if (InRect(mousePos, cpTopLeft, controlPointSize)) {
             return cp;
         }

@@ -1,8 +1,8 @@
-import Camera2D from "../camera2d";
-import { RGBA } from "../util/colour";
-import LineObject from "./lineObject";
-import Object2D from "./object2d";
-import TriangleFanObject from "./triangleFanObject";
+import Camera2D from '../camera2d';
+import { RGBA } from '../util/colour';
+import LineObject from './lineObject';
+import Object2D from './object2d';
+import TriangleFanObject from './triangleFanObject';
 
 export default class CircleObject extends Object2D {
     private _lineObject: LineObject;
@@ -26,7 +26,7 @@ export default class CircleObject extends Object2D {
 
     private CreateCirclePoints(cx = 0, cy = 0, radius: [number, number] = [1, 1]): [number, number][] {
         const circlePoints: [number, number][] = [];
-        const step = 2 * Math.PI / this.LineSegments;
+        const step = (2 * Math.PI) / this.LineSegments;
         for (let i = 0; i < this.LineSegments; i++) {
             const angle = i * step;
             const x = cx + radius[0] * Math.cos(angle);

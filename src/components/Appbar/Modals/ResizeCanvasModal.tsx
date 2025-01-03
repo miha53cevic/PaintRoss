@@ -1,18 +1,18 @@
-import { useEffect } from "react";
-import { useForm } from "react-hook-form";
-import PaintApp from "../../../rosslib";
-import { CanvasAnchor } from "../../../rosslib/objects/canvasObject";
-import Modal from "../../Modal";
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import PaintApp from '../../../rosslib';
+import { CanvasAnchor } from '../../../rosslib/objects/canvasObject';
+import Modal from '../../Modal';
 
 interface ResizeCanvasFormData {
-    width: number,
-    height: number,
-    anchor: CanvasAnchor,
+    width: number;
+    height: number;
+    anchor: CanvasAnchor;
 }
 
 export interface Props {
-    open: boolean,
-    handleClose: () => void,
+    open: boolean;
+    handleClose: () => void;
 }
 
 export default function ResizeCanvasModal({ open, handleClose }: Props) {
@@ -20,14 +20,16 @@ export default function ResizeCanvasModal({ open, handleClose }: Props) {
         defaultValues: {
             width: PaintApp.Get().GetCanvasImageSize()[0],
             height: PaintApp.Get().GetCanvasImageSize()[1],
-        }
+        },
     });
 
     useEffect(() => {
-        PaintApp.Get().GetCanvasObject().Subscribe('SizeChanged', (canvasObject) => {
-            setValue('width', canvasObject.Size[0]);
-            setValue('height', canvasObject.Size[1]);
-        });
+        PaintApp.Get()
+            .GetCanvasObject()
+            .Subscribe('SizeChanged', (canvasObject) => {
+                setValue('width', canvasObject.Size[0]);
+                setValue('height', canvasObject.Size[1]);
+            });
     }, [setValue]);
 
     const onResizeImageSubmit = (data: ResizeCanvasFormData) => {
@@ -35,12 +37,14 @@ export default function ResizeCanvasModal({ open, handleClose }: Props) {
     };
 
     return (
-        <Modal open={open} handleClose={handleClose}
-            title="Resize Canvas"
-            submitButtonText="Resize"
-            forForm="resizeCanvasForm"
+        <Modal
+            open={open}
+            handleClose={handleClose}
+            title='Resize Canvas'
+            submitButtonText='Resize'
+            forForm='resizeCanvasForm'
         >
-            <form id="resizeCanvasForm" className="flex flex-col gap-4" onSubmit={handleSubmit(onResizeImageSubmit)}>
+            <form id='resizeCanvasForm' className='flex flex-col gap-4' onSubmit={handleSubmit(onResizeImageSubmit)}>
                 <table>
                     <tbody>
                         <tr>
@@ -48,7 +52,11 @@ export default function ResizeCanvasModal({ open, handleClose }: Props) {
                                 <p>Width</p>
                             </td>
                             <td>
-                                <input type="number" {...register('width', { valueAsNumber: true })} className="text-slate-800 w-full" />
+                                <input
+                                    type='number'
+                                    {...register('width', { valueAsNumber: true })}
+                                    className='text-slate-800 w-full'
+                                />
                             </td>
                         </tr>
                         <tr>
@@ -56,7 +64,11 @@ export default function ResizeCanvasModal({ open, handleClose }: Props) {
                                 <p>Height</p>
                             </td>
                             <td>
-                                <input type="number" {...register('height', { valueAsNumber: true })} className="text-slate-800 w-full" />
+                                <input
+                                    type='number'
+                                    {...register('height', { valueAsNumber: true })}
+                                    className='text-slate-800 w-full'
+                                />
                             </td>
                         </tr>
                         <tr>
@@ -64,8 +76,8 @@ export default function ResizeCanvasModal({ open, handleClose }: Props) {
                                 <p>Anchor</p>
                             </td>
                             <td>
-                                <select {...register('anchor')} className="text-slate-800 w-full">
-                                    {Object.keys(CanvasAnchor).map(option => (
+                                <select {...register('anchor')} className='text-slate-800 w-full'>
+                                    {Object.keys(CanvasAnchor).map((option) => (
                                         <option key={option}>{option}</option>
                                     ))}
                                 </select>

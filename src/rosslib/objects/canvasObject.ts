@@ -1,19 +1,19 @@
-import { vec2 } from "gl-matrix";
-import Camera2D from "../camera2d";
-import FrameBuffer from "../glo/framebuffer";
-import Texture from "../glo/texture";
-import { RGBA } from "../util/colour";
-import ImageEffect, { ImageEffectType } from "../util/imageEffect";
-import ImageKernel, { KernelOperation } from "../util/imageKernel";
-import ImageOperation from "../util/imageOperation";
-import Logger from "../util/logger";
-import Object2D from "./object2d";
-import QuadObject from "./quadObject";
+import { vec2 } from 'gl-matrix';
+import Camera2D from '../camera2d';
+import FrameBuffer from '../glo/framebuffer';
+import Texture from '../glo/texture';
+import { RGBA } from '../util/colour';
+import ImageEffect, { ImageEffectType } from '../util/imageEffect';
+import ImageKernel, { KernelOperation } from '../util/imageKernel';
+import ImageOperation from '../util/imageOperation';
+import Logger from '../util/logger';
+import Object2D from './object2d';
+import QuadObject from './quadObject';
 
 export interface CanvasImage {
-    Width: number,
-    Height: number,
-    Pixels: Uint8Array,
+    Width: number;
+    Height: number;
+    Pixels: Uint8Array;
 }
 
 export enum CanvasAnchor {
@@ -37,9 +37,7 @@ export default class CanvasObject extends Object2D {
     private _previewFrameBuffer: FrameBuffer;
     private _texture: Texture;
     private _previewTexture: Texture;
-    private _listeners: Map<CanvasObjectEvent, CanvasObjectListener[]> = new Map([
-        ['SizeChanged', []]
-    ]);
+    private _listeners: Map<CanvasObjectEvent, CanvasObjectListener[]> = new Map([['SizeChanged', []]]);
 
     public DebugMode = false;
 
@@ -104,10 +102,7 @@ export default class CanvasObject extends Object2D {
         // If the mouse is in the canvas
         const normalizedX = x - this.Position[0];
         const normalizedY = y - this.Position[1];
-        return [
-            normalizedX,
-            normalizedY,
-        ];
+        return [normalizedX, normalizedY];
     }
 
     public IsMouseInCanvas(x: number, y: number) {
@@ -169,7 +164,18 @@ export default class CanvasObject extends Object2D {
         this._gl.readBuffer(this._gl.COLOR_ATTACHMENT0); // source color attachment to copy
         this._gl.drawBuffers([this._gl.COLOR_ATTACHMENT0]); // destination to copy into
 
-        this._gl.blitFramebuffer(0, 0, this.Size[0], this.Size[1], 0, 0, this.Size[0], this.Size[1], this._gl.COLOR_BUFFER_BIT, this._gl.NEAREST);
+        this._gl.blitFramebuffer(
+            0,
+            0,
+            this.Size[0],
+            this.Size[1],
+            0,
+            0,
+            this.Size[0],
+            this.Size[1],
+            this._gl.COLOR_BUFFER_BIT,
+            this._gl.NEAREST,
+        );
 
         this._gl.bindFramebuffer(this._gl.READ_FRAMEBUFFER, null);
         this._gl.bindFramebuffer(this._gl.DRAW_FRAMEBUFFER, null);
@@ -290,14 +296,17 @@ export default class CanvasObject extends Object2D {
         const eventListeners = this._listeners.get(event);
         if (!eventListeners) throw new Error(`Event ${event} does not exist`);
 
-        this._listeners.set(event, eventListeners.filter(l => l === listener));
+        this._listeners.set(
+            event,
+            eventListeners.filter((l) => l === listener),
+        );
         Logger.Log(this.constructor.name, `CanvasObject Unsubscribed`);
     }
 
     public Notify(event: CanvasObjectEvent) {
         const eventListeners = this._listeners.get(event);
         if (!eventListeners) throw new Error(`Event ${event} does not exist`);
-        eventListeners.forEach(l => l(this));
+        eventListeners.forEach((l) => l(this));
 
         Logger.Log(this.constructor.name, `Event ${event} notified`);
     }
@@ -308,7 +317,7 @@ export default class CanvasObject extends Object2D {
 
     set Position(value) {
         this._quadCanvas.Position = value;
-        Logger.Log("Event", "Updating canvas position");
+        Logger.Log('Event', 'Updating canvas position');
     }
 
     get Rotation(): number {
@@ -317,7 +326,7 @@ export default class CanvasObject extends Object2D {
 
     set Rotation(value: number) {
         this._quadCanvas.Rotation = value;
-        Logger.Log("Event", "Updating canvas rotation");
+        Logger.Log('Event', 'Updating canvas rotation');
     }
 
     get Size() {
@@ -326,7 +335,7 @@ export default class CanvasObject extends Object2D {
 
     set Size(value) {
         this._quadCanvas.Size = value;
-        Logger.Log("Event", "Updating canvas size");
+        Logger.Log('Event', 'Updating canvas size');
 
         // Resize textures to new canvas size
         Texture.ResizeTexture(this._gl, this._texture, value[0], value[1], null);
@@ -337,5 +346,4 @@ export default class CanvasObject extends Object2D {
 
         this.Notify('SizeChanged');
     }
-
 }

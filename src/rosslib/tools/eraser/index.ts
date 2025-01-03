@@ -1,10 +1,10 @@
-import CanvasObject from "../../objects/canvasObject";
-import CircleObject from "../../objects/circleObject";
-import LineObject from "../../objects/lineObject";
-import { ColourSelection } from "../../util/colour";
-import Tool from "../tool";
-import { ToolOption } from "../toolOptions";
-import EraserToolOptions from "./eraserToolOptions";
+import CanvasObject from '../../objects/canvasObject';
+import CircleObject from '../../objects/circleObject';
+import LineObject from '../../objects/lineObject';
+import { ColourSelection } from '../../util/colour';
+import Tool from '../tool';
+import { ToolOption } from '../toolOptions';
+import EraserToolOptions from './eraserToolOptions';
 
 export default class EraserTool extends Tool {
     private _points: [number, number][] = [];
@@ -48,8 +48,7 @@ export default class EraserTool extends Tool {
         }
     }
 
-    public OnKeyPress(key: string): void {
-    }
+    public OnKeyPress(key: string): void {}
 
     public OnToolOptionChange(option: ToolOption): void {
         if (option.Name === 'BrushSize') {
@@ -57,8 +56,7 @@ export default class EraserTool extends Tool {
         }
     }
 
-    public OnColourSelectionChange(colourSelection: ColourSelection): void {
-    }
+    public OnColourSelectionChange(colourSelection: ColourSelection): void {}
 
     public OnExit(): void {
         this._canvasObj.MergePreviewCanvas();

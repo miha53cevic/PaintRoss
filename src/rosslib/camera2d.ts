@@ -1,5 +1,5 @@
-import { mat4, vec2 } from "gl-matrix";
-import GLMath from "./glmath";
+import { mat4, vec2 } from 'gl-matrix';
+import GLMath from './glmath';
 
 export default class Camera2D {
     private _projMat: mat4 = mat4.create();
@@ -8,14 +8,29 @@ export default class Camera2D {
     public MaxZoom: number = 100.0;
     public MinZoom: number = 0.1;
 
-    constructor(screenWidth: number, screenHeight: number, initialZoomBy: number = 0.0, left: number = 0, top: number = 0, near: number = -1, far: number = 1) {
+    constructor(
+        screenWidth: number,
+        screenHeight: number,
+        initialZoomBy: number = 0.0,
+        left: number = 0,
+        top: number = 0,
+        near: number = -1,
+        far: number = 1,
+    ) {
         this._viewMat = GLMath.CreateViewMatrix2D();
         this.UpdateProjectionMatrix(screenWidth, screenHeight, left, top, near, far);
 
         this.ZoomBy(initialZoomBy);
     }
 
-    public UpdateProjectionMatrix(screenWidth: number, screenHeight: number, left: number = 0, top: number = 0, near: number = -1, far: number = 1) {
+    public UpdateProjectionMatrix(
+        screenWidth: number,
+        screenHeight: number,
+        left: number = 0,
+        top: number = 0,
+        near: number = -1,
+        far: number = 1,
+    ) {
         this._projMat = GLMath.CreateOrthoProjectionMatrix(left, screenWidth, screenHeight, top, near, far);
     }
 

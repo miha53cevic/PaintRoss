@@ -1,13 +1,13 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef } from 'react';
 
 export interface Props {
-    open: boolean,
-    handleClose: () => void,
-    title?: string,
-    content?: string,
-    submitButtonText?: string,
-    forForm?: string,
-    children?: React.ReactNode,
+    open: boolean;
+    handleClose: () => void;
+    title?: string;
+    content?: string;
+    submitButtonText?: string;
+    forForm?: string;
+    children?: React.ReactNode;
 }
 
 export default function Modal({ open, handleClose, title, content, submitButtonText, forForm, children }: Props) {
@@ -27,28 +27,22 @@ export default function Modal({ open, handleClose, title, content, submitButtonT
     };
 
     return (
-        <dialog
-            ref={dialogRef}
-            className="w-1/3 p-6 bg-slate-950 rounded shadow-lg text-gray-100"
-        >
-            <h2 className="text-lg font-bold">{title}</h2>
-            <p className="mt-2 text-gray-400">{content}</p>
+        <dialog ref={dialogRef} className='w-1/3 p-6 bg-slate-950 rounded shadow-lg text-gray-100'>
+            <h2 className='text-lg font-bold'>{title}</h2>
+            <p className='mt-2 text-gray-400'>{content}</p>
             {children}
-            <div className="mt-4 flex justify-end gap-3">
-                {submitButtonText &&
+            <div className='mt-4 flex justify-end gap-3'>
+                {submitButtonText && (
                     <button
-                        className="px-4 py-2 bg-slate-900 rounded hover:bg-slate-800"
-                        type="submit"
+                        className='px-4 py-2 bg-slate-900 rounded hover:bg-slate-800'
+                        type='submit'
                         form={forForm}
                         onClick={closeDialog}
                     >
                         {submitButtonText}
                     </button>
-                }
-                <button
-                    onClick={closeDialog}
-                    className="px-4 py-2 bg-slate-900 rounded hover:bg-slate-800"
-                >
+                )}
+                <button onClick={closeDialog} className='px-4 py-2 bg-slate-900 rounded hover:bg-slate-800'>
                     Close
                 </button>
             </div>

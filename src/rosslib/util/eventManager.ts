@@ -1,17 +1,17 @@
-import { RGBA } from "./colour";
-import Logger from "./logger";
+import { RGBA } from './colour';
+import Logger from './logger';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type EventListener = (args: any) => void;
 interface TEventTypeList {
-    [eventName: string]: EventListener,
+    [eventName: string]: EventListener;
 }
 interface EventTypeList extends TEventTypeList {
-    'ChangeTool': (toolId: string) => void,
-    'ChangePrimaryColour': (colour: RGBA) => void,
-    'ChangeSecondaryColour': (colour: RGBA) => void,
-    'OpenImage': () => void,
-    'ChangeCanvasCoordinates': (canvasPos: [number, number] | [undefined, undefined]) => void,
+    ChangeTool: (toolId: string) => void;
+    ChangePrimaryColour: (colour: RGBA) => void;
+    ChangeSecondaryColour: (colour: RGBA) => void;
+    OpenImage: () => void;
+    ChangeCanvasCoordinates: (canvasPos: [number, number] | [undefined, undefined]) => void;
 }
 type EventType = keyof EventTypeList;
 type EventListenerParameter<T extends EventType> = Parameters<EventTypeList[T]>[0];
@@ -27,15 +27,16 @@ export default class EventManager {
 
     public Unsubscribe<T extends EventType>(event: T, listener: EventTypeList[T]) {
         if (!this._listeners.has(event)) throw new Error("Event doesn't have any listeners!");
-        const filtered = this._listeners.get(event)!.filter(l => l !== listener);
-        if (filtered.length === this._listeners.get(event)!.length) throw new Error(`Listener is not subscribed to ${event}`);
+        const filtered = this._listeners.get(event)!.filter((l) => l !== listener);
+        if (filtered.length === this._listeners.get(event)!.length)
+            throw new Error(`Listener is not subscribed to ${event}`);
         this._listeners.set(event, filtered);
     }
 
     public Notify<T extends EventType>(event: T, data?: EventListenerParameter<T>) {
         if (!this._listeners.has(event)) return; // no listeners for this event registered
-        this._listeners.get(event)!.forEach(listener => listener(data));
+        this._listeners.get(event)!.forEach((listener) => listener(data));
 
-        Logger.Log("Event", `${event} notified`);
+        Logger.Log('Event', `${event} notified`);
     }
 }
