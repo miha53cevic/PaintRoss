@@ -1,11 +1,14 @@
-import BrushCursorObject from './objects/brushCursorObject';
+import CircleObject from './objects/circleObject';
 
 export default class BrushCursor {
     private static _instance: BrushCursor | null = null;
-    private _brushCursorObject: BrushCursorObject;
+    private _circleObject: CircleObject;
 
     private constructor(gl: WebGL2RenderingContext) {
-        this._brushCursorObject = new BrushCursorObject(gl);
+        this._circleObject = new CircleObject(gl);
+        this._circleObject.Outlined = true;
+        this._circleObject.Thickness = 0.1;
+        this._circleObject.Position = [0, 0];
     }
 
     public static Init(gl: WebGL2RenderingContext) {
@@ -22,18 +25,23 @@ export default class BrushCursor {
     }
 
     public GetObject2D() {
-        return this._brushCursorObject;
+        return this._circleObject;
     }
 
     public SetBrushCursorPosition(worldX: number, worldY: number) {
-        this._brushCursorObject.Position = [worldX, worldY];
+        const cursorSize = this._circleObject.Size;
+        const centeredPosition: [number, number] = [worldX - cursorSize[0] / 2, worldY - cursorSize[1] / 2];
+        this._circleObject.Position = centeredPosition;
     }
 
     public SetBrushCursorSize(size: number) {
-        this._brushCursorObject.Size = [size, size];
+        if (size >= 10) this._circleObject.Thickness = 1; // when using higher brushSize makes it more visible
+        else this._circleObject.Thickness = 0.1;
+
+        this._circleObject.Size = [size, size];
     }
 
     public ResetBrushCursorSize() {
-        this._brushCursorObject.Size = [1, 1];
+        this._circleObject.Size = [1, 1];
     }
 }
