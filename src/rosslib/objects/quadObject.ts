@@ -19,7 +19,7 @@ uniform mat4 u_projMat;
 uniform mat4 u_viewMat;
  
 void main() {
-  vec4 pos = u_projMat * u_viewMat * u_modelMat * vec4(a_position, 1.0, 1.0);
+  vec4 pos = u_projMat * u_viewMat * u_modelMat * vec4(a_position, 0.0, 1.0);
   gl_Position = pos;
   textureCoords = a_textureCoords;
 }
@@ -91,10 +91,18 @@ void main() {
 `;
 
 export default class QuadObject extends Object2D {
-    private static _verticies = [
-        0.0, 1.0, 0.0, 0.0, 1.0, 1.0, 1.0, 0.0, 1.0, 0.0, 1.0, 1.0,
+    private static _verticiesWithTextureCoords = [
+        0.0, 1.0, 0.0, 0.0,
 
-        1.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0, 0, 0.0,
+        1.0, 1.0, 1.0, 0.0,
+
+        1.0, 0.0, 1.0, 1.0,
+
+        1.0, 0.0, 1.0, 1.0,
+
+        0.0, 0.0, 0.0, 1.0,
+
+        0.0, 1.0, 0, 0, 0.0,
     ];
     private static _shader: Shader;
     private static _vao: VAO;
@@ -113,7 +121,7 @@ export default class QuadObject extends Object2D {
             QuadObject._vbo = new VBO(gl);
 
             QuadObject._vao.Bind();
-            QuadObject._vbo.SetBufferData(QuadObject._verticies);
+            QuadObject._vbo.SetBufferData(QuadObject._verticiesWithTextureCoords);
             QuadObject._vao.DefineVertexAttribPointer(QuadObject._vbo, 0, 2, 4 * 4, 0);
             QuadObject._vao.DefineVertexAttribPointer(QuadObject._vbo, 1, 2, 4 * 4, 4 * 2);
         }

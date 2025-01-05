@@ -6,6 +6,7 @@ import Texture from './glo/texture';
 import CanvasObject, { CanvasAnchor } from './objects/canvasObject';
 import LineObject from './objects/lineObject';
 import QuadObject from './objects/quadObject';
+import SelectionObject from './objects/selectionObject';
 import Scene2D from './scene2d';
 import EraserTool from './tools/eraser';
 import FillTool from './tools/fill';
@@ -178,9 +179,12 @@ export default class PaintApp {
         lineObject.Thickness = 10;
         this._canvasObj.DrawOnCanvas(lineObject);
 
+        const selectionObject = new SelectionObject(gl);
+        selectionObject.Size = [200, 200];
+
         this._toolManager.SetSelectedTool('Pen');
 
-        this._mainScene.Add([this._canvasObj, quad1, quad2, BrushCursor.Get().GetObject2D()]);
+        this._mainScene.Add([this._canvasObj, quad1, quad2, BrushCursor.Get().GetObject2D(), selectionObject]);
 
         this._canvasObj.Subscribe('SizeChanged', () => {
             this._app.GetEventManager().Notify('CanvasObjResize', [this._canvasObj.Size[0], this._canvasObj.Size[1]]);
@@ -189,7 +193,9 @@ export default class PaintApp {
         this._app.OnResize = (width, height) => {
             this._mainCamera2d.UpdateProjectionMatrix(width, height);
         };
-        this._app.OnUpdate = () => {};
+        this._app.OnUpdate = (_, timeSinceRun, __) => {
+            selectionObject.SetUniformTime(timeSinceRun);
+        };
         this._app.OnRender = () => {
             this._mainScene.Render(this._mainCamera2d);
         };
