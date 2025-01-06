@@ -60,7 +60,7 @@ TODO plan za Projekt R
 
 -   **Select Tool** (-)
 
-    -   Rectangle Select
+    -   Rectangle Select (+)
     -   Lasso Select
 
 -   **Layers** (-)

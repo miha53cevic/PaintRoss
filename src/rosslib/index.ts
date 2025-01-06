@@ -12,6 +12,7 @@ import EraserTool from './tools/eraser';
 import FillTool from './tools/fill';
 import PenTool from './tools/pen';
 import PickerTool from './tools/picker';
+import SelectTool from './tools/select';
 import ShapeTool from './tools/shape';
 import SplineTool from './tools/spline';
 import ToolManager from './tools/toolManager';
@@ -157,6 +158,10 @@ export default class PaintApp {
         );
         this._canvasObj.DebugMode = false;
 
+        const selectionObj = new SelectionObject(gl);
+        selectionObj.Size = [200, 200];
+        selectionObj.Visible = false;
+
         this._toolManager.RegisterTools([
             new PenTool(gl, this._canvasObj, this._colourSelection),
             new SplineTool(gl, this._canvasObj, this._colourSelection),
@@ -164,6 +169,7 @@ export default class PaintApp {
             new ShapeTool(gl, this._canvasObj, this._colourSelection),
             new PickerTool(gl, this._canvasObj, this._colourSelection),
             new EraserTool(gl, this._canvasObj, this._colourSelection),
+            new SelectTool(gl, this._canvasObj, this._colourSelection, selectionObj),
         ]);
 
         const lineObject = new LineObject(gl);
@@ -179,12 +185,9 @@ export default class PaintApp {
         lineObject.Thickness = 10;
         this._canvasObj.DrawOnCanvas(lineObject);
 
-        const selectionObject = new SelectionObject(gl);
-        selectionObject.Size = [200, 200];
-
         this._toolManager.SetSelectedTool('Pen');
 
-        this._mainScene.Add([this._canvasObj, quad1, quad2, BrushCursor.Get().GetObject2D(), selectionObject]);
+        this._mainScene.Add([this._canvasObj, quad1, quad2, BrushCursor.Get().GetObject2D(), selectionObj]);
 
         this._canvasObj.Subscribe('SizeChanged', () => {
             this._app.GetEventManager().Notify('CanvasObjResize', [this._canvasObj.Size[0], this._canvasObj.Size[1]]);
@@ -194,7 +197,7 @@ export default class PaintApp {
             this._mainCamera2d.UpdateProjectionMatrix(width, height);
         };
         this._app.OnUpdate = (_, timeSinceRun, __) => {
-            selectionObject.SetUniformTime(timeSinceRun);
+            selectionObj.SetUniformTime(timeSinceRun);
         };
         this._app.OnRender = () => {
             this._mainScene.Render(this._mainCamera2d);
@@ -285,6 +288,10 @@ export default class PaintApp {
 
     public GetToolManager() {
         return this._toolManager;
+    }
+
+    public GetApp() {
+        return this._app;
     }
 
     public static Init(canvas: HTMLCanvasElement) {

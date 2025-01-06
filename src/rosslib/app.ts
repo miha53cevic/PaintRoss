@@ -70,6 +70,14 @@ export default class App {
         this._gl.clear(this._gl.COLOR_BUFFER_BIT);
     }
 
+    public GetTimeSinceRun() {
+        return Date.now() - this._appStartTime;
+    }
+
+    public GetElapsedTime() {
+        return this._clock.Restart();
+    }
+
     private Setup() {
         // Event for finding mouse position on click
         this._glCanvas.addEventListener(
@@ -105,8 +113,8 @@ export default class App {
         this.Clear();
 
         // Update / rendering code
-        const elapsedTime = this._clock.Restart();
-        const timeSinceRun = Date.now() - this._appStartTime;
+        const elapsedTime = this.GetElapsedTime();
+        const timeSinceRun = this.GetTimeSinceRun();
         this.OnUpdate(elapsedTime, timeSinceRun, this);
         this.OnRender(this);
 

@@ -66,6 +66,8 @@ export default class SelectionObject extends Object2D {
     private static _vbo: VBO;
     private _time: number = 0;
 
+    public Visible = true;
+
     constructor(gl: WebGL2RenderingContext) {
         super(gl);
         if (!SelectionObject._shader && !SelectionObject._vao && !SelectionObject._vbo) {
@@ -84,6 +86,8 @@ export default class SelectionObject extends Object2D {
     }
 
     public Render(camera: Camera2D): void {
+        if (!this.Visible) return;
+
         const modelMat = GLMath.CreateTransformationMatrix2D(this.Position, this.Rotation, this.Size);
 
         const shader = SelectionObject._shader;
