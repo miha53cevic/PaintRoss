@@ -1,6 +1,5 @@
 import BrushCursor from '../../brushCursor';
 import CanvasObject from '../../objects/canvasObject';
-import CircleObject from '../../objects/circleObject';
 import LineObject from '../../objects/lineObject';
 import { ColourSelection } from '../../util/colour';
 import Tool from '../tool';
@@ -12,13 +11,10 @@ export default class EraserTool extends Tool {
     private _drawing = false;
     private _lineObject: LineObject;
     private _maxPointHistory = 3;
-    private _circleObject: CircleObject;
 
     constructor(gl: WebGL2RenderingContext, canvasObj: CanvasObject, colourSelection: ColourSelection) {
         super(gl, canvasObj, new EraserToolOptions(), colourSelection);
         this._lineObject = new LineObject(gl);
-        this._circleObject = new CircleObject(gl);
-        this._circleObject.Outlined = true;
     }
 
     public OnMouseDown(canvasX: number | undefined, canvasY: number | undefined, mouseButton: number): void {
@@ -47,16 +43,13 @@ export default class EraserTool extends Tool {
             // Keeping multiple points helps to draw smooth lines (fix gaps between points)
             this._points = this._points.slice(-this._maxPointHistory);
         }
-
-        const brushSize = this._toolOptions.GetOption('BrushSize').Value as number;
-        BrushCursor.Get().SetBrushCursorSize(brushSize);
     }
 
     public OnKeyPress(key: string): void {}
 
     public OnToolOptionChange(option: ToolOption): void {
         if (option.Name === 'BrushSize') {
-            this._circleObject.Size = [option.Value as number, option.Value as number];
+            BrushCursor.Get().SetBrushCursorSize(option.Value as number);
         }
     }
 

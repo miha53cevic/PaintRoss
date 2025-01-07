@@ -174,7 +174,7 @@ export default class CanvasObject extends Object2D {
             this.Size[0],
             this.Size[1],
             this._gl.COLOR_BUFFER_BIT,
-            this._gl.NEAREST,
+            this._gl.NEAREST
         );
 
         this._gl.bindFramebuffer(this._gl.READ_FRAMEBUFFER, null);
@@ -197,6 +197,9 @@ export default class CanvasObject extends Object2D {
     }
 
     public DrawOnCanvas(object: Object2D | { Render: (camera: Camera2D) => void }) {
+        // Disable blending so that eraser works
+        this._gl.disable(this._gl.BLEND);
+
         const canvasCamera = this.GetCanvasCamera();
         // Bind framebuffer to render into it
         this._previewFrameBuffer.Bind();
@@ -207,6 +210,9 @@ export default class CanvasObject extends Object2D {
         object.Render(canvasCamera);
         // Switch back to normal framebuffer
         this._previewFrameBuffer.Unbind();
+
+        // Enable blending again
+        this._gl.enable(this._gl.BLEND);
     }
 
     private RenderActualCanvasTexture(camera: Camera2D) {
@@ -298,7 +304,7 @@ export default class CanvasObject extends Object2D {
 
         this._listeners.set(
             event,
-            eventListeners.filter((l) => l === listener),
+            eventListeners.filter((l) => l === listener)
         );
         Logger.Log(this.constructor.name, `CanvasObject Unsubscribed`);
     }

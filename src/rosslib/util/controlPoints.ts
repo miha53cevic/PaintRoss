@@ -1,5 +1,9 @@
 export type Point = [number, number];
 
+export function HalfPoint(p1: Point, p2: Point): Point {
+    return [(p1[0] + p2[0]) / 2, (p1[1] + p2[1]) / 2];
+}
+
 export function InRect(point: Point, rectTopLeft: Point, rectSize: Point): boolean {
     const dx = point[0] - rectTopLeft[0];
     const dy = point[1] - rectTopLeft[1];
@@ -15,7 +19,7 @@ export function InRect(point: Point, rectTopLeft: Point, rectSize: Point): boole
 export function GetTouchingControlPoint(
     mousePos: Point,
     controlPoints: Point[],
-    controlPointSize: Point,
+    controlPointSize: Point
 ): Point | null {
     for (const cp of controlPoints) {
         const cpTopLeft: Point = [cp[0] - controlPointSize[0] / 2, cp[1] - controlPointSize[1] / 2];

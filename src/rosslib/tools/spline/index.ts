@@ -2,7 +2,7 @@ import CanvasObject from '../../objects/canvasObject';
 import LineObject from '../../objects/lineObject';
 import QuadObject from '../../objects/quadObject';
 import { ColourSelection } from '../../util/colour';
-import { GetTouchingControlPoint, Point } from '../../util/controlPoints';
+import { GetTouchingControlPoint, HalfPoint, Point } from '../../util/controlPoints';
 import Tool from '../tool';
 import { ToolOption } from '../toolOptions';
 import SplineToolOptions from './splineToolOptions';
@@ -20,10 +20,6 @@ function CatmulRomSpline(P: Point[], t: number): Point {
     const Cx = 0.5 * (P[0][0] * q0 + P[1][0] * q1 + P[2][0] * q2 + P[3][0] * q3);
     const Cy = 0.5 * (P[0][1] * q0 + P[1][1] * q1 + P[2][1] * q2 + P[3][1] * q3);
     return [Cx, Cy];
-}
-
-function HalfPoint(p1: Point, p2: Point): Point {
-    return [(p1[0] + p2[0]) / 2, (p1[1] + p2[1]) / 2];
 }
 
 type SplineState = 'waiting for initial click' | 'waiting for initial release' | 'waiting for point edit finish';
@@ -97,6 +93,9 @@ export default class SplineTool extends Tool {
         switch (this._state) {
             case 'waiting for initial release': {
                 if (mouseButton === 0) {
+                    // If it was a click and release mouse move ignore it
+                    if (this._controlPoints.length <= 1) return;
+
                     const p1 = this._controlPoints[0];
                     const p4 = this._controlPoints[1];
                     const middlePoint = HalfPoint(p1, p4);
