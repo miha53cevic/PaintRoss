@@ -71,18 +71,19 @@ vec3 applyEffects() {
 }
  
 void main() {
-  vec2 chessboardSize = vec2(16.0);
+  vec2 chessboardSize = vec2(0.125);
   vec3 outColour = vec3(1);
+  vec2 fragCoords = gl_FragCoord.xy;
 
   if (u_usingTexture == 1) {
     if (texture(textureSampler, textureCoords).a == 0.0) { // if alpha is 0 use chessboard pattern
-        outColour = vec3(chessboardPattern(textureCoords.x, textureCoords.y, chessboardSize));
+        outColour = vec3(chessboardPattern(fragCoords.x, fragCoords.y, chessboardSize));
     }
     else outColour = applyEffects();
   }
   else { // otherwise use solid colour
     if (u_colour.a == 0.0) {
-        outColour = vec3(chessboardPattern(textureCoords.x, textureCoords.y, chessboardSize));
+        outColour = vec3(chessboardPattern(fragCoords.x, fragCoords.y, chessboardSize));
     }
     else outColour = u_colour.rgb;
   }
