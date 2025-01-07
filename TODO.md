@@ -16,6 +16,8 @@ TODO plan za Projekt R
     -   When changing options trigger rerender of current tool maybe... (OnToolOptionChange function for each tool) (+)
     -   When changing colours trigger rerender of current tool (OnColourSelectionChange) (+)
     -   Triangular Colour Picker wheel not changing on initial state (+)
+    -   Select should clip to the edge of the canvas if mouse is outside of it (calculate from current world position) (-)
+    -   Loading the same image doesn't load it from scratch again (-)
 
 -   **Draw basic shapes** (+)
 
@@ -41,7 +43,7 @@ TODO plan za Projekt R
 
 -   **Image Tools** (-)
 
-    -   Crop
+    -   Crop (+)
     -   Copy
     -   Cut
     -   Paste

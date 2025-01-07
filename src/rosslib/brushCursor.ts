@@ -8,7 +8,6 @@ export default class BrushCursor {
         this._circleObject = new CircleObject(gl);
         this._circleObject.Outlined = true;
         this._circleObject.Thickness = 0.1;
-        this._circleObject.Position = [0, 0];
     }
 
     public static Init(gl: WebGL2RenderingContext) {
@@ -42,6 +41,6 @@ export default class BrushCursor {
     }
 
     public ResetBrushCursorSize() {
-        this._circleObject.Size = [1, 1];
+        this.SetBrushCursorSize(1);
     }
 }

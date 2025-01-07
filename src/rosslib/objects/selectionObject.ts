@@ -3,6 +3,7 @@ import GLMath from '../glmath';
 import Shader from '../glo/shader';
 import VAO from '../glo/vao';
 import VBO from '../glo/vbo';
+import Rect from '../util/rect';
 import Object2D from './object2d';
 
 const vertexShader = `#version 300 es
@@ -83,6 +84,10 @@ export default class SelectionObject extends Object2D {
 
     public SetUniformTime(time: number) {
         this._time = time / 1000; // in seconds
+    }
+
+    public GetSelectionRect(): Rect {
+        return new Rect([this.Position[0], this.Position[1]], [this.Size[0], this.Size[1]]);
     }
 
     public Render(camera: Camera2D): void {

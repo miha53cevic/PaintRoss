@@ -25,7 +25,11 @@ export default class PenTool extends Tool {
         if (!this.IsActive) return;
     }
 
-    public OnToolOptionChange(option: ToolOption): void {}
+    public OnToolOptionChange(option: ToolOption): void {
+        if (option.Name === 'BrushSize') {
+            BrushCursor.Get().SetBrushCursorSize(option.Value as number);
+        }
+    }
 
     public OnMouseDown(canvasX: number | undefined, canvasY: number | undefined, mouseButton: number): void {
         if (!canvasX || !canvasY) return;
@@ -53,9 +57,6 @@ export default class PenTool extends Tool {
             // Keeping multiple points helps to draw smooth lines (fix gaps between points)
             this._points = this._points.slice(-this._maxPointHistory);
         }
-
-        const brushSize = this._toolOptions.GetOption('BrushSize').Value as number;
-        BrushCursor.Get().SetBrushCursorSize(brushSize);
     }
 
     public OnKeyPress(key: string): void {}

@@ -7,6 +7,7 @@ import ImageEffect, { ImageEffectType } from '../util/imageEffect';
 import ImageKernel, { KernelOperation } from '../util/imageKernel';
 import ImageOperation from '../util/imageOperation';
 import Logger from '../util/logger';
+import Rect from '../util/rect';
 import Object2D from './object2d';
 import QuadObject from './quadObject';
 
@@ -97,23 +98,22 @@ export default class CanvasObject extends Object2D {
         this.MergePreviewCanvas();
     }
 
-    public MouseToCanvasCoordinates(x: number, y: number): [number, number] | [undefined, undefined] {
-        if (!this.IsMouseInCanvas(x, y)) return [undefined, undefined];
-        // If the mouse is in the canvas
-        const normalizedX = x - this.Position[0];
-        const normalizedY = y - this.Position[1];
-        return [normalizedX, normalizedY];
+    public WorldToCanvasCoordinates(x: number, y: number): [number, number] | [undefined, undefined] {
+        if (!this.IsWorldCoordInCanvas(x, y)) return [undefined, undefined];
+        const canvasX = x - this.Position[0];
+        const canvasY = y - this.Position[1];
+        return [canvasX, canvasY];
     }
 
-    public IsMouseInCanvas(x: number, y: number) {
+    public IsWorldCoordInCanvas(x: number, y: number) {
         const dx = x - this.Position[0];
         const dy = y - this.Position[1];
 
-        // If dx or dy are negative the mouse in on the left or above the canvas
+        // If dx or dy are negative the world coord in on the left or above the canvas
         if (dx < 0 || dy < 0) return false;
-        // If dx or dy are greater then canvasPos+canvasSize then mouse is right or bottom of canvas
+        // If dx or dy are greater then canvasPos+canvasSize then world coord is right or bottom of canvas
         if (dx > this.Size[0] || dy > this.Size[1]) return false;
-        // Otherwise mouse is in canvas
+        // Otherwise coord is in canvas
         return true;
     }
 
@@ -174,7 +174,7 @@ export default class CanvasObject extends Object2D {
             this.Size[0],
             this.Size[1],
             this._gl.COLOR_BUFFER_BIT,
-            this._gl.NEAREST,
+            this._gl.NEAREST
         );
 
         this._gl.bindFramebuffer(this._gl.READ_FRAMEBUFFER, null);
@@ -197,6 +197,9 @@ export default class CanvasObject extends Object2D {
     }
 
     public DrawOnCanvas(object: Object2D | { Render: (camera: Camera2D) => void }) {
+        // Disable blending so that eraser works
+        this._gl.disable(this._gl.BLEND);
+
         const canvasCamera = this.GetCanvasCamera();
         // Bind framebuffer to render into it
         this._previewFrameBuffer.Bind();
@@ -207,6 +210,9 @@ export default class CanvasObject extends Object2D {
         object.Render(canvasCamera);
         // Switch back to normal framebuffer
         this._previewFrameBuffer.Unbind();
+
+        // Enable blending again
+        this._gl.enable(this._gl.BLEND);
     }
 
     private RenderActualCanvasTexture(camera: Camera2D) {
@@ -236,6 +242,11 @@ export default class CanvasObject extends Object2D {
         // Draw the old texture as a fullscreenQuad on the new texture
         this.DrawFullscreenTextureOnCanvas(oldTexture);
         this.MergePreviewCanvas();
+
+        Logger.Log(
+            'Event',
+            `Resizing Canvas Image ${oldTexture.Size[0]}:${oldTexture.Size[1]} -> ${this.Size[0]}:${this.Size[1]}`
+        );
     }
 
     public ResizeCanvasOnAnchor(anchor: CanvasAnchor, newSizeX: number, newSizeY: number) {
@@ -283,6 +294,26 @@ export default class CanvasObject extends Object2D {
         oldTextureQuad.Position = position;
         this.DrawOnCanvas(oldTextureQuad);
         this.MergePreviewCanvas();
+
+        Logger.Log(
+            'Event',
+            `Resizing Canvas ${oldTexture.Size[0]}:${oldTexture.Size[1]} -> ${this.Size[0]}:${this.Size[1]}`
+        );
+    }
+
+    public CropCanvasImage(canvasSelectionRect: Rect) {
+        Logger.Log(
+            'Event',
+            `Cropping ${this.Size[0]}:${this.Size[1]} -> ${canvasSelectionRect.Size[0]}:${canvasSelectionRect.Size[1]} on point ${canvasSelectionRect.Position[0]}:${canvasSelectionRect.Position[1]}`
+        );
+
+        // Get a copy of the old texture
+        const oldTexturePortion = Texture.CopyTexturePortion(this._gl, this._texture, canvasSelectionRect);
+        // resize textures to canvas and clear them (set Size(value) is called)
+        this.Size = canvasSelectionRect.Size;
+        // Draw the old texture as a fullscreenQuad on the new texture
+        this.DrawFullscreenTextureOnCanvas(oldTexturePortion);
+        this.MergePreviewCanvas();
     }
 
     public Subscribe(event: CanvasObjectEvent, listener: CanvasObjectListener) {
@@ -298,7 +329,7 @@ export default class CanvasObject extends Object2D {
 
         this._listeners.set(
             event,
-            eventListeners.filter((l) => l === listener),
+            eventListeners.filter((l) => l === listener)
         );
         Logger.Log(this.constructor.name, `CanvasObject Unsubscribed`);
     }
