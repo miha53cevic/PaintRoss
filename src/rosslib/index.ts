@@ -155,8 +155,9 @@ export default class PaintApp {
         this._canvasObj = new CanvasObject(gl);
         this._canvasObj.Size = vec2.fromValues(800, 600);
         this._canvasObj.Position = vec2.fromValues(
-            gl.canvas.width / 2 - this._canvasObj.Size[0] / 2,
-            gl.canvas.height / 2 - this._canvasObj.Size[1] / 2
+            // Floor to whole values so that each pixel location is a whole number
+            Math.floor(gl.canvas.width / 2 - this._canvasObj.Size[0] / 2),
+            Math.floor(gl.canvas.height / 2 - this._canvasObj.Size[1] / 2)
         );
         this._canvasObj.DebugMode = false;
 

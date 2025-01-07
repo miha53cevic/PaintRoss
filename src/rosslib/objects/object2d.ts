@@ -2,9 +2,9 @@ import { vec2 } from 'gl-matrix';
 import Camera2D from '../camera2d';
 
 export default abstract class Object2D {
-    private _position: vec2 = vec2.fromValues(0, 0);
-    private _rotation: number = 0;
-    private _size: vec2 = vec2.fromValues(1, 1);
+    protected _position: vec2 = vec2.fromValues(0, 0);
+    protected _rotation: number = 0;
+    protected _size: vec2 = vec2.fromValues(1, 1);
 
     get Position(): vec2 {
         return this._position;

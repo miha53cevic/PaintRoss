@@ -54,6 +54,9 @@ export default class SelectTool extends Tool {
 
     public OnMouseDown(canvasX: number | undefined, canvasY: number | undefined, mouseButton: number): void {
         if (canvasX === undefined || canvasY === undefined) return;
+        // Pixel perfect
+        canvasX = Math.floor(canvasX);
+        canvasY = Math.floor(canvasY);
 
         if (!this._selectionObject.Visible) this.ResetState();
 
@@ -86,6 +89,8 @@ export default class SelectTool extends Tool {
 
     public OnMouseUp(canvasX: number | undefined, canvasY: number | undefined, mouseButton: number): void {
         if (canvasX === undefined || canvasY === undefined) return;
+        canvasX = Math.floor(canvasX);
+        canvasY = Math.floor(canvasY);
         switch (this._state) {
             case 'waiting for initial release': {
                 if (mouseButton === 0) {
@@ -107,6 +112,8 @@ export default class SelectTool extends Tool {
 
     public OnMouseMove(canvasX: number | undefined, canvasY: number | undefined): void {
         if (canvasX === undefined || canvasY === undefined) return;
+        canvasX = Math.floor(canvasX);
+        canvasY = Math.floor(canvasY);
         switch (this._state) {
             case 'waiting for initial release': {
                 // If the second control point is already placed just change it
@@ -162,10 +169,15 @@ export default class SelectTool extends Tool {
         if (this._controlPoints.length < 2) return;
         const p1 = this._controlPoints[0];
         const p4 = this._controlPoints[1];
-        const width = p4[0] - p1[0];
-        const height = p4[1] - p1[1];
+        const width = Math.abs(p4[0] - p1[0]);
+        const height = Math.abs(p4[1] - p1[1]);
 
-        this._selectionObject.Position = [this._canvasObj.Position[0] + p1[0], this._canvasObj.Position[1] + p1[1]];
+        const topLeftPoint = [p1[0] < p4[0] ? p1[0] : p4[0], p1[1] < p4[1] ? p1[1] : p4[1]];
+
+        this._selectionObject.Position = [
+            this._canvasObj.Position[0] + topLeftPoint[0],
+            this._canvasObj.Position[1] + topLeftPoint[1],
+        ];
         this._selectionObject.Size = [width, height];
         this._selectionObject.Visible = true;
 

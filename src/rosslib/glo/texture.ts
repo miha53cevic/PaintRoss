@@ -117,9 +117,21 @@ export default class Texture {
 
         const copiedPortion = this.CreateTexture(gl, rect.Size[0], rect.Size[1], null);
 
+        const framebufferImageHeight = texture.Size[1];
+        const framebufferTransformedY = framebufferImageHeight - (rect.Position[1] + rect.Size[1]);
+
         framebuffer.Bind();
         gl.bindTexture(gl.TEXTURE_2D, copiedPortion.Handle);
-        gl.copyTexSubImage2D(gl.TEXTURE_2D, 0, 0, 0, rect.Position[0], rect.Position[1], rect.Size[0], rect.Size[1]);
+        gl.copyTexSubImage2D(
+            gl.TEXTURE_2D,
+            0,
+            0,
+            0,
+            rect.Position[0],
+            framebufferTransformedY, // framebuffer texture start is lower left (0, 0) and increases upwards
+            rect.Size[0],
+            rect.Size[1]
+        );
         gl.bindTexture(gl.TEXTURE_2D, null);
         framebuffer.Unbind();
 

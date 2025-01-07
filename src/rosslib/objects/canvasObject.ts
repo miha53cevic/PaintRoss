@@ -242,6 +242,11 @@ export default class CanvasObject extends Object2D {
         // Draw the old texture as a fullscreenQuad on the new texture
         this.DrawFullscreenTextureOnCanvas(oldTexture);
         this.MergePreviewCanvas();
+
+        Logger.Log(
+            'Event',
+            `Resizing Canvas Image ${oldTexture.Size[0]}:${oldTexture.Size[1]} -> ${this.Size[0]}:${this.Size[1]}`
+        );
     }
 
     public ResizeCanvasOnAnchor(anchor: CanvasAnchor, newSizeX: number, newSizeY: number) {
@@ -289,11 +294,21 @@ export default class CanvasObject extends Object2D {
         oldTextureQuad.Position = position;
         this.DrawOnCanvas(oldTextureQuad);
         this.MergePreviewCanvas();
+
+        Logger.Log(
+            'Event',
+            `Resizing Canvas ${oldTexture.Size[0]}:${oldTexture.Size[1]} -> ${this.Size[0]}:${this.Size[1]}`
+        );
     }
 
     public CropCanvasImage(canvasSelectionRect: Rect) {
+        Logger.Log(
+            'Event',
+            `Cropping ${this.Size[0]}:${this.Size[1]} -> ${canvasSelectionRect.Size[0]}:${canvasSelectionRect.Size[1]} on point ${canvasSelectionRect.Position[0]}:${canvasSelectionRect.Position[1]}`
+        );
+
         // Get a copy of the old texture
-        const oldTexturePortion = Texture.CopyTexturePortion(this._gl, this._previewTexture, canvasSelectionRect);
+        const oldTexturePortion = Texture.CopyTexturePortion(this._gl, this._texture, canvasSelectionRect);
         // resize textures to canvas and clear them (set Size(value) is called)
         this.Size = canvasSelectionRect.Size;
         // Draw the old texture as a fullscreenQuad on the new texture
