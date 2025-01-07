@@ -1,11 +1,12 @@
 import Logger from '../util/logger';
+import Rect from '../util/rect';
 import FrameBuffer from './framebuffer';
 
 export default class Texture {
     private constructor(
         private readonly _gl: WebGL2RenderingContext,
         public readonly Handle: WebGLTexture,
-        private _size: [number, number],
+        private _size: [number, number]
     ) {}
 
     public static LoadImage(gl: WebGL2RenderingContext, url: string) {
@@ -25,7 +26,7 @@ export default class Texture {
                     0,
                     gl.RGBA,
                     gl.UNSIGNED_BYTE,
-                    new Uint8Array([255, 0, 255, 255]),
+                    new Uint8Array([255, 0, 255, 255])
                 );
                 gl.bindTexture(gl.TEXTURE_2D, null);
                 const image = new Image();
@@ -57,7 +58,7 @@ export default class Texture {
         gl: WebGL2RenderingContext,
         imageWidth: number,
         imageHeight: number,
-        imageData: Uint8Array | Uint8ClampedArray | null,
+        imageData: Uint8Array | Uint8ClampedArray | null
     ) {
         const handle = gl.createTexture();
         if (!handle) throw new Error('Error creating texture');
@@ -76,7 +77,7 @@ export default class Texture {
         texture: Texture,
         newImageWidth: number,
         newImageHeight: number,
-        newImageData: Uint8Array | Uint8ClampedArray | null,
+        newImageData: Uint8Array | Uint8ClampedArray | null
     ) {
         gl.bindTexture(gl.TEXTURE_2D, texture.Handle);
         gl.texImage2D(
@@ -88,7 +89,7 @@ export default class Texture {
             0,
             gl.RGBA,
             gl.UNSIGNED_BYTE,
-            newImageData,
+            newImageData
         );
         gl.bindTexture(gl.TEXTURE_2D, null);
 
@@ -108,6 +109,21 @@ export default class Texture {
         framebuffer.Unbind();
 
         return copy;
+    }
+
+    public static CopyTexturePortion(gl: WebGL2RenderingContext, texture: Texture, rect: Rect) {
+        const framebuffer = new FrameBuffer(gl);
+        framebuffer.AddTextureAttachment(texture);
+
+        const copiedPortion = this.CreateTexture(gl, rect.Size[0], rect.Size[1], null);
+
+        framebuffer.Bind();
+        gl.bindTexture(gl.TEXTURE_2D, copiedPortion.Handle);
+        gl.copyTexSubImage2D(gl.TEXTURE_2D, 0, 0, 0, rect.Position[0], rect.Position[1], rect.Size[0], rect.Size[1]);
+        gl.bindTexture(gl.TEXTURE_2D, null);
+        framebuffer.Unbind();
+
+        return copiedPortion;
     }
 
     // texture_unit must be from gl.TEXTURE1, gl.TEXTURE2...

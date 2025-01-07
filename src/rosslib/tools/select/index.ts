@@ -54,6 +54,9 @@ export default class SelectTool extends Tool {
 
     public OnMouseDown(canvasX: number | undefined, canvasY: number | undefined, mouseButton: number): void {
         if (canvasX === undefined || canvasY === undefined) return;
+
+        if (!this._selectionObject.Visible) this.ResetState();
+
         switch (this._state) {
             case 'waiting for initial point': {
                 if (mouseButton === 0) {

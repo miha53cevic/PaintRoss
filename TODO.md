@@ -41,7 +41,7 @@ TODO plan za Projekt R
 
 -   **Image Tools** (-)
 
-    -   Crop
+    -   Crop (+)
     -   Copy
     -   Cut
     -   Paste

@@ -7,6 +7,7 @@ import ImageEffect, { ImageEffectType } from '../util/imageEffect';
 import ImageKernel, { KernelOperation } from '../util/imageKernel';
 import ImageOperation from '../util/imageOperation';
 import Logger from '../util/logger';
+import Rect from '../util/rect';
 import Object2D from './object2d';
 import QuadObject from './quadObject';
 
@@ -97,23 +98,22 @@ export default class CanvasObject extends Object2D {
         this.MergePreviewCanvas();
     }
 
-    public MouseToCanvasCoordinates(x: number, y: number): [number, number] | [undefined, undefined] {
-        if (!this.IsMouseInCanvas(x, y)) return [undefined, undefined];
-        // If the mouse is in the canvas
-        const normalizedX = x - this.Position[0];
-        const normalizedY = y - this.Position[1];
-        return [normalizedX, normalizedY];
+    public WorldToCanvasCoordinates(x: number, y: number): [number, number] | [undefined, undefined] {
+        if (!this.IsWorldCoordInCanvas(x, y)) return [undefined, undefined];
+        const canvasX = x - this.Position[0];
+        const canvasY = y - this.Position[1];
+        return [canvasX, canvasY];
     }
 
-    public IsMouseInCanvas(x: number, y: number) {
+    public IsWorldCoordInCanvas(x: number, y: number) {
         const dx = x - this.Position[0];
         const dy = y - this.Position[1];
 
-        // If dx or dy are negative the mouse in on the left or above the canvas
+        // If dx or dy are negative the world coord in on the left or above the canvas
         if (dx < 0 || dy < 0) return false;
-        // If dx or dy are greater then canvasPos+canvasSize then mouse is right or bottom of canvas
+        // If dx or dy are greater then canvasPos+canvasSize then world coord is right or bottom of canvas
         if (dx > this.Size[0] || dy > this.Size[1]) return false;
-        // Otherwise mouse is in canvas
+        // Otherwise coord is in canvas
         return true;
     }
 
@@ -288,6 +288,16 @@ export default class CanvasObject extends Object2D {
         }
         oldTextureQuad.Position = position;
         this.DrawOnCanvas(oldTextureQuad);
+        this.MergePreviewCanvas();
+    }
+
+    public CropCanvasImage(canvasSelectionRect: Rect) {
+        // Get a copy of the old texture
+        const oldTexturePortion = Texture.CopyTexturePortion(this._gl, this._previewTexture, canvasSelectionRect);
+        // resize textures to canvas and clear them (set Size(value) is called)
+        this.Size = canvasSelectionRect.Size;
+        // Draw the old texture as a fullscreenQuad on the new texture
+        this.DrawFullscreenTextureOnCanvas(oldTexturePortion);
         this.MergePreviewCanvas();
     }
 

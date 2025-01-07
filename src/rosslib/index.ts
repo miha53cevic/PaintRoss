@@ -21,6 +21,7 @@ import { ImageEffectType } from './util/imageEffect';
 import ImageFormat from './util/imageFormat';
 import { KernelOperation } from './util/imageKernel';
 import Logger from './util/logger';
+import Rect from './util/rect';
 
 export default class PaintApp {
     private static _instance: PaintApp | null = null;
@@ -29,6 +30,7 @@ export default class PaintApp {
     private _mainScene: Scene2D;
     private _mainCamera2d: Camera2D;
     private _canvasObj: CanvasObject;
+    private _selectionObj: SelectionObject;
     private _toolManager: ToolManager;
     private _colourSelection: ColourSelection;
 
@@ -55,7 +57,7 @@ export default class PaintApp {
                 glCanvas.width,
                 glCanvas.height
             );
-            const canvasPos = this._canvasObj.MouseToCanvasCoordinates(mouseWorld[0], mouseWorld[1]);
+            const canvasPos = this._canvasObj.WorldToCanvasCoordinates(mouseWorld[0], mouseWorld[1]);
             this._toolManager.GetSelectedTool()?.OnMouseDown(canvasPos[0], canvasPos[1], ev.button);
             if (ev.button === 1) {
                 panningStartPos = this._app.GetMousePos();
@@ -71,7 +73,7 @@ export default class PaintApp {
                 glCanvas.width,
                 glCanvas.height
             );
-            const canvasPos = this._canvasObj.MouseToCanvasCoordinates(mouseWorld[0], mouseWorld[1]);
+            const canvasPos = this._canvasObj.WorldToCanvasCoordinates(mouseWorld[0], mouseWorld[1]);
             this._toolManager.GetSelectedTool()?.OnMouseMove(canvasPos[0], canvasPos[1]);
             if (canvasPos[0] && canvasPos[1]) BrushCursor.Get().SetBrushCursorPosition(mouseWorld[0], mouseWorld[1]);
             if (panning) {
@@ -92,7 +94,7 @@ export default class PaintApp {
                 glCanvas.width,
                 glCanvas.height
             );
-            const canvasPos = this._canvasObj.MouseToCanvasCoordinates(mouseWorld[0], mouseWorld[1]);
+            const canvasPos = this._canvasObj.WorldToCanvasCoordinates(mouseWorld[0], mouseWorld[1]);
             this._toolManager.GetSelectedTool()?.OnMouseUp(canvasPos[0], canvasPos[1], ev.button);
             if (ev.button === 1) {
                 panning = false;
@@ -158,9 +160,9 @@ export default class PaintApp {
         );
         this._canvasObj.DebugMode = false;
 
-        const selectionObj = new SelectionObject(gl);
-        selectionObj.Size = [200, 200];
-        selectionObj.Visible = false;
+        this._selectionObj = new SelectionObject(gl);
+        this._selectionObj.Size = [200, 200];
+        this._selectionObj.Visible = false;
 
         this._toolManager.RegisterTools([
             new PenTool(gl, this._canvasObj, this._colourSelection),
@@ -169,7 +171,7 @@ export default class PaintApp {
             new ShapeTool(gl, this._canvasObj, this._colourSelection),
             new PickerTool(gl, this._canvasObj, this._colourSelection),
             new EraserTool(gl, this._canvasObj, this._colourSelection),
-            new SelectTool(gl, this._canvasObj, this._colourSelection, selectionObj),
+            new SelectTool(gl, this._canvasObj, this._colourSelection, this._selectionObj),
         ]);
 
         const lineObject = new LineObject(gl);
@@ -187,7 +189,7 @@ export default class PaintApp {
 
         this._toolManager.SetSelectedTool('Pen');
 
-        this._mainScene.Add([this._canvasObj, quad1, quad2, BrushCursor.Get().GetObject2D(), selectionObj]);
+        this._mainScene.Add([this._canvasObj, quad1, quad2, BrushCursor.Get().GetObject2D(), this._selectionObj]);
 
         this._canvasObj.Subscribe('SizeChanged', () => {
             this._app.GetEventManager().Notify('CanvasObjResize', [this._canvasObj.Size[0], this._canvasObj.Size[1]]);
@@ -197,7 +199,7 @@ export default class PaintApp {
             this._mainCamera2d.UpdateProjectionMatrix(width, height);
         };
         this._app.OnUpdate = (_, timeSinceRun, __) => {
-            selectionObj.SetUniformTime(timeSinceRun);
+            this._selectionObj.SetUniformTime(timeSinceRun);
         };
         this._app.OnRender = () => {
             this._mainScene.Render(this._mainCamera2d);
@@ -231,7 +233,7 @@ export default class PaintApp {
             glCanvas.width,
             glCanvas.height
         );
-        const canvasPos = this._canvasObj.MouseToCanvasCoordinates(worldMousePos[0], worldMousePos[1]);
+        const canvasPos = this._canvasObj.WorldToCanvasCoordinates(worldMousePos[0], worldMousePos[1]);
         if (!canvasPos[0] && !canvasPos[1]) return [undefined, undefined];
         else return [Math.floor(canvasPos[0]), Math.floor(canvasPos[1])]; // remove decimals
     }
@@ -284,6 +286,23 @@ export default class PaintApp {
 
     public ResizeCanvasWithAnchor(anchor: CanvasAnchor, newSizeX: number, newSizeY: number) {
         this._canvasObj.ResizeCanvasOnAnchor(anchor, newSizeX, newSizeY);
+    }
+
+    public CropCanvasImage() {
+        if (!this._selectionObj.Visible) return;
+
+        const worldSelectionRect = this._selectionObj.GetSelectionRect();
+
+        const canvasSelectionRectPos = this._canvasObj.WorldToCanvasCoordinates(
+            worldSelectionRect.Position[0],
+            worldSelectionRect.Position[1]
+        );
+        if (!canvasSelectionRectPos[0] || !canvasSelectionRectPos[1]) return;
+
+        const canvasSelectionRectSize = worldSelectionRect.Size;
+
+        this._canvasObj.CropCanvasImage(new Rect(canvasSelectionRectPos, canvasSelectionRectSize));
+        this._selectionObj.Visible = false;
     }
 
     public GetToolManager() {
