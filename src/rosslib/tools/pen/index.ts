@@ -61,6 +61,11 @@ export default class PenTool extends Tool {
 
     public OnKeyPress(key: string): void {}
 
+    public OnEnter(): void {
+        const brushSize = this._toolOptions.GetOption('BrushSize').Value as number;
+        BrushCursor.Get().SetBrushCursorSize(brushSize);
+    }
+
     public OnExit(): void {
         this._canvasObj.MergePreviewCanvas();
         BrushCursor.Get().ResetBrushCursorSize();
