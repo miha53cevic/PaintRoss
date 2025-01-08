@@ -36,6 +36,7 @@ uniform int u_usingTexture;
 uniform float u_kernel[9];
 uniform float u_kernelWeight;
 uniform int u_effect;
+uniform int u_transparencyChessboard;
 
 float chessboardPattern(float u, float v, vec2 size) {
     float chessboard = floor(u * size.x) + floor(v * size.y);
@@ -72,22 +73,24 @@ vec3 applyEffects() {
  
 void main() {
   vec2 chessboardSize = vec2(0.125);
-  vec3 outColour = vec3(1);
+  vec4 outColour = vec4(1.0);
   vec2 fragCoords = gl_FragCoord.xy;
 
   if (u_usingTexture == 1) {
     if (texture(textureSampler, textureCoords).a == 0.0) { // if alpha is 0 use chessboard pattern
-        outColour = vec3(chessboardPattern(fragCoords.x, fragCoords.y, chessboardSize));
+        vec3 colorSum = vec3(chessboardPattern(fragCoords.x, fragCoords.y, chessboardSize));
+        outColour = vec4(colorSum.xyz, 1.0);
     }
-    else outColour = applyEffects();
+    else outColour = vec4(applyEffects().xyz, 1.0);
   }
   else { // otherwise use solid colour
-    if (u_colour.a == 0.0) {
-        outColour = vec3(chessboardPattern(fragCoords.x, fragCoords.y, chessboardSize));
+    if (u_transparencyChessboard == 1 && u_colour.a == 0.0) {
+        vec3 pattern = vec3(chessboardPattern(fragCoords.x, fragCoords.y, chessboardSize));
+        outColour = vec4(pattern.xyz, 1.0);
     }
-    else outColour = u_colour.rgb;
+    else outColour = u_colour;
   }
-  FragColor = vec4(outColour, 1);
+  FragColor = vec4(outColour);
 }
 `;
 
@@ -113,6 +116,7 @@ export default class QuadObject extends Object2D {
     public Texture: Texture | null = null;
     public Kernel: Kernel = ImageKernel.GetKernel('Normal');
     public Effect: number = ImageEffect.GetImageEffect('None');
+    public TransparencyChessboard: boolean = true;
 
     constructor(gl: WebGL2RenderingContext) {
         super(gl);
@@ -139,6 +143,7 @@ export default class QuadObject extends Object2D {
         shader.SetFloatArray(shader.GetUniformLocation('u_kernel'), this.Kernel);
         shader.SetFloat(shader.GetUniformLocation('u_kernelWeight'), ImageKernel.ComputeKernelWeight(this.Kernel));
         shader.SetInt(shader.GetUniformLocation('u_effect'), this.Effect);
+        shader.SetInt(shader.GetUniformLocation('u_transparencyChessboard'), this.TransparencyChessboard ? 1 : 0);
 
         // Check if there is a texture
         if (this.Texture) {

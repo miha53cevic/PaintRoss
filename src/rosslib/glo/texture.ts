@@ -111,17 +111,17 @@ export default class Texture {
         return copy;
     }
 
-    public static CopyTexturePortion(gl: WebGL2RenderingContext, texture: Texture, rect: Rect) {
+    public static CopyTextureSection(gl: WebGL2RenderingContext, texture: Texture, rect: Rect) {
         const framebuffer = new FrameBuffer(gl);
         framebuffer.AddTextureAttachment(texture);
 
-        const copiedPortion = this.CreateTexture(gl, rect.Size[0], rect.Size[1], null);
+        const copiedSection = this.CreateTexture(gl, rect.Size[0], rect.Size[1], null);
 
         const framebufferImageHeight = texture.Size[1];
         const framebufferTransformedY = framebufferImageHeight - (rect.Position[1] + rect.Size[1]);
 
         framebuffer.Bind();
-        gl.bindTexture(gl.TEXTURE_2D, copiedPortion.Handle);
+        gl.bindTexture(gl.TEXTURE_2D, copiedSection.Handle);
         gl.copyTexSubImage2D(
             gl.TEXTURE_2D,
             0,
@@ -135,7 +135,7 @@ export default class Texture {
         gl.bindTexture(gl.TEXTURE_2D, null);
         framebuffer.Unbind();
 
-        return copiedPortion;
+        return copiedSection;
     }
 
     // texture_unit must be from gl.TEXTURE1, gl.TEXTURE2...

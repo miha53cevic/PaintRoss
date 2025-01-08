@@ -4,6 +4,7 @@ import Shader from '../glo/shader';
 import VAO from '../glo/vao';
 import VBO from '../glo/vbo';
 import Rect from '../util/rect';
+import CanvasObject from './canvasObject';
 import Object2D from './object2d';
 
 const vertexShader = `#version 300 es
@@ -88,6 +89,17 @@ export default class SelectionObject extends Object2D {
 
     public GetSelectionRect(): Rect {
         return new Rect([this.Position[0], this.Position[1]], [this.Size[0], this.Size[1]]);
+    }
+
+    public GetCanvasSelectionRect(canvasObj: CanvasObject): Rect {
+        const worldRect = this.GetSelectionRect();
+
+        const canvasRectPos = canvasObj.WorldToCanvasCoordinates(worldRect.Position[0], worldRect.Position[1]);
+        const canvasRectSize = worldRect.Size;
+
+        if (!canvasRectPos[0] || !canvasRectPos[1]) throw new Error('Selection is outside of canvas!');
+
+        return new Rect(canvasRectPos, canvasRectSize);
     }
 
     public Render(camera: Camera2D): void {

@@ -21,7 +21,6 @@ import { ImageEffectType } from './util/imageEffect';
 import ImageFormat from './util/imageFormat';
 import { KernelOperation } from './util/imageKernel';
 import Logger from './util/logger';
-import Rect from './util/rect';
 
 export default class PaintApp {
     private static _instance: PaintApp | null = null;
@@ -217,6 +216,7 @@ export default class PaintApp {
     }
 
     public async LoadImage(url: string) {
+        this._selectionObj.Visible = false;
         const gl = this._app.GetGLContext();
         const imageTexture = await Texture.LoadImage(gl, url);
         this._canvasObj.Size = imageTexture.Size;
@@ -283,27 +283,42 @@ export default class PaintApp {
 
     public ResizeCanvasImage(newSizeX: number, newSizeY: number) {
         this._canvasObj.ResizeCanvasImage(newSizeX, newSizeY);
+        this._selectionObj.Visible = false;
     }
 
     public ResizeCanvasWithAnchor(anchor: CanvasAnchor, newSizeX: number, newSizeY: number) {
         this._canvasObj.ResizeCanvasOnAnchor(anchor, newSizeX, newSizeY);
+        this._selectionObj.Visible = false;
     }
 
     public CropCanvasImage() {
         if (!this._selectionObj.Visible) return;
-
-        const worldSelectionRect = this._selectionObj.GetSelectionRect();
-
-        const canvasSelectionRectPos = this._canvasObj.WorldToCanvasCoordinates(
-            worldSelectionRect.Position[0],
-            worldSelectionRect.Position[1]
-        );
-        if (!canvasSelectionRectPos[0] || !canvasSelectionRectPos[1]) return;
-
-        const canvasSelectionRectSize = worldSelectionRect.Size;
-
-        this._canvasObj.CropCanvasImage(new Rect(canvasSelectionRectPos, canvasSelectionRectSize));
+        this.FinishCanvasImage();
+        this._canvasObj.CropCanvasImage(this._selectionObj.GetCanvasSelectionRect(this._canvasObj));
         this._selectionObj.Visible = false;
+    }
+
+    public CopyFromCanvasImage() {
+        if (!this._selectionObj.Visible) return;
+        this.FinishCanvasImage();
+        this._selectionObj.Visible = false;
+    }
+
+    public CutFromCanvasImage() {
+        if (!this._selectionObj.Visible) return;
+        this.FinishCanvasImage();
+        this._canvasObj.CutFromCanvasImage(this._selectionObj.GetCanvasSelectionRect(this._canvasObj));
+        this._selectionObj.Visible = false;
+    }
+
+    public PasteOntoCanvasImage() {
+        this._selectionObj.Visible = false;
+        this.FinishCanvasImage();
+    }
+
+    public FinishCanvasImage() {
+        this._toolManager.GetSelectedTool()?.OnExit();
+        this._canvasObj.MergePreviewCanvas();
     }
 
     public GetToolManager() {
