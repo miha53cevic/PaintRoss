@@ -79,14 +79,14 @@ void main() {
   if (u_usingTexture == 1) {
     if (texture(textureSampler, textureCoords).a == 0.0) { // if alpha is 0 use chessboard pattern
         vec3 colorSum = vec3(chessboardPattern(fragCoords.x, fragCoords.y, chessboardSize));
-        outColour = vec4(colorSum.xyz, 1.0);
+        outColour = vec4(colorSum, 1.0);
     }
-    else outColour = vec4(applyEffects().xyz, 1.0);
+    else outColour = vec4(applyEffects(), 1.0);
   }
   else { // otherwise use solid colour
     if (u_transparencyChessboard == 1 && u_colour.a == 0.0) {
         vec3 pattern = vec3(chessboardPattern(fragCoords.x, fragCoords.y, chessboardSize));
-        outColour = vec4(pattern.xyz, 1.0);
+        outColour = vec4(pattern, 1.0);
     }
     else outColour = u_colour;
   }

@@ -1,8 +1,7 @@
 import CanvasObject from '../../objects/canvasObject';
 import LineObject from '../../objects/lineObject';
-import QuadObject from '../../objects/quadObject';
 import { ColourSelection } from '../../util/colour';
-import { GetTouchingControlPoint, HalfPoint, Point } from '../../util/controlPoints';
+import { ControllablePoints, ControlPoint, HalfPoint, Point } from '../../util/controlPoints';
 import Tool from '../tool';
 import { ToolOption } from '../toolOptions';
 import SplineToolOptions from './splineToolOptions';
@@ -25,10 +24,9 @@ function CatmulRomSpline(P: Point[], t: number): Point {
 type SplineState = 'waiting for initial click' | 'waiting for initial release' | 'waiting for point edit finish';
 
 export default class SplineTool extends Tool {
-    private _controlPoints: Point[] = [];
     private _lineObject: LineObject;
     private _state: SplineState = 'waiting for initial click';
-    private _selectedControlPoint: Point | null = null;
+    private _controllablePoints: ControllablePoints = new ControllablePoints();
 
     public LineSegments = 200;
     public ControlPointSize: Point = [10, 10];
@@ -64,8 +62,7 @@ export default class SplineTool extends Tool {
         switch (this._state) {
             case 'waiting for initial click': {
                 if (mouseButton === 0) {
-                    this._controlPoints = [];
-                    this._controlPoints.push([canvasX, canvasY]); // initial line starting point
+                    this._controllablePoints.ControlPoints.push(new ControlPoint([canvasX, canvasY])); // initial line starting point
                     this._state = 'waiting for initial release';
                 }
                 break;
@@ -79,9 +76,11 @@ export default class SplineTool extends Tool {
                     this.ResetState();
                 }
                 if (mouseButton === 0) {
-                    const cp = GetTouchingControlPoint([canvasX, canvasY], this._controlPoints, this.ControlPointSize);
-                    this._selectedControlPoint = cp;
-                    this.RenderSpline();
+                    const cp = this._controllablePoints.GetTouching([canvasX, canvasY]);
+                    if (cp) {
+                        this._controllablePoints.Select(cp);
+                        this.RenderSpline();
+                    }
                 }
                 break;
             }
@@ -94,14 +93,19 @@ export default class SplineTool extends Tool {
             case 'waiting for initial release': {
                 if (mouseButton === 0) {
                     // If it was a click and release mouse move ignore it
-                    if (this._controlPoints.length <= 1) return;
+                    if (this._controllablePoints.ControlPoints.length <= 1) return;
 
-                    const p1 = this._controlPoints[0];
-                    const p4 = this._controlPoints[1];
+                    const p1 = this._controllablePoints.ControlPoints[0].Position;
+                    const p4 = this._controllablePoints.ControlPoints[1].Position;
                     const middlePoint = HalfPoint(p1, p4);
                     const p2 = HalfPoint(p1, middlePoint);
                     const p3 = HalfPoint(middlePoint, p4);
-                    this._controlPoints = [p1, p1, p2, p3, p4, p4];
+
+                    const cp1 = this._controllablePoints.ControlPoints[0];
+                    const cp4 = this._controllablePoints.ControlPoints[1];
+                    const cp2 = new ControlPoint(p2);
+                    const cp3 = new ControlPoint(p3);
+                    this._controllablePoints.ControlPoints = [cp1, cp1, cp2, cp3, cp4, cp4];
                     this.RenderSpline();
                     this._state = 'waiting for point edit finish';
                 }
@@ -109,7 +113,7 @@ export default class SplineTool extends Tool {
             }
             case 'waiting for point edit finish': {
                 if (mouseButton === 0) {
-                    this._selectedControlPoint = null;
+                    this._controllablePoints.Select(null);
                     this._canvasObj.CancelPreviewCanvas();
                     this.RenderSpline();
                 }
@@ -123,19 +127,19 @@ export default class SplineTool extends Tool {
         switch (this._state) {
             case 'waiting for initial release': {
                 // If the second control point is already placed just change it
-                if (this._controlPoints.length == 2) {
-                    this._controlPoints[1] = [canvasX, canvasY];
+                if (this._controllablePoints.ControlPoints.length === 2) {
+                    this._controllablePoints.ControlPoints[1] = new ControlPoint([canvasX, canvasY]);
                     // Otherwise add the second control point
-                } else this._controlPoints.push([canvasX, canvasY]);
+                } else this._controllablePoints.ControlPoints.push(new ControlPoint([canvasX, canvasY]));
                 // Rerender the line
                 this._canvasObj.CancelPreviewCanvas();
                 this.RenderInitialLine();
                 break;
             }
             case 'waiting for point edit finish': {
-                if (this._selectedControlPoint) {
-                    this._selectedControlPoint[0] = canvasX;
-                    this._selectedControlPoint[1] = canvasY;
+                const selectedControlPoint = this._controllablePoints.GetSelected();
+                if (selectedControlPoint) {
+                    selectedControlPoint.Position = [canvasX, canvasY];
                     // Rerender spline
                     this._canvasObj.CancelPreviewCanvas();
                     this.RenderSpline();
@@ -165,15 +169,16 @@ export default class SplineTool extends Tool {
     }
 
     private RenderSpline(renderControlPoints: boolean = true) {
-        let numberOfConnectedSplines = this._controlPoints.length - 2; // makni rubne kontrolne točke
+        let numberOfConnectedSplines = this._controllablePoints.ControlPoints.length - 2; // makni rubne kontrolne točke
         numberOfConnectedSplines -= 1; // za 2 imamo 1, za 3 imamo 2, za 4 imamo 3 spline-a... (odnosno length(controlPoints)-3)
         for (let j = 0; j < numberOfConnectedSplines; j++) {
             const curvePoints: Point[] = [];
+            const controlPositions = this._controllablePoints.GetPositions();
             const controlSubset = [
-                this._controlPoints[0 + j],
-                this._controlPoints[1 + j],
-                this._controlPoints[2 + j],
-                this._controlPoints[3 + j],
+                controlPositions[0 + j],
+                controlPositions[1 + j],
+                controlPositions[2 + j],
+                controlPositions[3 + j],
             ];
             for (let i = 0; i <= this.LineSegments; i++) {
                 const t = i / this.LineSegments;
@@ -187,33 +192,20 @@ export default class SplineTool extends Tool {
             this._canvasObj.DrawOnCanvas(this._lineObject);
 
             // Render control points
-            if (renderControlPoints) this.RenderControlPoints();
+            if (renderControlPoints) this._controllablePoints.RenderCircles(this._gl, this._canvasObj);
         }
     }
 
     private RenderInitialLine() {
         this._lineObject.Thickness = this._toolOptions.GetOption('BrushSize').Value as number;
         this._lineObject.Colour = this.ColourSelection.Primary;
-        this._lineObject.SetPoints(this._controlPoints);
+        this._lineObject.SetPoints(this._controllablePoints.GetPositions());
         this._canvasObj.DrawOnCanvas(this._lineObject);
     }
 
-    private RenderControlPoints() {
-        const quad = new QuadObject(this._gl);
-        quad.Size = this.ControlPointSize;
-        for (const controlPoint of this._controlPoints) {
-            if (this._selectedControlPoint === controlPoint) {
-                quad.Colour = [255, 255, 0, 255];
-            } else quad.Colour = [255, 0, 0, 255];
-            const pos: Point = [controlPoint[0] - quad.Size[0] / 2, controlPoint[1] - quad.Size[1] / 2];
-            quad.Position = pos;
-            this._canvasObj.DrawOnCanvas(quad);
-        }
-    }
-
     private ResetState() {
-        this._controlPoints = [];
-        this._selectedControlPoint = null;
+        this._controllablePoints.ControlPoints = [];
+        this._controllablePoints.Select(null);
         this._state = 'waiting for initial click';
     }
 }
