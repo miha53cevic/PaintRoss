@@ -157,7 +157,7 @@ export default class ShapeTool extends Tool {
                 this._rectangleObject.Thickness = this._toolOptions.GetOption('BrushSize').Value as number;
 
                 this._canvasObj.DrawOnCanvas(this._rectangleObject);
-                if (drawControlPoints) this._controllablePoints.RenderCircles(this._gl, this._canvasObj);
+                if (drawControlPoints) this._controllablePoints.Render(this._gl, this._canvasObj);
                 break;
             }
             case 'Ellipse': {
@@ -169,7 +169,7 @@ export default class ShapeTool extends Tool {
                 this._circleObject.Thickness = this._toolOptions.GetOption('BrushSize').Value as number;
 
                 this._canvasObj.DrawOnCanvas(this._circleObject);
-                if (drawControlPoints) this._controllablePoints.RenderCircles(this._gl, this._canvasObj);
+                if (drawControlPoints) this._controllablePoints.Render(this._gl, this._canvasObj);
                 break;
             }
         }

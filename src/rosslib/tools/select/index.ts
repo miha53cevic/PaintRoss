@@ -168,7 +168,7 @@ export default class SelectTool extends Tool {
         this._selectionObject.Size = [width, height];
         this._selectionObject.Visible = true;
 
-        if (drawControlPoints) this._controllablePoints.RenderCircles(this._gl, this._canvasObj);
+        if (drawControlPoints) this._controllablePoints.Render(this._gl, this._canvasObj);
     }
 
     private ResetState(): void {

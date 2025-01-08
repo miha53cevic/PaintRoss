@@ -192,7 +192,7 @@ export default class SplineTool extends Tool {
             this._canvasObj.DrawOnCanvas(this._lineObject);
 
             // Render control points
-            if (renderControlPoints) this._controllablePoints.RenderCircles(this._gl, this._canvasObj);
+            if (renderControlPoints) this._controllablePoints.Render(this._gl, this._canvasObj);
         }
     }
 
