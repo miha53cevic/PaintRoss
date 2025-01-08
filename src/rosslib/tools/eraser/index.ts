@@ -55,6 +55,11 @@ export default class EraserTool extends Tool {
 
     public OnColourSelectionChange(colourSelection: ColourSelection): void {}
 
+    public OnEnter(): void {
+        const brushSize = this._toolOptions.GetOption('BrushSize').Value as number;
+        BrushCursor.Get().SetBrushCursorSize(brushSize);
+    }
+
     public OnExit(): void {
         this._canvasObj.MergePreviewCanvas();
         BrushCursor.Get().ResetBrushCursorSize();

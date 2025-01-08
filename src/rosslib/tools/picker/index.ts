@@ -29,6 +29,8 @@ export default class PickerTool extends Tool {
         if (!this.IsActive) return;
     }
 
+    public OnEnter(): void {}
+
     public OnExit(): void {}
 
     public GetID(): string {

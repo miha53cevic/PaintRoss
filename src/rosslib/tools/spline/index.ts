@@ -155,6 +155,8 @@ export default class SplineTool extends Tool {
 
     public OnKeyPress(key: string): void {}
 
+    public OnEnter(): void {}
+
     public OnExit(): void {
         this._canvasObj.CancelPreviewCanvas();
         this.RenderSpline(false);

@@ -28,6 +28,8 @@ export default class FillTool extends Tool {
 
     public OnKeyPress(key: string): void {}
 
+    public OnEnter(): void {}
+
     public OnExit(): void {
         this._canvasObj.MergePreviewCanvas();
     }
@@ -47,7 +49,7 @@ export default class FillTool extends Tool {
             `rgb(${this.ColourSelection.Primary[0]}, ${this.ColourSelection.Primary[1]}, ${this.ColourSelection.Primary[2]})`,
             canvasStartX,
             canvasStartY,
-            0,
+            0
         );
         const texture = Texture.CreateTexture(this._gl, image.Width, image.Height, floodFill.imageData.data);
         this._canvasObj.DrawFullscreenTextureOnCanvas(texture);

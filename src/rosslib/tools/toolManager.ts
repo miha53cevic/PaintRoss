@@ -26,10 +26,10 @@ export default class ToolManager {
     public SetSelectedTool(name: string): void {
         const oldTool = this.GetSelectedTool();
         oldTool?.OnExit();
-
         if (oldTool) oldTool.IsActive = false;
 
         const newTool = this.GetTool(name);
+        newTool.OnEnter();
         newTool.IsActive = true;
         this._selectedTool = newTool;
     }
