@@ -70,9 +70,9 @@ export default function AppBar() {
                         <DropdownItem onClick={handleSaveImage}>Save Image</DropdownItem>
                     </Dropdown>
                     <Dropdown title='Edit'>
-                        <DropdownItem>Cut TODO</DropdownItem>
-                        <DropdownItem>Copy TODO</DropdownItem>
-                        <DropdownItem>Paste TODO</DropdownItem>
+                        <DropdownItem onClick={() => PaintApp.Get().CutFromCanvasImage()}>Cut</DropdownItem>
+                        <DropdownItem onClick={() => PaintApp.Get().CopyFromCanvasImage()}>Copy</DropdownItem>
+                        <DropdownItem onClick={() => PaintApp.Get().PasteOntoCanvasImage()}>Paste</DropdownItem>
                         <DropdownItem onClick={() => PaintApp.Get().CropCanvasImage()}>Crop</DropdownItem>
                     </Dropdown>
                     <Dropdown title='Image Effects'>

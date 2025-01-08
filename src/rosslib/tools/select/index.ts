@@ -1,8 +1,7 @@
 import CanvasObject from '../../objects/canvasObject';
-import QuadObject from '../../objects/quadObject';
 import SelectionObject from '../../objects/selectionObject';
 import { ColourSelection } from '../../util/colour';
-import { GetTouchingControlPoint, Point } from '../../util/controlPoints';
+import { ControllablePoints, ControlPoint } from '../../util/controlPoints';
 import Tool from '../tool';
 import { ToolOption } from '../toolOptions';
 import SelectToolOptions from './selectToolOptions';
@@ -12,10 +11,7 @@ type SelectState = 'waiting for initial point' | 'waiting for initial release' |
 export default class SelectTool extends Tool {
     private _state: SelectState = 'waiting for initial point';
     private _selectionObject: SelectionObject;
-    private _controlPoints: Point[] = [];
-    private _selectedControlPoint: Point | null = null;
-
-    public ControlPointSize: Point = [10, 10];
+    private _controllablePoints: ControllablePoints = new ControllablePoints();
 
     constructor(
         _gl: WebGL2RenderingContext,
@@ -63,8 +59,8 @@ export default class SelectTool extends Tool {
         switch (this._state) {
             case 'waiting for initial point': {
                 if (mouseButton === 0) {
-                    this._controlPoints = [];
-                    this._controlPoints.push([canvasX, canvasY]);
+                    this._controllablePoints.ControlPoints = [];
+                    this._controllablePoints.ControlPoints.push(new ControlPoint([canvasX, canvasY]));
                     this._state = 'waiting for initial release';
                 }
                 break;
@@ -78,9 +74,11 @@ export default class SelectTool extends Tool {
                     this.ResetState();
                 }
                 if (mouseButton === 0) {
-                    const cp = GetTouchingControlPoint([canvasX, canvasY], this._controlPoints, this.ControlPointSize);
-                    this._selectedControlPoint = cp;
-                    this.RenderSelection();
+                    const cp = this._controllablePoints.GetTouching([canvasX, canvasY]);
+                    if (cp) {
+                        this._controllablePoints.Select(cp);
+                        this.RenderSelection();
+                    }
                 }
                 break;
             }
@@ -101,7 +99,7 @@ export default class SelectTool extends Tool {
             }
             case 'waiting for controlpoint edit finish': {
                 if (mouseButton === 0) {
-                    this._selectedControlPoint = null;
+                    this._controllablePoints.Select(null);
                     this._canvasObj.CancelPreviewCanvas();
                     this.RenderSelection();
                 }
@@ -117,19 +115,19 @@ export default class SelectTool extends Tool {
         switch (this._state) {
             case 'waiting for initial release': {
                 // If the second control point is already placed just change it
-                if (this._controlPoints.length == 2) {
-                    this._controlPoints[1] = [canvasX, canvasY];
+                if (this._controllablePoints.ControlPoints.length == 2) {
+                    this._controllablePoints.ControlPoints[1] = new ControlPoint([canvasX, canvasY]);
                     // Otherwise add the second control point
-                } else this._controlPoints.push([canvasX, canvasY]);
+                } else this._controllablePoints.ControlPoints.push(new ControlPoint([canvasX, canvasY]));
                 // Rerender the line
                 this._canvasObj.CancelPreviewCanvas();
                 this.RenderSelection();
                 break;
             }
             case 'waiting for controlpoint edit finish': {
-                if (this._selectedControlPoint) {
-                    this._selectedControlPoint[0] = canvasX;
-                    this._selectedControlPoint[1] = canvasY;
+                const selectedControlPoint = this._controllablePoints.GetSelected();
+                if (selectedControlPoint) {
+                    selectedControlPoint.Position = [canvasX, canvasY];
                     // Rerender spline
                     this._canvasObj.CancelPreviewCanvas();
                     this.RenderSelection();
@@ -154,23 +152,10 @@ export default class SelectTool extends Tool {
         return 'Select';
     }
 
-    private RenderControlPoints() {
-        const quad = new QuadObject(this._gl);
-        quad.Size = this.ControlPointSize;
-        for (const controlPoint of this._controlPoints) {
-            if (this._selectedControlPoint === controlPoint) {
-                quad.Colour = [255, 255, 0, 255];
-            } else quad.Colour = [255, 0, 0, 255];
-            const pos: Point = [controlPoint[0] - quad.Size[0] / 2, controlPoint[1] - quad.Size[1] / 2];
-            quad.Position = pos;
-            this._canvasObj.DrawOnCanvas(quad);
-        }
-    }
-
     private RenderSelection(drawControlPoints = true): void {
-        if (this._controlPoints.length < 2) return;
-        const p1 = this._controlPoints[0];
-        const p4 = this._controlPoints[1];
+        if (this._controllablePoints.ControlPoints.length < 2) return;
+        const p1 = this._controllablePoints.ControlPoints[0].Position;
+        const p4 = this._controllablePoints.ControlPoints[1].Position;
         const width = Math.abs(p4[0] - p1[0]);
         const height = Math.abs(p4[1] - p1[1]);
 
@@ -183,12 +168,12 @@ export default class SelectTool extends Tool {
         this._selectionObject.Size = [width, height];
         this._selectionObject.Visible = true;
 
-        if (drawControlPoints) this.RenderControlPoints();
+        if (drawControlPoints) this._controllablePoints.Render(this._gl, this._canvasObj);
     }
 
     private ResetState(): void {
         this._state = 'waiting for initial point';
-        this._controlPoints = [];
-        this._selectedControlPoint = null;
+        this._controllablePoints.ControlPoints = [];
+        this._controllablePoints.Select(null);
     }
 }

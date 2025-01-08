@@ -308,13 +308,34 @@ export default class CanvasObject extends Object2D {
         );
 
         // Get a copy of the old texture
-        const oldTexturePortion = Texture.CopyTexturePortion(this._gl, this._texture, canvasSelectionRect);
+        const oldTextureSection = Texture.CopyTextureSection(this._gl, this._previewTexture, canvasSelectionRect);
         // resize textures to canvas and clear them (set Size(value) is called)
         this.Size = canvasSelectionRect.Size;
         // Draw the old texture as a fullscreenQuad on the new texture
-        this.DrawFullscreenTextureOnCanvas(oldTexturePortion);
+        this.DrawFullscreenTextureOnCanvas(oldTextureSection);
         this.MergePreviewCanvas();
     }
+
+    public CopyFromCanvasImage(canvasSelectionRect: Rect): Texture {
+        const textureSection = Texture.CopyTextureSection(this._gl, this._previewTexture, canvasSelectionRect);
+        return textureSection;
+    }
+
+    public CutFromCanvasImage(canvasSelectionRect: Rect): Texture {
+        // Get the texture selection
+        const textureSection = this.CopyFromCanvasImage(canvasSelectionRect);
+        // Draw empty pixels on the selection
+        const quad = new QuadObject(this._gl);
+        quad.Position = canvasSelectionRect.Position;
+        quad.Size = canvasSelectionRect.Size;
+        quad.Colour = [0, 0, 0, 0];
+        quad.TransparencyChessboard = false;
+        this.DrawOnCanvas(quad);
+        this.MergePreviewCanvas();
+        return textureSection;
+    }
+
+    public PasteOntoCanvasImage(canvasPositionX: number, canvasPositionY: number, texture: Texture) {}
 
     public Subscribe(event: CanvasObjectEvent, listener: CanvasObjectListener) {
         const eventListeners = this._listeners.get(event);
