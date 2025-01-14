@@ -1,6 +1,6 @@
-import BrushCursor from '../../brushCursor';
 import CanvasObject from '../../objects/canvasObject';
 import LineObject from '../../objects/lineObject';
+import BrushCursor from '../../util/brushCursor';
 import { ColourSelection } from '../../util/colour';
 import Tool from '../tool';
 import { ToolOption } from '../toolOptions';

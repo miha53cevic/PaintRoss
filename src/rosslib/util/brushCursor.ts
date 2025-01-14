@@ -1,4 +1,4 @@
-import CircleObject from './objects/circleObject';
+import CircleObject from '../objects/circleObject';
 
 export default class BrushCursor {
     private static _instance: BrushCursor | null = null;

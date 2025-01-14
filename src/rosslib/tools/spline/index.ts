@@ -1,7 +1,7 @@
 import CanvasObject from '../../objects/canvasObject';
 import LineObject from '../../objects/lineObject';
 import { ColourSelection } from '../../util/colour';
-import { ControllablePoints, ControlPoint, HalfPoint, Point } from '../../util/controlPoints';
+import { ControllablePoints, ControlPoint, HalfPoint, Point } from '../../util/controllablePoints';
 import Tool from '../tool';
 import { ToolOption } from '../toolOptions';
 import SplineToolOptions from './splineToolOptions';
@@ -62,7 +62,7 @@ export default class SplineTool extends Tool {
         switch (this._state) {
             case 'waiting for initial click': {
                 if (mouseButton === 0) {
-                    this._controllablePoints.ControlPoints.push(new ControlPoint([canvasX, canvasY])); // initial line starting point
+                    this._controllablePoints.Points.push(new ControlPoint([canvasX, canvasY])); // initial line starting point
                     this._state = 'waiting for initial release';
                 }
                 break;
@@ -93,19 +93,19 @@ export default class SplineTool extends Tool {
             case 'waiting for initial release': {
                 if (mouseButton === 0) {
                     // If it was a click and release mouse move ignore it
-                    if (this._controllablePoints.ControlPoints.length <= 1) return;
+                    if (this._controllablePoints.Points.length <= 1) return;
 
-                    const p1 = this._controllablePoints.ControlPoints[0].Position;
-                    const p4 = this._controllablePoints.ControlPoints[1].Position;
+                    const p1 = this._controllablePoints.Points[0].Position;
+                    const p4 = this._controllablePoints.Points[1].Position;
                     const middlePoint = HalfPoint(p1, p4);
                     const p2 = HalfPoint(p1, middlePoint);
                     const p3 = HalfPoint(middlePoint, p4);
 
-                    const cp1 = this._controllablePoints.ControlPoints[0];
-                    const cp4 = this._controllablePoints.ControlPoints[1];
+                    const cp1 = this._controllablePoints.Points[0];
+                    const cp4 = this._controllablePoints.Points[1];
                     const cp2 = new ControlPoint(p2);
                     const cp3 = new ControlPoint(p3);
-                    this._controllablePoints.ControlPoints = [cp1, cp1, cp2, cp3, cp4, cp4];
+                    this._controllablePoints.Points = [cp1, cp1, cp2, cp3, cp4, cp4];
                     this.RenderSpline();
                     this._state = 'waiting for point edit finish';
                 }
@@ -127,10 +127,10 @@ export default class SplineTool extends Tool {
         switch (this._state) {
             case 'waiting for initial release': {
                 // If the second control point is already placed just change it
-                if (this._controllablePoints.ControlPoints.length === 2) {
-                    this._controllablePoints.ControlPoints[1] = new ControlPoint([canvasX, canvasY]);
+                if (this._controllablePoints.Points.length === 2) {
+                    this._controllablePoints.Points[1] = new ControlPoint([canvasX, canvasY]);
                     // Otherwise add the second control point
-                } else this._controllablePoints.ControlPoints.push(new ControlPoint([canvasX, canvasY]));
+                } else this._controllablePoints.Points.push(new ControlPoint([canvasX, canvasY]));
                 // Rerender the line
                 this._canvasObj.CancelPreviewCanvas();
                 this.RenderInitialLine();
@@ -169,7 +169,7 @@ export default class SplineTool extends Tool {
     }
 
     private RenderSpline(renderControlPoints: boolean = true) {
-        let numberOfConnectedSplines = this._controllablePoints.ControlPoints.length - 2; // makni rubne kontrolne točke
+        let numberOfConnectedSplines = this._controllablePoints.Points.length - 2; // makni rubne kontrolne točke
         numberOfConnectedSplines -= 1; // za 2 imamo 1, za 3 imamo 2, za 4 imamo 3 spline-a... (odnosno length(controlPoints)-3)
         for (let j = 0; j < numberOfConnectedSplines; j++) {
             const curvePoints: Point[] = [];
@@ -204,7 +204,7 @@ export default class SplineTool extends Tool {
     }
 
     private ResetState() {
-        this._controllablePoints.ControlPoints = [];
+        this._controllablePoints.Points = [];
         this._controllablePoints.Select(null);
         this._state = 'waiting for initial click';
     }

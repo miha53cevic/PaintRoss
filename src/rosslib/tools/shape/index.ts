@@ -2,7 +2,7 @@ import CanvasObject from '../../objects/canvasObject';
 import CircleObject from '../../objects/circleObject';
 import RectangleObject from '../../objects/rectangleObject';
 import { ColourSelection } from '../../util/colour';
-import { ControllablePoints, ControlPoint } from '../../util/controlPoints';
+import { ControllablePoints, ControlPoint } from '../../util/controllablePoints';
 import Tool from '../tool';
 import { ToolOption } from '../toolOptions';
 import ShapeToolOptions from './shapeToolOptions';
@@ -51,8 +51,8 @@ export default class ShapeTool extends Tool {
         switch (this._state) {
             case 'waiting for initial point': {
                 if (mouseButton === 0) {
-                    this._controllablePoints.ControlPoints = [];
-                    this._controllablePoints.ControlPoints.push(new ControlPoint([canvasX, canvasY]));
+                    this._controllablePoints.Points = [];
+                    this._controllablePoints.Points.push(new ControlPoint([canvasX, canvasY]));
                     this._state = 'waiting for initial release';
                 }
                 break;
@@ -103,10 +103,10 @@ export default class ShapeTool extends Tool {
         switch (this._state) {
             case 'waiting for initial release': {
                 // If the second control point is already placed just change it
-                if (this._controllablePoints.ControlPoints.length == 2) {
-                    this._controllablePoints.ControlPoints[1] = new ControlPoint([canvasX, canvasY]);
+                if (this._controllablePoints.Points.length == 2) {
+                    this._controllablePoints.Points[1] = new ControlPoint([canvasX, canvasY]);
                     // Otherwise add the second control point
-                } else this._controllablePoints.ControlPoints.push(new ControlPoint([canvasX, canvasY]));
+                } else this._controllablePoints.Points.push(new ControlPoint([canvasX, canvasY]));
                 // Rerender the line
                 this._canvasObj.CancelPreviewCanvas();
                 this.RenderShape();
@@ -141,9 +141,9 @@ export default class ShapeTool extends Tool {
     }
 
     private RenderShape(drawControlPoints = true): void {
-        if (this._controllablePoints.ControlPoints.length < 2) return;
-        const p1 = this._controllablePoints.ControlPoints[0].Position;
-        const p4 = this._controllablePoints.ControlPoints[1].Position;
+        if (this._controllablePoints.Points.length < 2) return;
+        const p1 = this._controllablePoints.Points[0].Position;
+        const p4 = this._controllablePoints.Points[1].Position;
         const width = p4[0] - p1[0];
         const height = p4[1] - p1[1];
 
@@ -177,7 +177,7 @@ export default class ShapeTool extends Tool {
 
     private ResetState(): void {
         this._state = 'waiting for initial point';
-        this._controllablePoints.ControlPoints = [];
+        this._controllablePoints.Points = [];
         this._controllablePoints.Select(null);
     }
 }

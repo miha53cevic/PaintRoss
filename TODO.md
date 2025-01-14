@@ -44,9 +44,9 @@ TODO plan za Projekt R
 -   **Image Tools** (-)
 
     -   Crop (+)
-    -   Copy
-    -   Cut
-    -   Paste
+    -   Copy (+)
+    -   Cut (+)
+    -   Paste (+/-) - add ability to move pasted selection
 
 -   **Brush Tool** (+)
 

@@ -1,6 +1,5 @@
 import { vec2 } from 'gl-matrix';
 import App from './app';
-import BrushCursor from './brushCursor';
 import Camera2D from './camera2d';
 import Texture from './glo/texture';
 import CanvasObject, { CanvasAnchor } from './objects/canvasObject';
@@ -16,6 +15,8 @@ import SelectTool from './tools/select';
 import ShapeTool from './tools/shape';
 import SplineTool from './tools/spline';
 import ToolManager from './tools/toolManager';
+import BrushCursor from './util/brushCursor';
+import CanvasClipboard from './util/canvasClipboard';
 import { ColourSelection, RGBA } from './util/colour';
 import { ImageEffectType } from './util/imageEffect';
 import ImageFormat from './util/imageFormat';
@@ -32,6 +33,7 @@ export default class PaintApp {
     private _selectionObj: SelectionObject;
     private _toolManager: ToolManager;
     private _colourSelection: ColourSelection;
+    private _canvasClipboard: CanvasClipboard;
 
     private constructor(private readonly _htmlCanvas: HTMLCanvasElement) {
         Logger.Enable();
@@ -159,6 +161,8 @@ export default class PaintApp {
             Math.floor(gl.canvas.height / 2 - this._canvasObj.Size[1] / 2)
         );
         this._canvasObj.DebugMode = false;
+
+        this._canvasClipboard = new CanvasClipboard();
 
         this._selectionObj = new SelectionObject(gl);
         this._selectionObj.Size = [200, 200];
@@ -301,19 +305,28 @@ export default class PaintApp {
     public CopyFromCanvasImage() {
         if (!this._selectionObj.Visible) return;
         this.FinishCanvasImage();
+        this._canvasClipboard.SaveTexture(
+            this._canvasObj.CopyFromCanvasImage(this._selectionObj.GetCanvasSelectionRect(this._canvasObj))
+        );
         this._selectionObj.Visible = false;
     }
 
     public CutFromCanvasImage() {
         if (!this._selectionObj.Visible) return;
         this.FinishCanvasImage();
-        this._canvasObj.CutFromCanvasImage(this._selectionObj.GetCanvasSelectionRect(this._canvasObj));
+        this._canvasClipboard.SaveTexture(
+            this._canvasObj.CutFromCanvasImage(this._selectionObj.GetCanvasSelectionRect(this._canvasObj))
+        );
         this._selectionObj.Visible = false;
     }
 
-    public PasteOntoCanvasImage() {
+    public PasteOntoCanvasImage(canvasPositionX: number, canvasPositionY: number) {
+        const clipboardTexture = this._canvasClipboard.GetTexture();
+        if (!clipboardTexture) return;
+
         this._selectionObj.Visible = false;
         this.FinishCanvasImage();
+        this._canvasObj.PasteOntoCanvasImage(canvasPositionX, canvasPositionY, clipboardTexture);
     }
 
     public FinishCanvasImage() {
