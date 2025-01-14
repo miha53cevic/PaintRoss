@@ -335,7 +335,15 @@ export default class CanvasObject extends Object2D {
         return textureSection;
     }
 
-    public PasteOntoCanvasImage(canvasPositionX: number, canvasPositionY: number, texture: Texture) {}
+    public PasteOntoCanvasImage(canvasPositionX: number, canvasPositionY: number, texture: Texture) {
+        const quad = new QuadObject(this._gl);
+        quad.Position = [canvasPositionX, canvasPositionY];
+        quad.Size = texture.Size;
+        quad.Texture = texture;
+        quad.TransparencyChessboard = false;
+        this.DrawOnCanvas(quad);
+        this.MergePreviewCanvas();
+    }
 
     public Subscribe(event: CanvasObjectEvent, listener: CanvasObjectListener) {
         const eventListeners = this._listeners.get(event);

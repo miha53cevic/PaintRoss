@@ -32,18 +32,18 @@ export class ControlPoint {
 }
 
 export class ControllablePoints {
-    public ControlPoints: ControlPoint[];
+    public Points: ControlPoint[];
 
     constructor(controlPoints: ControlPoint[] = []) {
-        this.ControlPoints = controlPoints;
+        this.Points = controlPoints;
     }
 
     public SetSize(size: number) {
-        this.ControlPoints.forEach((cp) => (cp.Size = size));
+        this.Points.forEach((cp) => (cp.Size = size));
     }
 
     public GetTouching(mousePos: Point): ControlPoint | null {
-        for (const cp of this.ControlPoints) {
+        for (const cp of this.Points) {
             if (cp.IsPointInControlPoint(mousePos)) {
                 return cp;
             }
@@ -52,11 +52,11 @@ export class ControllablePoints {
     }
 
     public GetSelected(): ControlPoint | null {
-        return this.ControlPoints.find((cp) => cp.Selected === true) || null;
+        return this.Points.find((cp) => cp.Selected === true) || null;
     }
 
     public Select(controlPoint: ControlPoint | null) {
-        for (const cp of this.ControlPoints) {
+        for (const cp of this.Points) {
             if (cp === controlPoint) cp.Selected = true;
             else cp.Selected = false;
         }
@@ -64,7 +64,7 @@ export class ControllablePoints {
 
     public GetPositions(): Point[] {
         const points: Point[] = [];
-        for (const cp of this.ControlPoints) {
+        for (const cp of this.Points) {
             points.push(cp.Position);
         }
         return points;
@@ -77,7 +77,7 @@ export class ControllablePoints {
 
     private RenderCircles(gl: WebGL2RenderingContext, canvasObj: CanvasObject) {
         const circle = new CircleObject(gl);
-        for (const cp of this.ControlPoints) {
+        for (const cp of this.Points) {
             circle.Size = [cp.Size, cp.Size];
             if (cp.Selected) {
                 circle.SetColour([255, 255, 0, 255]);
@@ -89,7 +89,7 @@ export class ControllablePoints {
 
     private RenderQuads(gl: WebGL2RenderingContext, canvasObj: CanvasObject) {
         const quad = new QuadObject(gl);
-        for (const cp of this.ControlPoints) {
+        for (const cp of this.Points) {
             quad.Size = [cp.Size, cp.Size];
             if (cp.Selected) {
                 quad.Colour = [255, 255, 0, 255];

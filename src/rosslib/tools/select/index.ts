@@ -1,7 +1,7 @@
 import CanvasObject from '../../objects/canvasObject';
 import SelectionObject from '../../objects/selectionObject';
 import { ColourSelection } from '../../util/colour';
-import { ControllablePoints, ControlPoint } from '../../util/controlPoints';
+import { ControllablePoints, ControlPoint } from '../../util/controllablePoints';
 import Tool from '../tool';
 import { ToolOption } from '../toolOptions';
 import SelectToolOptions from './selectToolOptions';
@@ -59,8 +59,8 @@ export default class SelectTool extends Tool {
         switch (this._state) {
             case 'waiting for initial point': {
                 if (mouseButton === 0) {
-                    this._controllablePoints.ControlPoints = [];
-                    this._controllablePoints.ControlPoints.push(new ControlPoint([canvasX, canvasY]));
+                    this._controllablePoints.Points = [];
+                    this._controllablePoints.Points.push(new ControlPoint([canvasX, canvasY]));
                     this._state = 'waiting for initial release';
                 }
                 break;
@@ -115,10 +115,10 @@ export default class SelectTool extends Tool {
         switch (this._state) {
             case 'waiting for initial release': {
                 // If the second control point is already placed just change it
-                if (this._controllablePoints.ControlPoints.length == 2) {
-                    this._controllablePoints.ControlPoints[1] = new ControlPoint([canvasX, canvasY]);
+                if (this._controllablePoints.Points.length == 2) {
+                    this._controllablePoints.Points[1] = new ControlPoint([canvasX, canvasY]);
                     // Otherwise add the second control point
-                } else this._controllablePoints.ControlPoints.push(new ControlPoint([canvasX, canvasY]));
+                } else this._controllablePoints.Points.push(new ControlPoint([canvasX, canvasY]));
                 // Rerender the line
                 this._canvasObj.CancelPreviewCanvas();
                 this.RenderSelection();
@@ -153,9 +153,9 @@ export default class SelectTool extends Tool {
     }
 
     private RenderSelection(drawControlPoints = true): void {
-        if (this._controllablePoints.ControlPoints.length < 2) return;
-        const p1 = this._controllablePoints.ControlPoints[0].Position;
-        const p4 = this._controllablePoints.ControlPoints[1].Position;
+        if (this._controllablePoints.Points.length < 2) return;
+        const p1 = this._controllablePoints.Points[0].Position;
+        const p4 = this._controllablePoints.Points[1].Position;
         const width = Math.abs(p4[0] - p1[0]);
         const height = Math.abs(p4[1] - p1[1]);
 
@@ -173,7 +173,7 @@ export default class SelectTool extends Tool {
 
     private ResetState(): void {
         this._state = 'waiting for initial point';
-        this._controllablePoints.ControlPoints = [];
+        this._controllablePoints.Points = [];
         this._controllablePoints.Select(null);
     }
 }
